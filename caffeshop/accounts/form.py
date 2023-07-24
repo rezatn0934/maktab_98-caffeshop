@@ -26,3 +26,9 @@ class CustomUserCreationForm(UserCreationForm):
             user.save()
         return user
 
+
+class CustomUserChangeForm(UserChangeForm):
+    class Meta:
+        model = User
+        fields = ('phone','first_name', 'last_name')
+
