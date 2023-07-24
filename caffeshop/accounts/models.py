@@ -8,8 +8,8 @@ from .manager import UserManager
 class User(AbstractBaseUser, PermissionsMixin):
     phoneNumberRegex = RegexValidator(regex=r"^09\d{9}$")
     phone = models.CharField(validators=[phoneNumberRegex], max_length=16, unique=True)
-    first_name = models.CharField(max_length=50, default=" ")
-    last_name = models.CharField(max_length=100, default=" ")
+    first_name = models.CharField(max_length=50, null=True, blank=True)
+    last_name = models.CharField(max_length=100, null=True, blank=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)
