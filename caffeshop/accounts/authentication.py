@@ -1,13 +1,10 @@
 from django.contrib.auth.backends import ModelBackend
 from .models import User
-from .form import *
 
 
 class PhoneAuthBackend(ModelBackend):
 
-    def authenticate(self, request, **kwargs):
-        phone = kwargs['phone']
-        password = kwargs['password']
+    def authenticate(self, request, phone=None, password=None, **kwargs):
         try:
             user = User.objects.get(phone=phone)
             if user.check_password(password):
