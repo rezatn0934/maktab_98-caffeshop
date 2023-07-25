@@ -1,7 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from django.contrib.auth import authenticate
-from accounts import CustomUserCreationForm, CustomUserChangeForm
+from .form import CustomUserCreationForm, CustomUserChangeForm
 from .models import User
 
 
@@ -27,6 +26,7 @@ class CustomUserAdmin(UserAdmin):
     )
     search_fields = ("phone",)
     ordering = ("phone",)
+
 
 admin.site.site_header = 'Cafe Management'
 admin.site.site_title = 'Coffee shop Management'
