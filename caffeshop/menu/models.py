@@ -10,6 +10,10 @@ class Category(models.Model):
     class Meta:
         verbose_name_plural = "Categories"
 
+    def img_preview(self):
+        return mark_safe(f'<img src = "{self.image.url}" width = "150" height="150"/> ')
+
+
     def __str__(self):
         return self.name
 
