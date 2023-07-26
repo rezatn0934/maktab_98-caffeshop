@@ -13,18 +13,18 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
-    class Product(models.Model):
-        category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
-        name = models.CharField(max_length=250, unique=True)
-        price_per_item = models.FloatField()
-        active = models.BooleanField(default=True)
-        daily_availability = models.IntegerField(default=0)
-        description = models.TextField()
-        image = models.FileField(upload_to='images/product/', blank=True, null=True)
 
+class Product(models.Model):
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
+    name = models.CharField(max_length=250, unique=True)
+    price_per_item = models.FloatField()
+    active = models.BooleanField(default=True)
+    daily_availability = models.IntegerField(default=0)
+    description = models.TextField()
+    image = models.ImageField(upload_to='images/product/', blank=True, null=True)
 
-        def img_preview(self):
-            return mark_safe(f'<img src = "{self.image.url}" width = "150" height="150"/> ')
+    def img_preview(self):
+        return mark_safe(f'<img src = "{self.image.url}" width = "150" height="150"/> ')
 
-        def __str__(self):
-            return self.name
+    def __str__(self):
+        return self.name
