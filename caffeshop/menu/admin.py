@@ -13,3 +13,12 @@ class ProductAdmin(admin.ModelAdmin):
     search_fields = ['name', 'category', 'price_per_item', 'active', 'num_product']
     ordering = ['name', 'category', 'price_per_item', 'active', 'num_product']
     list_per_page = 15
+
+
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = ['name', 'product_count']
+    list_filter = ['name']
+
+    search_fields = ['name']
+    ordering = ['name']
+    list_per_page = 15
