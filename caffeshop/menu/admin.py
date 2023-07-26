@@ -8,6 +8,7 @@ from . import models
 
 @admin.register(models.Product)
 class ProductAdmin(admin.ModelAdmin):
+    autocomplete_fields = ['category']
     readonly_fields = ['img_preview']
     list_display = ['name', 'category', 'price_per_item', 'active', 'daily_availability', 'description', 'img_preview']
     list_editable = ['category', 'price_per_item', 'active', 'daily_availability']
