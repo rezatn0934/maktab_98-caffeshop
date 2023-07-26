@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Order
+from .models import Order, Order_detail
 # Register your models here.
 
 
@@ -14,6 +14,7 @@ class OrderAdmin(admin.ModelAdmin):
     list_per_page = 15
 
 
+@admin.register(Order_detail)
 class OrderDetailAdmin(admin.ModelAdmin):
     list_display = ["id", "order_id", "product", "quantity", "price", "total_price"]
 
