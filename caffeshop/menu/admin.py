@@ -27,6 +27,7 @@ class CategoryAdmin(admin.ModelAdmin):
     ordering = ['name']
     list_per_page = 15
 
+    @admin.display(ordering='product_count')
     def product_count(self, category):
         url = (reverse('admin:menu_product_changelist')
                + '?'
