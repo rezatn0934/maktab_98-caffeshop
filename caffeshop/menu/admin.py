@@ -20,10 +20,19 @@ class ProductAdmin(admin.ModelAdmin):
     ]
     list_editable = ['category', 'price_per_item', 'active', 'daily_availability']
     list_filter = ['name', 'category', 'price_per_item', 'active', 'daily_availability']
-
     search_fields = ['name__istartswith', 'category__istartswith']
     ordering = ['name', 'category', 'price_per_item', 'active', 'daily_availability']
     list_per_page = 15
+
+    @admin.display(ordering='order_count')
+    def order_count(self, product):
+        url = (reverse('admin:orders_order_detail_changelist')
+               + '?'
+               + urlencode({
+                    'product__id': str(product.id)
+                }))
+
+        return format_html('<a href="{}">{}</a>', url, product.order_count)
 
     def get_queryset(self, request):
         return super().get_queryset(request).annotate(
