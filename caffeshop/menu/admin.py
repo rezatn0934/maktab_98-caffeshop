@@ -13,7 +13,7 @@ class ProductAdmin(admin.ModelAdmin):
     list_editable = ['category', 'price_per_item', 'active', 'daily_availability']
     list_filter = ['name', 'category', 'price_per_item', 'active', 'daily_availability']
 
-    search_fields = ['name', 'category', 'price_per_item', 'active', 'daily_availability']
+    search_fields = ['name__istartswith', 'category__istartswith']
     ordering = ['name', 'category', 'price_per_item', 'active', 'daily_availability']
     list_per_page = 15
 
@@ -23,7 +23,7 @@ class CategoryAdmin(admin.ModelAdmin):
     list_display = ['name', 'product_count', 'img_preview']
     list_filter = ['name']
 
-    search_fields = ['name']
+    search_fields = ['name__istartswith']
     ordering = ['name']
     list_per_page = 15
 
@@ -36,8 +36,6 @@ class CategoryAdmin(admin.ModelAdmin):
                 }))
 
         return format_html('<a href="{}">{}</a>', url, category.product_count)
-
-
 
     def get_queryset(self, request):
         return super().get_queryset(request).annotate(

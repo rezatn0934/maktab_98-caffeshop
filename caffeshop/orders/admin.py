@@ -9,7 +9,7 @@ class OrderAdmin(admin.ModelAdmin):
     list_filter = ["phone_number", "date", "table_number", "total_price"]
     list_editable = ["phone_number", "table_number", "total_price"]
 
-    search_fields = ["phone_number", "date", "table_number", "total_price"]
+    search_fields = ["phone_number__istartswith", "table_number__istartswith"]
     ordering = ["phone_number", "date", "table_number", "total_price"]
     list_per_page = 15
 
@@ -25,6 +25,6 @@ class OrderDetailAdmin(admin.ModelAdmin):
     def order_id(self, obj):
         return obj.order.id
 
-    search_fields = ["product", "quantity", "price", "total_price"]
+    search_fields = ["product__istartswith"]
     ordering = ["order_id", "product", "quantity", "price", "total_price"]
     list_per_page = 15
