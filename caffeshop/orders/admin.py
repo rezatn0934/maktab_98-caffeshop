@@ -3,11 +3,21 @@ from .models import Order, Order_detail
 from django.db.models import Count
 from django.urls import reverse
 from django.utils.html import format_html, urlencode
+from . import models
 # Register your models here.
+
+
+class OrderdetailInline(admin.TabularInline):
+    autocomplete_fields = ['product']
+    model = models.Order_detail
+    min_num = 0
+    max_num = 10
+    extra = 0
 
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
+    inlines = [OrderdetailInline]
     list_display = ["id", "phone_number", "customer_count", "table_number", "total_price"]
     list_filter = ["phone_number", "date", "table_number", "total_price"]
     list_editable = ["phone_number", "table_number", "total_price"]
