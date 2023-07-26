@@ -15,7 +15,7 @@ class ProductAdmin(admin.ModelAdmin):
     readonly_fields = ['img_preview']
 
     list_display = [
-        'name', 'category', 'price_per_item', 'active', 'daily_availability',
+        'name', 'category', 'price_per_item', 'order_count', 'active', 'daily_availability',
         'truncated_description', 'img_preview'
     ]
     list_editable = ['category', 'price_per_item', 'active', 'daily_availability']
@@ -24,6 +24,11 @@ class ProductAdmin(admin.ModelAdmin):
     search_fields = ['name__istartswith', 'category__istartswith']
     ordering = ['name', 'category', 'price_per_item', 'active', 'daily_availability']
     list_per_page = 15
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).annotate(
+            order_count=Count('order_detail__product')
+        )
 
     def truncated_description(self, obj):
         return truncatewords(obj.description, 10)
