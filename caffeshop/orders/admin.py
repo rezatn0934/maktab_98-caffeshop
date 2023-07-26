@@ -20,6 +20,10 @@ class OrderDetailAdmin(admin.ModelAdmin):
 
     list_filter = ["product", "quantity", "price", "total_price"]
     list_editable = ["product", "quantity", "price", "total_price"]
+    list_select_related = ['order']
+
+    def order_id(self, obj):
+        return obj.order.id
 
     search_fields = ["product", "quantity", "price", "total_price"]
     ordering = ["order_id", "product", "quantity", "price", "total_price"]
