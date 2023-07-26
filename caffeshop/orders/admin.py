@@ -12,3 +12,14 @@ class OrderAdmin(admin.ModelAdmin):
     search_fields = ["phone_number", "date", "table_number", "total_price"]
     ordering = ["phone_number", "date", "table_number", "total_price"]
     list_per_page = 15
+
+
+class OrderDetailAdmin(admin.ModelAdmin):
+    list_display = ["id", "order_id", "product", "quantity", "price", "total_price"]
+
+    list_filter = ["product", "quantity", "price", "total_price"]
+    list_editable = ["product", "quantity", "price", "total_price"]
+
+    search_fields = ["product", "quantity", "price", "total_price"]
+    ordering = ["order_id", "product", "quantity", "price", "total_price"]
+    list_per_page = 15
