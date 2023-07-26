@@ -1,7 +1,9 @@
+from django.core.validators import MinValueValidator
 from django.db import models
 from django.utils.html import mark_safe
 
 # Create your models here.
+
 
 class Category(models.Model):
     name = models.CharField(max_length=250, unique=True)
@@ -21,7 +23,7 @@ class Category(models.Model):
 class Product(models.Model):
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
     name = models.CharField(max_length=250, unique=True)
-    price_per_item = models.FloatField()
+    price_per_item = models.FloatField(validators=[MinValueValidator(0.0)])
     active = models.BooleanField(default=True)
     daily_availability = models.IntegerField(default=0)
     description = models.TextField()
