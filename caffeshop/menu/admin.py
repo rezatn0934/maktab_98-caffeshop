@@ -15,6 +15,7 @@ class ProductAdmin(admin.ModelAdmin):
     list_per_page = 15
 
 
+@admin.register(models.Category)
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ['name', 'product_count']
     list_filter = ['name']
