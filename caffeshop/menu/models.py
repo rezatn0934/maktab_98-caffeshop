@@ -21,8 +21,7 @@ class Product(models.Model):
     active = models.BooleanField(default=True)
     daily_availability = models.IntegerField(default=0)
     description = models.TextField()
-    image = models.FileField(upload_to='images/product/', blank=True, null=True)
-
+    image = models.ImageField(upload_to='images/product/', blank=True, null=True)
 
     def img_preview(self):
         return mark_safe(f'<img src = "{self.image.url}" width = "150" height="150"/> ')
