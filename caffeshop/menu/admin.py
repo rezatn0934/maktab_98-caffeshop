@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django.urls import reverse
+from django.utils.html import format_html, urlencode
 from django.db.models import Count
 from . import models
 # Register your models here.
@@ -24,6 +26,12 @@ class CategoryAdmin(admin.ModelAdmin):
     search_fields = ['name']
     ordering = ['name']
     list_per_page = 15
+
+    def product_count(self, category):
+        url = (reverse('admin:menu_product_changelist'))
+        return format_html('<a href="{}">{}</a>', url, category.product_count)
+
+
 
     def get_queryset(self, request):
         return super().get_queryset(request).annotate(
