@@ -16,10 +16,11 @@ class OrderAdmin(admin.ModelAdmin):
 
 @admin.register(Order_detail)
 class OrderDetailAdmin(admin.ModelAdmin):
+    autocomplete_fields = ['order_id', 'product']
     list_display = ["id", "order_id", "product", "quantity", "price", "total_price"]
 
     list_filter = ["product", "quantity", "price", "total_price"]
-    list_editable = ["product", "quantity", "price", "total_price"]
+    list_editable = ["quantity", "price", "total_price"]
     list_select_related = ['order']
 
     def order_id(self, obj):
