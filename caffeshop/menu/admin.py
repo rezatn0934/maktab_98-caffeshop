@@ -28,7 +28,12 @@ class CategoryAdmin(admin.ModelAdmin):
     list_per_page = 15
 
     def product_count(self, category):
-        url = (reverse('admin:menu_product_changelist'))
+        url = (reverse('admin:menu_product_changelist')
+               + '?'
+               + urlencode({
+                    'category__id': str(category.id)
+                }))
+
         return format_html('<a href="{}">{}</a>', url, category.product_count)
 
 
