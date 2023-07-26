@@ -1,6 +1,8 @@
 from django.contrib import admin
 from .models import Order, Order_detail
 from django.db.models import Count
+from django.urls import reverse
+from django.utils.html import format_html, urlencode
 # Register your models here.
 
 
@@ -14,9 +16,20 @@ class OrderAdmin(admin.ModelAdmin):
     ordering = ["phone_number", "date", "table_number", "total_price"]
     list_per_page = 15
 
+    def customer_count(self, obj):
+        url = (reverse('admin:orders_order_detail_changelist')
+               + '?'
+               + urlencode({
+                    'order__id': str(obj.id)
+                }))
+        return format_html('<a href="{}">{}</a>', url, obj.customer_count)
+
+    customer_count.short_description = 'Number of Orders'
+
     def get_queryset(self, request):
         return super().get_queryset(request).annotate(customer_count=Count('order_detail__order'))
 
+    customer_count.admin_order_field = 'customer_count'
 
 
 
