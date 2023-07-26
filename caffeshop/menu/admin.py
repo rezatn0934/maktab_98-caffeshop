@@ -20,7 +20,7 @@ class ProductAdmin(admin.ModelAdmin):
 
 @admin.register(models.Category)
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ['name', 'product_count']
+    list_display = ['name', 'product_count', 'img_preview']
     list_filter = ['name']
 
     search_fields = ['name']
