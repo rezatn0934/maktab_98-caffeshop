@@ -10,11 +10,11 @@ from . import models
 class ProductAdmin(admin.ModelAdmin):
     readonly_fields = ['img_preview']
     list_display = ['name', 'category', 'price_per_item', 'active', 'daily_availability', 'description', 'img_preview']
-    list_editable = ['category', 'price_per_item', 'active', 'num_product']
-    list_filter = ['name', 'category', 'price_per_item', 'active', 'num_product']
+    list_editable = ['category', 'price_per_item', 'active', 'daily_availability']
+    list_filter = ['name', 'category', 'price_per_item', 'active', 'daily_availability']
 
-    search_fields = ['name', 'category', 'price_per_item', 'active', 'num_product']
-    ordering = ['name', 'category', 'price_per_item', 'active', 'num_product']
+    search_fields = ['name', 'category', 'price_per_item', 'active', 'daily_availability']
+    ordering = ['name', 'category', 'price_per_item', 'active', 'daily_availability']
     list_per_page = 15
 
 
