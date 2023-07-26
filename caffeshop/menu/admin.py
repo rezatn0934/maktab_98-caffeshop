@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.db.models import Count
 from . import models
 # Register your models here.
 
@@ -23,3 +24,8 @@ class CategoryAdmin(admin.ModelAdmin):
     search_fields = ['name']
     ordering = ['name']
     list_per_page = 15
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).annotate(
+            product_count=Count('product')
+        )
