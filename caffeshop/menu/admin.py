@@ -1,8 +1,9 @@
 from django.contrib import admin
+from django.db.models import Count
 from django.template.defaultfilters import truncatewords
 from django.urls import reverse
 from django.utils.html import format_html, urlencode
-from django.db.models import Count
+
 from . import models
 # Register your models here.
 
@@ -10,6 +11,7 @@ from . import models
 @admin.register(models.Product)
 class ProductAdmin(admin.ModelAdmin):
     autocomplete_fields = ['category']
+    actions = ['deactivate_product']
     readonly_fields = ['img_preview']
 
     list_display = [
@@ -28,6 +30,13 @@ class ProductAdmin(admin.ModelAdmin):
 
     truncated_description.short_description = 'Description'
 
+    @admin.action(description='deactivate products ')
+    def deactivate_product(self, request, queryset):
+        updated_count = queryset.update(active=False)
+        self.message_user(
+            request,
+            f'{updated_count} products were successfully deactivated.',
+        )
 
 @admin.register(models.Category)
 class CategoryAdmin(admin.ModelAdmin):
