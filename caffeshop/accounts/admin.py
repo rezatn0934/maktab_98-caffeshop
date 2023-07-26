@@ -24,8 +24,8 @@ class CustomUserAdmin(UserAdmin):
             )}
          ),
     )
-    search_fields = ("phone", 'first_name', 'last_name')
-    ordering = ("phone",'first_name', 'last_name')
+    search_fields = ("phone", 'first_name__istartswith', 'last_name__istartswith')
+    ordering = ("phone", 'first_name', 'last_name')
 
 
 admin.site.site_header = 'Cafe Management'
