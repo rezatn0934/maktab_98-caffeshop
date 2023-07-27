@@ -3,15 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    {% load static %}
+    <style>
+        .body1{
+        background-image: url("{% static 'images/accounts/login.jpg' %}");
+    }
+    </style>
+    <link rel="stylesheet" href="{% static 'css/account/login.css' %}">
+    <title>Document Title</title>
 </head>
-<body >
-    <div class="card" style='background-color: pink; width: 200px; margin-left: 650px; border-radius: 20px;'>
-        <form action="" method="POST" novalidate style="text-align: center;margin-top: 300px;">
-        <h2> admin login </h2>
-            {% csrf_token %}
-            {{form.as_p}}
-        <input type="submit" value="Login">
-    </div>    
+<body class="body1" >
+    <div class="container">
+        <div class="card1" >
+            <form action="" method="POST" class="form1">
+            <div class="textform">
+                <h1 class="font1"> Admin login </h1>
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                <input type="submit" value="Login" class="login_btn">
+            </div>
+            
+            </form>
+        </div>  
+    </div>  
 </body>
 </html>
