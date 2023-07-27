@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body >
+    <div class="card" style='background-color: pink; width: 200px; margin-left: 650px; border-radius: 20px;'>
+        <form action="" method="POST" novalidate style="text-align: center;margin-top: 300px;">
+        <h2> admin login </h2>
+            {% csrf_token %}
+            {{form.as_p}}
+        <input type="submit" value="Login">
+    </div>    
+</body>
+</html>
