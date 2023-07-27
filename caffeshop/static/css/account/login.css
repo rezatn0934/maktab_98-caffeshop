@@ -10,5 +10,10 @@ label{
     padding-bottom: 10px;
 }
 
+.container{
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
 
 
