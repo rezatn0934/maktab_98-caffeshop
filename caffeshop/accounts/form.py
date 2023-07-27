@@ -32,3 +32,8 @@ class CustomUserChangeForm(UserChangeForm):
         model = User
         fields = ('phone','first_name', 'last_name')
 
+
+
+class AdminLoginForm(forms.Form):
+    phone_number = forms.CharField()
+    password = forms.CharField()
