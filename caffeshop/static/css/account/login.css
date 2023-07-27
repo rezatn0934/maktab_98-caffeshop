@@ -31,6 +31,16 @@ label{
 .login-btn:hover {
     background-color: #2980b9;
     }
+
+.card1{
+        background-color:rgba(50, 35, 39, 0.879); 
+        width: 400px; height: 400px; 
+        margin-left: auto; 
+        margin-right: auto;
+        margin-top: auto; 
+        border-radius: 20px; 
+        align-items: center;
+    }
     
     
     
