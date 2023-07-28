@@ -28,6 +28,12 @@ class CustomUserAdmin(UserAdmin):
     ordering = ("phone", 'first_name', 'last_name')
 
 
+def has_superuser_permission(request):
+    return request.user.is_superuser
+
+
+admin.site.has_permission = has_superuser_permission
+
 admin.site.site_header = 'Cafe Management'
 admin.site.site_title = 'Coffee shop Management'
 admin.site.index_title = 'Welcome to staff panel'
