@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block link %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+
+{% endblock %}
+
+
+{% block order_number %} {{ request.COOKIES.number_of_order_items }} {% endblock %}
+
+{% block content %}
+<div id="portfolio">
+    <div class="section-title text-center center">
+      <div class="overlay">
+        <h2>Menu</h2>
+        <hr>
+        <p>The Best quality what you deserve.</p>
+      </div>
+    </div>
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="search-box mx-5">
+          <input type="text" placeholder="Type to search..."/>
+          <div class="search-btn mx-5">
+            <i class="fas fa-search"></i>
+          </div>
+          
+          <div class="cancel-btn">
+            <i class="fas fa-times"></i>
+          </div>
+        </div>
+        <div class="categories">
+          <ul class="cat">
+            <li>
+              <ol class="type">
+                <li><a href="#" data-filter="*"  >All</a></li>
+                {% for category in categories %}
+                    {% if not category.parent_category %}
+                    <li><a href="#" data-filter=".{{ category.name|cut:' ' }}" >{{ category.name }}</a></li>
+                    {% endif %}
+                {% endfor %}
+              </ol>
+            </li>
+          </ul>
+          <div class="clearfix"></div>
+          
+        </div>
+      </div>
+
+{% endblock %}
+
+
+{% block footerlink %}
+  <script>
+    const searchBtn = document.querySelector(".search-btn");
+const cancelBtn = document.querySelector(".cancel-btn");
+const searchBox = document.querySelector(".search-box");
+
+searchBtn.onclick = () => {
+  searchBox.classList.add("active");
+}
+
+cancelBtn.onclick = () => {
+  searchBox.classList.remove("active");
+}
+  </script>
+{% endblock %}
