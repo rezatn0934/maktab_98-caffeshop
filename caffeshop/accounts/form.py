@@ -30,10 +30,13 @@ class CustomUserCreationForm(UserCreationForm):
 class CustomUserChangeForm(UserChangeForm):
     class Meta:
         model = User
-        fields = ('phone','first_name', 'last_name')
-
+        fields = ('phone', 'first_name', 'last_name')
 
 
 class AdminLoginForm(forms.Form):
     phone_number = forms.IntegerField()
     password = forms.CharField(widget=forms.PasswordInput)
+
+
+class VerifyCodeForm(forms.Form):
+    code = forms.CharField()
