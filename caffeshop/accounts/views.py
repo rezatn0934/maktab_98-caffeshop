@@ -65,3 +65,7 @@ def verify(request):
     else:
         form = VerifyCodeForm()
     return render(request, "verify.html", {"form": form})
+
+
+def dashboard(request):
+    return render(request, "dashboard.html")
