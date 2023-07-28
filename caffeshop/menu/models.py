@@ -15,6 +15,9 @@ class ParentCategory(models.Model):
     def img_preview(self):
         return mark_safe(f'<img src = "{self.image.url}" width = "150" height="150"/> ')
 
+    def __str__(self):
+        return self.name
+
 
 class Category(models.Model):
     name = models.CharField(max_length=250, unique=True)
