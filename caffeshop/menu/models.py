@@ -5,6 +5,11 @@ from django.utils.html import mark_safe
 # Create your models here.
 
 
+class ParentCategory(models.Model):
+    name = models.CharField(max_length=250, unique=True)
+    image = models.ImageField(upload_to='images/parent_category', blank=True, null=True)
+
+
 class Category(models.Model):
     name = models.CharField(max_length=250, unique=True)
     image = models.ImageField(upload_to='images/category/', blank=True, null=True)
