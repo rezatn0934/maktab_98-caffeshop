@@ -86,6 +86,16 @@ class ParentCategoryAdmin(admin.ModelAdmin):
     ordering = ['name']
     list_per_page = 15
 
+    @admin.display(ordering='category_count')
+    def category_count(self, parent_category):
+        url = (reverse('admin:menu_category_changelist')
+               + '?'
+               + urlencode({
+                    'parent_category__id': str(parent_category.id)
+                }))
+
+        return format_html('<a href="{}">{}</a>', url, parent_category.category_count)
+
     def get_queryset(self, request):
         return super().get_queryset(request).annotate(
             category_count=Count('category__parent_category')
