@@ -30,3 +30,13 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def has_module_perms(self, app_label):
         return True
+
+
+class Otp_code(models.Model):
+    phoneNumberRegex = RegexValidator(regex=r"^09\d{9}$")
+    phone = models.CharField(validators=[phoneNumberRegex], unique=True)
+    code = models.PositiveSmallIntegerField()
+    created = models.DateTimeField(auto_now=True)
+
+    def str(self):
+        return f"{self.phone} - {self.code} - {self.created}"
