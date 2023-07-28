@@ -77,6 +77,7 @@ class CategoryAdmin(admin.ModelAdmin):
         )
 
 
+@admin.register(models.ParentCategory)
 class ParentCategoryAdmin(admin.ModelAdmin):
     list_display = ['name', 'category_count', 'img_preview']
     list_filter = ['name']
