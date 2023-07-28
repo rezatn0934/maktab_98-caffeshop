@@ -57,7 +57,46 @@
 <!-- Navigation
     ==========================================-->
 
-       
+        <nav  id="menu" class="navbar  navbar-default fixed-top navbar-expand-lg">
+    
+        <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="container-fluid">
+                <!-- <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#bs-example-navbar-collapse-1"> <span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </button> -->
+            <a class="navbar-brand page-scroll" href="index.html">Touché</a>
+            
+            <button class="navbar-toggler" style="color: greenyellow; background-color: blueviolet;" type="button" data-bs-toggle="collapse" data-bs-target="#bs-example-navbar-collapse-1" aria-controls="bs-example-navbar-collapse-1" aria-expanded="false" >
+            <span class="navbar-toggler-icon"></span>
+            </button>
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1" >
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 row px-2 justify-content-end " style="width: 100%;">
+                <li class="nav-item col-lg-1 "><a class="nav-link" href="#about" class="page-scroll">About</a></li>
+                <li class="nav-item col-lg-1 "><a class="nav-link" href="menu.html" class="page-scroll">Menu</a></li>
+                <li class="nav-item col-lg-1 "><a class="nav-link" href="#portfolio" class="page-scroll">Gallery</a></li>
+                <li class="nav-item col-lg-1 "><a class="nav-link" href="#team" class="page-scroll">Chefs</a></li>
+                <li class="nav-item col-lg-1 "><a class="nav-link" href="#call-reservation" class="page-scroll">Contact</a></li>
+                </ul>
+            </div>
+            <form class="float-end">
+                <a role="button" href="{% static 'flat_cart_widget/web/cart.html' %}" class="btn btn-customm btn-cart mx-sm-3  my-2" type="submit">
+                <i class="bi-cart-fill me-1"></i>
+                Cart
+                <span class="badge text-white ms-1 rounded-pill" style="background-color: rgba(234, 15, 179, 0.196);">{% block order_number %} {% endblock %}</span>
+                </a>
+            </form>
+            {% block cartbox %}{% endblock %}
+        
+            <!-- /.navbar-collapse --> 
+            </div>
+        </nav>
+        <!-- Navigation
+            ==========================================-->
+
+
+        {% block content %}{% endblock %}
+
+
+
         <script type="text/javascript" src="{% static 'js/jquery.1.11.1.js' %}"></script> 
         <script type="text/javascript" src="{% static 'js/bootstrap.js' %}"></script> 
         <script type="text/javascript" src="{% static 'js/SmoothScroll.js' %}"></script> 
