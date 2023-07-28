@@ -17,4 +17,23 @@ def menu(request):
     html.set_cookie('number_of_order_items', sum([int(order_qnt) for order_qnt in orders.values()]))
     if request.method == 'GET':
         return html
-    
+    elif request.method == 'POST':
+        product = request.POST.get('product')
+        number_of_product = int(request.POST.get('quantity'))
+        if request.COOKIES.get('orders'):
+            if orders.get(product):
+                orders[product] += number_of_product
+                message = "Order updated"
+            else:
+                orders[product] = number_of_product 
+                message = "Order added"
+            html.set_cookie('orders', orders, max_age=60)
+            html.set_cookie('message', message, max_age=65)
+        else:
+            new_order = {product: number_of_product}
+            html.set_cookie('orders', new_order)
+            message = "you created a shopping cart"
+            html.set_cookie('message', message)
+        html.set_cookie( 'number_of_order_items', sum([int(order_qnt) for order_qnt in orders.values()]))
+        return html
+
