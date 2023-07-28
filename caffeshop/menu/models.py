@@ -12,6 +12,9 @@ class ParentCategory(models.Model):
     class Meta:
         verbose_name_plural = "ParentCategories"
 
+    def img_preview(self):
+        return mark_safe(f'<img src = "{self.image.url}" width = "150" height="150"/> ')
+
 
 class Category(models.Model):
     name = models.CharField(max_length=250, unique=True)
