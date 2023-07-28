@@ -52,13 +52,14 @@ class ProductAdmin(admin.ModelAdmin):
             f'{updated_count} products were successfully deactivated.',
         )
 
+
 @admin.register(models.Category)
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ['name', 'product_count', 'img_preview']
-    list_filter = ['name']
+    list_display = ['name', 'parent_category', 'product_count', 'img_preview']
+    list_filter = ['name', 'parent_category']
 
-    search_fields = ['name__istartswith']
-    ordering = ['name']
+    search_fields = ['name__istartswith', 'parent__istartswith']
+    ordering = ['name', 'parent_category']
     list_per_page = 15
 
     @admin.display(ordering='product_count')
@@ -74,4 +75,29 @@ class CategoryAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         return super().get_queryset(request).annotate(
             product_count=Count('product')
+        )
+
+
+@admin.register(models.ParentCategory)
+class ParentCategoryAdmin(admin.ModelAdmin):
+    list_display = ['name', 'category_count', 'img_preview']
+    list_filter = ['name']
+
+    search_fields = ['name__istartswith']
+    ordering = ['name']
+    list_per_page = 15
+
+    @admin.display(ordering='category_count')
+    def category_count(self, parent_category):
+        url = (reverse('admin:menu_category_changelist')
+               + '?'
+               + urlencode({
+                    'parent_category__id': str(parent_category.id)
+                }))
+
+        return format_html('<a href="{}">{}</a>', url, parent_category.category_count)
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).annotate(
+            category_count=Count('category__parent_category')
         )
