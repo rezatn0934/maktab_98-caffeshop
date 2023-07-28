@@ -52,13 +52,14 @@ class ProductAdmin(admin.ModelAdmin):
             f'{updated_count} products were successfully deactivated.',
         )
 
+
 @admin.register(models.Category)
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ['name', 'product_count', 'img_preview']
-    list_filter = ['name']
+    list_display = ['name', 'parent_category', 'product_count', 'img_preview']
+    list_filter = ['name', 'parent_category']
 
-    search_fields = ['name__istartswith']
-    ordering = ['name']
+    search_fields = ['name__istartswith', 'parent__istartswith']
+    ordering = ['name', 'parent_category']
     list_per_page = 15
 
     @admin.display(ordering='product_count')
