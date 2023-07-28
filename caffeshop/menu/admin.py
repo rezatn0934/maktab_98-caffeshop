@@ -75,3 +75,12 @@ class CategoryAdmin(admin.ModelAdmin):
         return super().get_queryset(request).annotate(
             product_count=Count('product')
         )
+
+
+class ParentCategoryAdmin(admin.ModelAdmin):
+    list_display = ['name', 'category_count', 'img_preview']
+    list_filter = ['name']
+
+    search_fields = ['name__istartswith']
+    ordering = ['name']
+    list_per_page = 15
