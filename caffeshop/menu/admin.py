@@ -85,3 +85,8 @@ class ParentCategoryAdmin(admin.ModelAdmin):
     search_fields = ['name__istartswith']
     ordering = ['name']
     list_per_page = 15
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).annotate(
+            category_count=Count('category__parent_category')
+        )
