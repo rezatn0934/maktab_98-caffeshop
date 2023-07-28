@@ -9,6 +9,9 @@ class ParentCategory(models.Model):
     name = models.CharField(max_length=250, unique=True)
     image = models.ImageField(upload_to='images/parent_category', blank=True, null=True)
 
+    class Meta:
+        verbose_name_plural = "ParentCategories"
+
 
 class Category(models.Model):
     name = models.CharField(max_length=250, unique=True)
