@@ -35,7 +35,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 class Otp_code(models.Model):
     phoneNumberRegex = RegexValidator(regex=r"^09\d{9}$")
     phone = models.CharField(validators=[phoneNumberRegex], unique=True)
-    code = models.PositiveSmallIntegerField()
+    code = models.PositiveBigIntegerField()
     created = models.DateTimeField(auto_now=True)
 
     def str(self):
