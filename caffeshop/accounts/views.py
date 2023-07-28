@@ -19,7 +19,7 @@ def staff_login(request):
             user = PhoneAuthBackend().authenticate(request, phone=cd["phone"], password=cd["password"])
             if user is not None:
                 random_code = random.randint(10000000, 99999999)
-                send_otp_code(cd["phone"], random_code)
+                # send_otp_code(cd["phone"], random_code)
                 Otp_code.objects.create(phone=cd["phone"], code=random_code)
 
                 request.session["staff_login_info"] = {
@@ -46,9 +46,10 @@ def verify(request):
             cd = form.cleaned_data
             code = cd["code"]
             phone = request.session["staff_login_info"]["phone"]
-            code_instance = Otp_code.objects.get(phone=phone)
+            code_instance = Otp_code.objects.filter(phone=phone)
 
             if code_instance:
+                code_instance = code_instance.get(phone=phone)
                 if int(code) == code_instance.code:
                     Otp_code.objects.filter(phone=phone).delete()
                     user = User.objects.get(phone=phone)
