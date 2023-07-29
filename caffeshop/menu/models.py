@@ -1,6 +1,8 @@
 from django.core.validators import MinValueValidator
 from django.db import models
+from django.db.models.signals import pre_delete, pre_save
 from django.utils.html import mark_safe
+from caffeshop.signals import delete_image_file
 
 # Create your models here.
 
@@ -20,6 +22,10 @@ class ParentCategory(models.Model):
         return self.name
 
 
+pre_delete.connect(delete_image_file, ParentCategory)
+pre_save.connect(delete_image_file, ParentCategory)
+
+
 class Category(models.Model):
     name = models.CharField(max_length=250, unique=True)
     parent_category = models.ForeignKey(ParentCategory, on_delete=models.SET_NULL, null=True)
@@ -34,6 +40,10 @@ class Category(models.Model):
 
     def __str__(self):
         return self.name
+
+
+pre_delete.connect(delete_image_file, Category)
+pre_save.connect(delete_image_file, Category)
 
 
 class Product(models.Model):
@@ -51,3 +61,7 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
+
+
+pre_delete.connect(delete_image_file, Product)
+pre_save.connect(delete_image_file, Product)
