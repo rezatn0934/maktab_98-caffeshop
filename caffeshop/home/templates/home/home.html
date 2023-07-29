@@ -1,0 +1,167 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block link %}
+<style> .img-fluid{max-width:100%;height:auto} </style>
+{% endblock%}
+{% block content %}
+
+<header id="header"
+  <div class="intro">
+    <div class="overlay">
+      <div class="container">
+        <div class="row">
+          <div class="intro-text">
+            <h1>Touché</h1>
+            <p><b>Fast-Food / Coffee </b></p>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+<main id="main">
+  <!-- About Section -->
+  <div id="about">
+    <div class="container">
+      <div class="row">
+        <div class="col-xs-12 col-md-6 ">
+          <div class="about-img"><img src="{% static 'img/about.jpg'%}" class="img-responsive" alt=""></div>
+
+        </div>
+        <div class="col-xs-12 col-md-6">
+          <div class="about-text">
+            <h2>Our Restaurant</h2>
+            <hr>
+            <p>The pleasure of eating healthy and authentic food in a suitable environment is one of the feelings that can relieve the fatigue of a hard and worrying week and provide us with the energy we need for the days ahead.At <b>Touch Cafe</b>, with more than 65 years of experience, we are always proud to host your friendly and business circles, celebrations and ceremonies in an original environment based on modern architecture and design, suitable for any kind of taste and taste, relying on the skills of trained chefs. To have a good time together.</p>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+   <div id="test">
+    <!-- ======= Gallery Section ======= -->
+    <section id="test" class="gallery section-bg">
+      <div class="container" data-aos="fade-up">
+
+        <div class="section-header">
+          <h2>Menu</h2>
+          <p>Check <span>Menu</span></p>
+        </div>
+
+        <div class="gallery-slider swiper">
+          <div class="swiper-wrapper align-items-center">
+            {% for category in parentcategories %}
+            <div class="swiper-slide"><a  class="glightbox" data-gallery="images-gallery" href="{{ category.image.url }}"><img  src="{{ category.image.url }}" class="img-fluid" width="500" height="333" style=" max-width: 100% !important; max-height: 100% !important;" alt=""></a></div>
+            {%endfor%}
+          </div>
+          <div class="swiper-pagination"></div>
+        </div>
+
+      </div>
+    </section><!-- End Gallery Section -->
+  </div>
+
+
+  <div id="portfolio">
+    <!-- ======= Gallery Section ======= -->
+    <section id="gallery" class="gallery section-bg">
+      <div class="container" data-aos="fade-up">
+
+        <div class="section-header">
+          <h2>gallery</h2>
+          <p>Check <span>Our Gallery</span></p>
+        </div>
+
+        <div class="gallery-slider swiper">
+          <div class="swiper-wrapper align-items-center">
+            <div class="swiper-slide"><a class="glightbox" data-gallery="images-gallery" href="assets/img/gallery/gallery-1.jpg"><img src="{% static 'assets/img/gallery/gallery-1.jpg' %}" class="img-fluid" alt=""></a></div>
+            <div class="swiper-slide"><a class="glightbox" data-gallery="images-gallery" href="assets/img/gallery/gallery-2.jpg"><img src="{% static 'assets/img/gallery/gallery-2.jpg' %}" class="img-fluid" alt=""></a></div>
+            <div class="swiper-slide"><a class="glightbox" data-gallery="images-gallery" href="assets/img/gallery/gallery-3.jpg"><img src="{% static 'assets/img/gallery/gallery-3.jpg' %}" class="img-fluid" alt=""></a></div>
+            <div class="swiper-slide"><a class="glightbox" data-gallery="images-gallery" href="assets/img/gallery/gallery-4.jpg"><img src="{% static 'assets/img/gallery/gallery-4.jpg' %}" class="img-fluid" alt=""></a></div>
+            <div class="swiper-slide"><a class="glightbox" data-gallery="images-gallery" href="assets/img/gallery/gallery-5.jpg"><img src="{% static 'assets/img/gallery/gallery-5.jpg' %}" class="img-fluid" alt=""></a></div>
+            <div class="swiper-slide"><a class="glightbox" data-gallery="images-gallery" href="assets/img/gallery/gallery-6.jpg"><img src="{% static 'assets/img/gallery/gallery-6.jpg' %}" class="img-fluid" alt=""></a></div>
+            <div class="swiper-slide"><a class="glightbox" data-gallery="images-gallery" href="assets/img/gallery/gallery-7.jpg"><img src="{% static 'assets/img/gallery/gallery-7.jpg' %}" class="img-fluid" alt=""></a></div>
+            <div class="swiper-slide"><a class="glightbox" data-gallery="images-gallery" href="assets/img/gallery/gallery-8.jpg"><img src="{% static 'assets/img/gallery/gallery-8.jpg' %}" class="img-fluid" alt=""></a></div>
+          </div>
+          <div class="swiper-pagination"></div>
+        </div>
+
+      </div>
+    </section><!-- End Gallery Section -->
+  </div>
+  <!-- Team Section -->
+  <div id="call-reservation" class="text-center">
+    <div class="container">
+      <h2>Want to make a reservation? Call <strong>+98 21 91077225</strong></h2>
+    </div>
+  </div>
+ <!-- Contact Section -->
+  <div id="contact" class="text-center">
+    <div class="container container">
+      <div class="row justify-content-center">
+        <div class="section-title text-center">
+          <h2>Contact Form</h2>
+          <hr>
+
+        </div>
+        <div class="col-md-10 col-md-offset-1">
+          <form name="sentMessage" id="contactForm" novalidate>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <input type="text" id="name" class="form-control" placeholder="Name" required="required">
+                  <p class="help-block text-danger"></p>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <input type="email" id="email" class="form-control" placeholder="Email" required="required">
+                  <p class="help-block text-danger"></p>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <textarea name="message" id="message" class="form-control" rows="4" placeholder="Message" required></textarea>
+              <p class="help-block text-danger"></p>
+            </div>
+            <div id="success"></div>
+            <button type="submit" class="btn btn-custom btn-lg">Send Message</button>
+          </form>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</main>
+
+  <div class="container-fluid text-center copyrights">
+    <div class="col-md-8 col-md-offset-2">
+      <div class="social">
+        <ul>
+          <li><a href="#"><i class="fa fa-facebook"></i></a></li>
+          <li><a href="#"><i class="fa fa-twitter"></i></a></li>
+          <li><a href="#"><i class="fa fa-google-plus"></i></a></li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</div>
+<script type="text/javascript" src="js/jquery.1.11.1.js"></script>
+<script type="text/javascript" src="js/bootstrap.js"></script>
+<script type="text/javascript" src="js/SmoothScroll.js"></script>
+<script type="text/javascript" src="js/nivo-lightbox.js"></script>
+<script type="text/javascript" src="js/jquery.isotope.js"></script>
+<script type="text/javascript" src="js/jqBootstrapValidation.js"></script>
+<!--<script type="text/javascript" src="js/contact_me.js"></script> -->
+<script type="text/javascript" src="js/main.js"></script>
+
+<!-- <a href="#" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a> -->
+
+  <!-- <div id="preloader"></div> -->
+
+
+{% endblock%}
