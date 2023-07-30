@@ -17,7 +17,7 @@ def staff_login(request):
         form = StaffLoginForm(request.POST)
         if form.is_valid():
             cd = form.cleaned_data
-            user = PhoneAuthBackend().authenticate(request, phone=cd["phone"], password=cd["password"])
+            user = PhoneAuthBackend().authenticate(request, phone=cd["phone"])
             if user is not None:
                 request.session["phone"] = cd["phone"]
                 return redirect("verify")
