@@ -4,11 +4,6 @@ from .form import CustomUserCreationForm, CustomUserChangeForm
 from .models import User, Otp_code
 
 
-@admin.register(Otp_code)
-class OtpCodeAdmin(admin.ModelAdmin):
-    list_display = ("phone", "code", "created")
-
-
 class CustomUserAdmin(UserAdmin):
     add_form = CustomUserCreationForm
     form = CustomUserChangeForm
@@ -32,12 +27,6 @@ class CustomUserAdmin(UserAdmin):
     search_fields = ("phone", 'first_name__istartswith', 'last_name__istartswith')
     ordering = ("phone", 'first_name', 'last_name')
 
-
-def has_superuser_permission(request):
-    return request.user.is_superuser
-
-
-admin.site.has_permission = has_superuser_permission
 
 admin.site.site_header = 'Cafe Management'
 admin.site.site_title = 'Coffee shop Management'
