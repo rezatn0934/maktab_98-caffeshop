@@ -76,6 +76,8 @@
                         <form action="{% url 'menu:menu'  %}" class=" row px-5 py-1" method="post" style="width: fit-content;">
                            {% csrf_token %}
                             <input  type="hidden" name="product" value="{{ product.id }}">
+                            <span class="co-sm-1 text-center">{{ product.name }}</span>
+                            <span class="co-sm-1 text-center">{{ product.price_per_item }} <span>$</span></span>
                             <!-- <span class="co-sm-1 text-center">Qnt</span> -->
                             <span><input placeholder="Qnt" class="col-sm-1 my-3 text-center  qnt" type="number" min="0" max="{{ product.quantity }}" name="quantity" value="1" style="width: 100%; border-radius: 5px; color: #00014f; font-weight: bold; background-color: rgb(255, 255, 255);"></span>
                             <input type="submit" class="btn btn-cart moving-btn1 heart col-sm-1  " style="border-radius: 10px; color: rgb(3, 0, 38) !important; background-color: rgba(16, 3, 87, 0.142); width: 100%;" value="Add to cart"> 
