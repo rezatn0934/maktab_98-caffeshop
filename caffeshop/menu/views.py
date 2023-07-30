@@ -7,7 +7,7 @@ import json
 
 
 def menu(request):
-    categories =   ParentCategory.objects.all()
+    categories = ParentCategory.objects.all()
     products = Product.objects.all()
     orders = request.COOKIES.get('orders', '{}')
     orders = orders.replace("\'", "\"")
