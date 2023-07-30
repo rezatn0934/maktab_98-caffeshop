@@ -1,5 +1,5 @@
 import os
-gi
+
 
 def delete_image_file(sender, instance, **kwargs):
     old_image = sender.objects.filter(pk=instance.pk)

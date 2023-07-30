@@ -35,11 +35,13 @@
             <li>
               <ol class="type">
                 <li><a href="#" data-filter="*"  >All</a></li>
-                {% for category in categories %}
-                    {% if not category.parent_category %}
-                    <li><a href="#" data-filter=".{{ category.name|cut:' ' }}" >{{ category.name }}</a></li>
-                    {% endif %}
-                {% endfor %}
+                {% if categories %}
+                  {% for category in categories %}
+                      <!-- {% if not category.parent_category %} -->
+                      <li><a href="#" data-filter=".{{ category.name|cut:' ' }}" >{{ category.name }}</a></li>
+                      <!-- {% endif %} -->
+                  {% endfor %}
+                {% endif %}
               </ol>
             </li>
           </ul>
@@ -49,24 +51,35 @@
       </div>
       <div class="container">
         <div class="portfolio-items pp-gallery row justify-content-between">
-
+          {% if products %}
           {% for product in products %}
             <div  class="col-sm-6 col-md-6 col-lg-4 {{ product.category.parent_category.parent_category.parent_category.name|cut:' ' }} {{ product.category.parent_category.parent_category.name|cut:' ' }} {{ product.category.parent_category.name|cut:' '   }} {{ product.category.name|cut:' ' }}">
                 <div class="portfolio-item container">
                     <div class="hover-bg" style="border: 1px solid black; border-radius: 10px 10px 0 0;">
-                        <a href="{{ product.image.url }}" title="{{ product.category }}" data-lightbox-gallery="gallery1">
-                            <div class="hover-text">
-                                <h4 style="color: chartreuse !important;">{{ product.name }}</h4>                                
-                            </div>
-                            <img src="{{ product.image.url }}" width="500" height="333" class="img-responsive" alt="Project Title" style="max-width: 100%; max-height: 100%;">
+                      {% if product.image %}
+                      <a href="{{ product.image.url }}" title="{{ product.category }}" data-lightbox-gallery="gallery1">
+                          <div class="hover-text">
+                              <h4 style="color: chartreuse !important;">{{ product.name }}</h4>                                
+                          </div>
+                          <img src="{{ product.image.url }}" width="500" height="333" class="img-responsive" alt="Project Title" style="max-width: 100%; max-height: 100%;">
                         </a>
+                        {% else %}
+                      <a href="#" title="{{ product.category }}" data-lightbox-gallery="gallery1">
+                          <div class="hover-text">
+                              <h4 style="color: chartreuse !important;">{{ product.name }}</h4>                                
+                          </div>
+                          <img src="#" width="500" height="333" class="img-responsive" alt="Project Title" style="max-width: 100%; max-height: 100%;">
+                        </a>
+                        {% endif %}
                     </div>
                     <div class="container mx-0 px-lg-5 justify-content-center" style="background-color: rgba(233, 33, 220, 0); border: 1px solid black; border-radius: 0 0 10px 10px; max-width: 100%; max-height: 100%;">
                         <form action="{% url 'menu:menu'  %}" class=" row px-5 py-1" method="post" style="width: fit-content;">
                            {% csrf_token %}
                             <input  type="hidden" name="product" value="{{ product.id }}">
-                            <span class="co-sm-1 text-center">Qnt</span>
-                            <input placeholder="Qnt" class="col-sm-1 my-3 text-center  qnt" type="number" min="0" max="{{ product.quantity }}" name="quantity" value="1" style="width: 100%; border-radius: 5px; color: #00014f; font-weight: bold; background-color: rgb(255, 255, 255);">
+                            <span class="co-sm-1 text-center">{{ product.name }}</span>
+                            <span class="co-sm-1 text-center">{{ product.price_per_item }} <span>$</span></span>
+                            <!-- <span class="co-sm-1 text-center">Qnt</span> -->
+                            <span><input placeholder="Qnt" class="col-sm-1 my-3 text-center  qnt" type="number" min="0" max="{{ product.quantity }}" name="quantity" value="1" style="width: 100%; border-radius: 5px; color: #00014f; font-weight: bold; background-color: rgb(255, 255, 255);"></span>
                             <input type="submit" class="btn btn-cart moving-btn1 heart col-sm-1  " style="border-radius: 10px; color: rgb(3, 0, 38) !important; background-color: rgba(16, 3, 87, 0.142); width: 100%;" value="Add to cart"> 
 
                         </form> 
@@ -74,6 +87,7 @@
                 </div>
             </div>
           {% endfor %}
+          {% endif %}
         </div>
       </div>
     </div>
