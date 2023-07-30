@@ -35,7 +35,7 @@ class CustomUserChangeForm(UserChangeForm):
 
 class StaffLoginForm(forms.Form):
     phone = forms.CharField()
-    password = forms.CharField(widget=forms.PasswordInput)
+
 
 
 class VerifyCodeForm(forms.Form):
