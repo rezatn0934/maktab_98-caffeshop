@@ -54,9 +54,6 @@ def verify(request):
                         message = "Invalid OTP"
                 else:
                     message = "OTP has been expired"
-            else:
-                message = "Start From Here!"
-                return render(request, "login.html", {"message": message, "form": form})
 
     elif request.method == "GET":
         if request.user.is_authenticated:
