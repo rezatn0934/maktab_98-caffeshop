@@ -21,8 +21,8 @@ body, html {
 
 .heart:hover {
 	animation: animateHeart 1.5s infinite;
-	background-color: rgba(0, 255, 13, 0.618) !important;
-	box-shadow: 0 0 25px 0 red ;
+	background-color: rgb(255, 130, 29) !important;
+	box-shadow: 0 0 25px 0 rgb(255, 33, 33) !important;
   }
   
   @keyframes animateHeart {
