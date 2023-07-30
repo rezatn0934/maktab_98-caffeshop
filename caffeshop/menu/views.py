@@ -13,7 +13,7 @@ def menu(request):
     orders = orders.replace("\'", "\"")
     orders = json.loads(orders)
     context = {'categories': categories, 'products': products}
-    html = render(request, 'menu\menu.html', context)
+    html = render(request, 'menu/menu.html', context)
     html.set_cookie('number_of_order_items', sum([int(order_qnt) for order_qnt in orders.values()]))
     if request.method == 'GET':
         return html
