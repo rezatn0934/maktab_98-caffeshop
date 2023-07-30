@@ -81,7 +81,7 @@
                 <a role="button" href="{% static 'flat_cart_widget/web/cart.html' %}" class="btn btn-customm btn-cart mx-sm-3  my-2" type="submit">
                 <i class="bi-cart-fill me-1"></i>
                 Cart
-                <span class="badge text-white ms-1 rounded-pill" style="background-color: rgba(234, 15, 179, 0.196);">{% block order_number %} {% endblock %}</span>
+                <span class="badge text-white ms-1 rounded-pill" style="background-color: rgba(234, 15, 179, 0.196);">{% block order_number %} {{ request.COOKIES.number_of_order_items }}  {% endblock %}</span>
                 </a>
             </form>
             {% block cartbox %}{% endblock %}
