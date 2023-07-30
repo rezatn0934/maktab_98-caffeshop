@@ -85,13 +85,6 @@
                 <span class="badge text-white ms-1 rounded-pill" style="background-color: rgba(234, 15, 179, 0.196);">{% block order_number %} {{ request.COOKIES.number_of_order_items }}  {% endblock %}</span>
                 </a>
             </form>
-            <button type="button" class="btn btn-secondary" data-bs-container="body" data-bs-toggle="popover" data-bs-placement="top" data-bs-content="Top popover">
-                Popover on top
-              </button>
-              <span class="d-inline-block" tabindex="0" data-bs-toggle="popover" data-bs-placement="left" data-bs-trigger="hover focus" data-bs-content="#my-hide">
-                <button class="btn btn-primary" type="button" disabled>Disabled button</button>
-                <h1 id="my-hide">hello</h1>
-              </span>
             {% block cartbox %}{% endblock %}
         
             <!-- /.navbar-collapse --> 
