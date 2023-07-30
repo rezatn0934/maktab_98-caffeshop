@@ -7,20 +7,20 @@ import json
 
 
 def menu(request):
-    categories =   ParentCategory.objects.all()
+    categories = ParentCategory.objects.all()
     products = Product.objects.all()
     orders = request.COOKIES.get('orders', '{}')
     orders = orders.replace("\'", "\"")
     orders = json.loads(orders)
     context = {'categories': categories, 'products': products}
-    html = render(request, 'menu\menu.html', context)
+    html = render(request, 'menu/menu.html', context)
     html.set_cookie('number_of_order_items', sum([int(order_qnt) for order_qnt in orders.values()]))
     if request.method == 'GET':
         return html
     elif request.method == 'POST':
         product = request.POST.get('product')
         number_of_product = int(request.POST.get('quantity'))
-        html = HttpResponseRedirect(request.path)
+        html = HttpResponseRedirect(request.META.get('HTTP_REFERER', '/menu/'))
         if request.COOKIES.get('orders'):
             if orders.get(product):
                 orders[product] += number_of_product

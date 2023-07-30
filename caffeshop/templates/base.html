@@ -63,7 +63,7 @@
         <!-- Brand and toggle get grouped for better mobile display -->
             <div class="container-fluid">
                 <!-- <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#bs-example-navbar-collapse-1"> <span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </button> -->
-            <a class="navbar-brand page-scroll" href="index.html">Touché</a>
+            <a class="navbar-brand page-scroll" href="{% url 'home' %}">Touché</a>
             
             <button class="navbar-toggler" style="color: greenyellow; background-color: blueviolet;" type="button" data-bs-toggle="collapse" data-bs-target="#bs-example-navbar-collapse-1" aria-controls="bs-example-navbar-collapse-1" aria-expanded="false" >
             <span class="navbar-toggler-icon"></span>
@@ -79,19 +79,12 @@
                 </ul>
             </div>
             <form class="float-end">
-                <a role="button" href="{% static 'flat_cart_widget/web/cart.html' %}" class="btn btn-customm btn-cart mx-sm-3  my-2" type="submit">
+                <a role="button" href="{% url 'orders:cart' %}" class="btn btn-customm btn-cart mx-sm-3  my-2" type="submit">
                 <i class="bi-cart-fill me-1"></i>
                 Cart
                 <span class="badge text-white ms-1 rounded-pill" style="background-color: rgba(234, 15, 179, 0.196);">{% block order_number %} {{ request.COOKIES.number_of_order_items }}  {% endblock %}</span>
                 </a>
             </form>
-            <button type="button" class="btn btn-secondary" data-bs-container="body" data-bs-toggle="popover" data-bs-placement="top" data-bs-content="Top popover">
-                Popover on top
-              </button>
-              <span class="d-inline-block" tabindex="0" data-bs-toggle="popover" data-bs-placement="left" data-bs-trigger="hover focus" data-bs-content="#my-hide">
-                <button class="btn btn-primary" type="button" disabled>Disabled button</button>
-                <h1 id="my-hide">hello</h1>
-              </span>
             {% block cartbox %}{% endblock %}
         
             <!-- /.navbar-collapse --> 

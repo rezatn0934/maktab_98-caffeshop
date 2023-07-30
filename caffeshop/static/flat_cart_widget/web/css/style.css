@@ -5,8 +5,8 @@ License: Creative Commons Attribution 3.0 Unported
 License URL: http://creativecommons.org/licenses/by/3.0/
 --*/
 /* start editing from here */
-html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,dl,dt,dd,ol,nav ul,nav li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td,article,aside,canvas,details,embed,figure,figcaption,footer,header,hgroup,menu,nav,output,ruby,section,summary,time,mark,audio,video{margin:0;padding:0;border:0;font-size:100%;font:inherit;vertical-align:baseline;}
-article, aside, details, figcaption, figure,footer, header, hgroup, menu, nav, section {display: block;}
+/* html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,dl,dt,dd,ol,nav ul,nav li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td,article,aside,canvas,details,embed,figure,figcaption,footer,header,hgroup,menu,nav,output,ruby,section,summary,time,mark,audio,video{margin:0;padding:0;border:0;font-size:100%;font:inherit;vertical-align:baseline;}
+article, aside, details, figcaption, figure,footer, header, hgroup, menu, nav, section {display: block;} */
 ol,ul{list-style:none;margin:0;padding:0;}
 blockquote,q{quotes:none;}
 blockquote:before,blockquote:after,q:before,q:after{content:'';content:none;}
@@ -66,7 +66,7 @@ a:hover {
     font-family:serif;
 }
 .cart {
-    width: 50%;
+    width: 80%;
     margin: 3em auto 2em;
 }
 .cart-experience {
@@ -134,13 +134,7 @@ td.cakes {
     /* background-color: red; */
     
 }
-td.cakes img {
-    padding: 1em 0em;
-    /* background-color: yellow; */
-    height: 100%;
-    width: 100%;
-    /* background-size: cover; */
-}
+
 td {
     vertical-align: middle;
 }
@@ -175,17 +169,7 @@ tr.main-heading th {
 tr.main-heading {
     background-color: #ccc !important;
 }
-.product-text {
-    padding: 0em 0em 0em 1em;
-    margin: 5px ;
-    height:90%;
-    width: 90%;
-    /* font-size:50px; */
-    /* background-color: #f3db0e; */
-    border: 2px solid rgb(32, 32, 32);
-    border-radius: 10px;
-    /* border: 2px cadetblue; */
-}
+
 .dis-card h2 {
     font-size: 1.1em;
     color: #000;
