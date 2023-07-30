@@ -3,8 +3,9 @@ from .form import StaffLoginForm, VerifyCodeForm
 from django.contrib.auth import login
 from .authentication import PhoneAuthBackend
 from .models import User
-from django.contrib import messages
-
+from utils import send_otp_code
+import datetime
+from django.utils import timezone
 
 # Create your views here.
 
@@ -30,32 +31,43 @@ def staff_login(request):
 
 
 def verify(request):
+    message = None
     if request.method == "POST":
         form = VerifyCodeForm(request.POST)
         if form.is_valid():
             cd = form.cleaned_data
             code = cd["code"]
-            phone = request.session["staff_login_info"]["phone"]
-            code_instance = Otp_code.objects.filter(phone=phone)
-
-            if code_instance:
-                code_instance = code_instance.get(phone=phone)
-                if int(code) == code_instance.code:
-                    Otp_code.objects.filter(phone=phone).delete()
-                    user = User.objects.get(phone=phone)
-                    login(request, user, backend='accounts.authentication.PhoneAuthBackend')
-                    messages.success(request, "logged in successfully", "success")
-                    return redirect("dashboard")
+            phone = request.session["phone"]
+            otp_key = request.session.get("otp_code")
+            otp_valid_date = request.session.get("otp_valid_date")
+            if otp_key is not None and otp_valid_date is not None:
+                valid_until = datetime.datetime.fromisoformat(otp_valid_date)
+                if valid_until > timezone.now():
+                    if code == otp_key:
+                        user = User.objects.get(phone=phone)
+                        login(request, user, backend='accounts.authentication.PhoneAuthBackend')
+                        del request.session["otp_code"]
+                        del request.session["otp_valid_date"]
+                        return redirect("dashboard")
+                    else:
+                        message = "Invalid OTP"
                 else:
-                    messages.success(request, "code is wrong", "danger")
-                    return redirect("verify")
+                    message = "OTP has been expired"
             else:
-                messages.success(request, "Your code has been expired", "danger")
-                return redirect("login")
+                message = "Start From Here!"
+                return render(request, "login.html", {"message": message, "form": form})
 
-    else:
-        form = VerifyCodeForm()
-    return render(request, "verify.html", {"form": form})
+    elif request.method == "GET":
+        if request.user.is_authenticated:
+            return redirect("dashboard")
+        if request.session.get("phone") is None:
+            return redirect("login")
+
+        message = "6-digit code was sent for you, you only have 60 seconds"
+        send_otp_code(request, request.session.get("phone"))
+
+    form = VerifyCodeForm()
+    return render(request, "verify.html", {"message": message, "form": form})
 
 
 def dashboard(request):
