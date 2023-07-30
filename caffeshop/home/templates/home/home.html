@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block link %}
-<style> .img-fluid{max-width:100%;height:auto} </style>
+
 {% endblock%}
 {% block content %}
 
-<header id="header"
+<header id="header">
   <div class="intro">
     <div class="overlay">
       <div class="container">
@@ -46,15 +46,17 @@
       <div class="container" data-aos="fade-up">
 
         <div class="section-header">
-          <h2>Menu</h2>
-          <p>Check <span>Menu</span></p>
+          <h2>Category</h2>
+
         </div>
 
-        <div class="gallery-slider swiper">
-          <div class="swiper-wrapper align-items-center">
-            {% for category in parentcategories %}
-            <div class="swiper-slide"><a  class="glightbox" data-gallery="images-gallery" href="{{ category.image.url }}"><img  src="{{ category.image.url }}" class="img-fluid" width="500" height="333" style=" max-width: 100% !important; max-height: 100% !important;" alt=""></a></div>
-            {%endfor%}
+
+          <div class="gallery-slider swiper">
+            <div class="swiper-wrapper align-items-center">
+              {% for category in parentcategories %}
+              <div class="swiper-slide"><a  class="glightbox" data-gallery="images-gallery" href="{{ category.image.url }}"><img  src="{{ category.image.url }}" class="img-fluid"  style=" width:273px ; height:200px;" alt=""></a></div>
+              {%endfor%}
+
           </div>
           <div class="swiper-pagination"></div>
         </div>
@@ -73,9 +75,8 @@
           <h2>gallery</h2>
           <p>Check <span>Our Gallery</span></p>
         </div>
-
-        <div class="gallery-slider swiper">
-          <div class="swiper-wrapper align-items-center">
+          <div class="gallery-slider swiper">
+           <div class="swiper-wrapper align-items-center">
             <div class="swiper-slide"><a class="glightbox" data-gallery="images-gallery" href="assets/img/gallery/gallery-1.jpg"><img src="{% static 'assets/img/gallery/gallery-1.jpg' %}" class="img-fluid" alt=""></a></div>
             <div class="swiper-slide"><a class="glightbox" data-gallery="images-gallery" href="assets/img/gallery/gallery-2.jpg"><img src="{% static 'assets/img/gallery/gallery-2.jpg' %}" class="img-fluid" alt=""></a></div>
             <div class="swiper-slide"><a class="glightbox" data-gallery="images-gallery" href="assets/img/gallery/gallery-3.jpg"><img src="{% static 'assets/img/gallery/gallery-3.jpg' %}" class="img-fluid" alt=""></a></div>
