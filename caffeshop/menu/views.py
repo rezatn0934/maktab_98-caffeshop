@@ -20,6 +20,7 @@ def menu(request):
     elif request.method == 'POST':
         product = request.POST.get('product')
         number_of_product = int(request.POST.get('quantity'))
+        html = HttpResponseRedirect(request.path)
         if request.COOKIES.get('orders'):
             if orders.get(product):
                 orders[product] += number_of_product
