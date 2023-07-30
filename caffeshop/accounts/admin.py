@@ -4,11 +4,6 @@ from .form import CustomUserCreationForm, CustomUserChangeForm
 from .models import User, Otp_code
 
 
-@admin.register(Otp_code)
-class OtpCodeAdmin(admin.ModelAdmin):
-    list_display = ("phone", "code", "created")
-
-
 class CustomUserAdmin(UserAdmin):
     add_form = CustomUserCreationForm
     form = CustomUserChangeForm
