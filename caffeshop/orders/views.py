@@ -1,11 +1,12 @@
-from django.shortcuts import render , HttpResponse , HttpResponseRedirect , redirect
-from .models import Order, Order_detail
-from menu.models import Product, Category, ParentCategory
-from django.urls import reverse
+from django.shortcuts import render, redirect
+from menu.models import Product
 import json
+from home.models import BackgroundImage
+
+
 # Create your views here.
 
-def cart1(request):
+def cart(request):
     orders = request.COOKIES.get('orders', '{}')
     orders = orders.replace("\'", "\"")
     orders = json.loads(orders)
@@ -15,18 +16,22 @@ def cart1(request):
         qs = Product.objects.filter(id=product_id)
         if qs.exists():
             obj = qs.get(id=product_id)
-            tp =  obj.price_per_item * int(quantity)        
-            order_items.append((obj , quantity, tp))
-        else :
+            tp = obj.price_per_item * int(quantity)
+            order_items.append((obj, quantity, tp))
+        else:
             updated_orders.pop(product_id)
     order_total_price = sum(map(lambda item: int(item[2]), order_items))
-    response = render(request, 'orders/cart.html', {'order_items':order_items, 'order_total_price': order_total_price})
+    background_image = BackgroundImage.objects.get(is_active=True)
+    context = {'order_items': order_items,
+               'order_total_price': order_total_price,
+               'background_image': background_image}
+    response = render(request, 'orders/cart.html', context=context)
     response.set_cookie('orders', updated_orders)
     response.set_cookie('number_of_order_items', sum([int(order_qnt) for order_qnt in updated_orders.values()]))
     if request.method == 'GET':
         return response
 
-    
+
 def update_or_remove(request):
     if request.method == 'POST':
         orders = request.COOKIES.get('orders', '{}')
