@@ -6,5 +6,5 @@ from . import views
 app_name = "menu"
 urlpatterns = [
     path('menu/', views.menu, name='menu'),
-    path('show_product/<str:name>', views.product)
+    path('show_product/<str:name>', views.product, name='show_product')
 ]
