@@ -26,3 +26,6 @@ class BackgroundImage(models.Model):
     def img_preview(self):
         if self.image:
             return mark_safe(f'<img src = "{self.image.url}" width = "150" height="150"/> ')
+
+    def __str__(self):
+        return self.title
