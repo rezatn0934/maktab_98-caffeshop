@@ -14,6 +14,9 @@ class Gallery(models.Model):
         if self.image:
             return mark_safe(f'<img src = "{self.image.url}" width = "150" height="150"/> ')
 
+    def __str__(self):
+        return self.title
+
 
 class BackgroundImage(models.Model):
     title = models.CharField(max_length=250, null=True, blank=True)
