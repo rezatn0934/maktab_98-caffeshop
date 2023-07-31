@@ -1,3 +1,4 @@
+
 from django.contrib import admin
 from django.db.models import Count
 from django.template.defaultfilters import truncatewords
@@ -11,7 +12,7 @@ from . import models
 @admin.register(models.Product)
 class ProductAdmin(admin.ModelAdmin):
     autocomplete_fields = ['category']
-    actions = ['deactivate_product']
+    actions = ['delete_selected', 'deactivate_product']
     readonly_fields = ['img_preview']
 
     list_display = [
@@ -55,6 +56,8 @@ class ProductAdmin(admin.ModelAdmin):
 
 @admin.register(models.Category)
 class CategoryAdmin(admin.ModelAdmin):
+    actions = ['delete_selected']
+
     list_display = ['name', 'parent_category', 'product_count', 'img_preview']
     list_filter = ['name', 'parent_category']
 
@@ -80,6 +83,8 @@ class CategoryAdmin(admin.ModelAdmin):
 
 @admin.register(models.ParentCategory)
 class ParentCategoryAdmin(admin.ModelAdmin):
+    actions = ['delete_selected']
+
     list_display = ['name', 'category_count', 'img_preview']
     list_filter = ['name']
 

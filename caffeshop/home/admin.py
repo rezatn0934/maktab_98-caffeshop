@@ -10,6 +10,7 @@ site.disable_action('delete_selected')
 
 @admin.register(models.Gallery)
 class GalleryAdmin(admin.ModelAdmin):
+    actions = ['delete_selected']
     readonly_fields = ["img_preview"]
     list_display = ["title", "img_preview", "is_active", ]
     list_editable = ["is_active"]
