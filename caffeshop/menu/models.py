@@ -24,7 +24,7 @@ class ParentCategory(models.Model):
 
     def save(self, *args, **kwargs):
         if self.pk:
-            old_instance = Category.objects.get(pk=self.pk)
+            old_instance = ParentCategory.objects.get(pk=self.pk)
             if not old_instance.image == self.image:
                 if old_instance.image:
                     if os.path.exists(old_instance.image.path):
@@ -87,7 +87,7 @@ class Product(models.Model):
 
     def save(self, *args, **kwargs):
         if self.pk:
-            old_instance = Category.objects.get(pk=self.pk)
+            old_instance = Product.objects.get(pk=self.pk)
             if not old_instance.image == self.image:
                 if old_instance.image:
                     if os.path.exists(old_instance.image.path):
