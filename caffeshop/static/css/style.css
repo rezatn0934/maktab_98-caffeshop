@@ -763,7 +763,7 @@ color: #777;
 	padding: 50px 0 0 0;
 }
 #footer h3 {
-	color: #8eb640;
+	color: #8eb640 !important;
 	font-weight: 400;
 	font-size: 18px;
 	text-transform: uppercase;
