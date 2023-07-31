@@ -1,8 +1,6 @@
 from django.db import models
 from django.utils.html import mark_safe
-from django.db.models.signals import pre_save, post_delete
-from caffeshop.signals import change_activation, delete_image_file, change_image
-
+import os
 
 # Create your models here.
 
@@ -16,12 +14,17 @@ class Gallery(models.Model):
         if self.image:
             return mark_safe(f'<img src = "{self.image.url}" width = "150" height="150"/> ')
 
+    def save(self, *args, **kwargs):
+        if self.pk:
+            old_instance = Gallery.objects.get(pk=self.pk)
+            if not old_instance.image == self.image:
+                if old_instance.image:
+                    if os.path.exists(old_instance.image.path):
+                        os.remove(old_instance.image.path)
+        super().save(*args, **kwargs)
+
     def __str__(self):
-        return self.title
-
-
-post_delete.connect(delete_image_file, Gallery)
-pre_save.connect(change_image, Gallery)
+        return self.title or ''
 
 
 class BackgroundImage(models.Model):
@@ -31,12 +34,4 @@ class BackgroundImage(models.Model):
 
     def img_preview(self):
         if self.image:
-            return mark_safe(f'<img src = "{self.image.url}" width = "150" height="150"/> ')
-
-    def __str__(self):
-        return self.title
-
-
-post_delete.connect(delete_image_file, BackgroundImage)
-pre_save.connect(change_image, BackgroundImage)
-pre_save.connect(change_activation, BackgroundImage)
+            return mark_safe(f'<img src="{self.image.url}" width="150" height="150"/>')
