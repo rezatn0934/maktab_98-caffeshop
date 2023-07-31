@@ -88,6 +88,8 @@ td.cakes img {
                                           <th class="col-lg-1" ></th> 		 			 	
                                       </tr>
                                       {% for product , quantity , total in order_items %}
+                                      <form action="{% url 'orders:update_or_remove' %}" method="post">
+                                        {% csrf_token %}
                                       <tr class="cake-top row justify-content-between d-flex align-items-center">
                                             <td class="cakes col-lg-3">	 	     	  
                                                 <div class="product-img  ">
@@ -112,35 +114,37 @@ td.cakes img {
                                                 </td>                                        
                                             <td class="top-remove col-lg-1 text-center ">
                                                 <div class="row">
-                                                    <button type="submit" class="btn btn-outline-danger my-2">
-                                                        <i class="bi bi-trash"></i>
-                                                    </button>
-                                                    <button type="submit" class="btn btn-outline-warning my-2" >
+                                                    <input name="product" value="{{ product.id }}" type="hidden">
+                                                    <button name="update" value="True" type="submit" class="btn btn-outline-warning my-2" >
                                                         <i class="bi bi-arrow-repeat"></i>
+                                                    </button>
+                                                    <button name="remove" value="True" type="submit" class="btn btn-outline-danger my-2">
+                                                        <i class="bi bi-trash"></i>
                                                     </button>
                                                 </div>
                                             </td>                                        
-                                      </tr>
+                                        </tr>
+                                    </form>
                                       {% endfor %}
                                   </tbody>
                               </table>
                           </div>
                           <div class="vocher">
                               <div class="dis-card">
-                                  <h2>Discount Code or Voucher</h2>
-                                  <p>Enter your discount code or voucher to receive a discount on your total order.</p>
-                                  <form>
-                                      <input type="text" value="">
-                                      <input type="submit"  value="Redeem">
-                                  </form>
-                              </div>
-                              <div class="dis-total" >
-                                  <h1>Total $38.97</h1>
-                                  <div class="tot-btn">
-                                      <a class="shop" href="#">Back to Shop</a>
-                                      <a class="check heart" href="#" style="color:black !important; background-color: rgb(139, 215, 62);">Continue to Checkout</a>
-                                  </div>
-                              </div>
+                                    <form>
+                                    <h2>Discount Code or Voucher</h2>
+                                    <p>Enter your discount code or voucher to receive a discount on your total order.</p>
+                                        <input type="text" value="">
+                                        <input type="submit"  value="Redeem">
+                                        </div>
+                                        <div class="dis-total" >
+                                            <h1>Total ${{ order_total_price }}</h1>
+                                            <div class="tot-btn">
+                                                <a class="shop" href="#">Back to Shop</a>
+                                                <a class="check heart" href="#" style="color:black !important; background-color: rgb(139, 215, 62);">Continue to Checkout</a>
+                                            </div>
+                                        </div>
+                                    </form>
                               <div class="clear"> </div>
                           </div>
                       </div>
