@@ -41,3 +41,6 @@ def menu(request):
 def product(request, name):
     pro = Product.objects.get(name = name)
     return render(request, 'menu/product.html', {'product':pro})
+
+def search_product(request):
+    return render(request, 'menu/search.html')
