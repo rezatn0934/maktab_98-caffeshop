@@ -41,3 +41,17 @@ class BackgroundImage(models.Model):
     def img_preview(self):
         if self.image:
             return mark_safe(f'<img src="{self.image.url}" width="150" height="150"/>')
+
+    def save(self, *args, **kwargs):
+        if self.pk:
+            old_instance = BackgroundImage.objects.get(pk=self.pk)
+            if not old_instance.image == self.image:
+                if old_instance.image:
+                    if os.path.exists(old_instance.image.path):
+                        os.remove(old_instance.image.path)
+        BackgroundImage.objects.all().update(is_active=False)
+        self.is_active = True
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.title or ''
