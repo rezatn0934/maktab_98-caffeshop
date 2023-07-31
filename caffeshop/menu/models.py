@@ -32,6 +32,12 @@ class Category(models.Model):
         if self.image:
             return mark_safe(f'<img src = "{self.image.url}" width = "150" height="150"/> ')
 
+    def delete(self, *args, **kwargs):
+        if self.image:
+            if os.path.exists(self.image.path):
+                os.remove(self.image.path)
+        super().delete(*args, **kwargs)
+
     def save(self, *args, **kwargs):
         if self.pk:
             old_instance = Category.objects.get(pk=self.pk)
