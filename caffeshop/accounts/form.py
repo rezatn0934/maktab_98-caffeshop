@@ -19,7 +19,6 @@ class CustomUserCreationForm(UserCreationForm):
         return phone
 
     def save(self, commit=True):
-        # Save the provided password in hashed format
         user = super().save(commit=False)
         user.set_password(self.cleaned_data["password1"])
         if commit:
@@ -35,7 +34,6 @@ class CustomUserChangeForm(UserChangeForm):
 
 class StaffLoginForm(forms.Form):
     phone = forms.CharField()
-
 
 
 class VerifyCodeForm(forms.Form):
