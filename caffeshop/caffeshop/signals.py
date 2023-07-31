@@ -17,3 +17,8 @@ def change_image(sender, instance, **kwargs):
         if old_image:
             if os.path.isfile(old_image.path):
                 os.remove(old_image.path)
+
+
+def change_activation(sender, instance, **kwargs):
+    qs = sender.objects.all().update(is_active=False)
+    instance.is_active = True
