@@ -54,6 +54,8 @@ def verify(request):
                         message = "Invalid OTP"
                 else:
                     message = "OTP has been expired"
+            else:
+                message = "Start from here!"
 
     elif request.method == "GET":
         if request.user.is_authenticated:
