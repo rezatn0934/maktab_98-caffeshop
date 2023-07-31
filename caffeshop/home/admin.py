@@ -1,6 +1,10 @@
 from django.contrib import admin
+from django.contrib.admin import site
+from django.contrib import messages
 from . import models
 
+
+site.disable_action('delete_selected')
 
 # Register your models here.
 
