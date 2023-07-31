@@ -12,7 +12,7 @@ from . import models
 @admin.register(models.Product)
 class ProductAdmin(admin.ModelAdmin):
     autocomplete_fields = ['category']
-    actions = ['delete_selected', 'deactivate_product']
+    actions = ['delete_selected']
     readonly_fields = ['img_preview']
 
     list_display = [
@@ -44,14 +44,6 @@ class ProductAdmin(admin.ModelAdmin):
         return truncatewords(obj.description, 10)
 
     truncated_description.short_description = 'Description'
-
-    @admin.action(description='deactivate products ')
-    def deactivate_product(self, request, queryset):
-        updated_count = queryset.update(active=False)
-        self.message_user(
-            request,
-            f'{updated_count} products were successfully deactivated.',
-        )
 
 
 @admin.register(models.Category)
