@@ -6,6 +6,11 @@
 
     <style>
 
+
+        .intro{
+            background-color: rgba(195, 0, 255, 0.686) !important;
+        }
+
         .cart{
             width: 80% !important;
         }
@@ -141,7 +146,7 @@ td.cakes img {
                                             <h1>Total ${{ order_total_price }}</h1>
                                             <div class="tot-btn">
                                                 <a class="shop" href="#">Back to Shop</a>
-                                                <a class="check heart" href="#" style="color:black !important; background-color: rgb(139, 215, 62);">Continue to Checkout</a>
+                                                <a class="check heart" data-bs-toggle="modal" data-bs-target="#exampleModal" href="#" style="color:black !important; background-color: rgb(139, 215, 62);">Continue to Checkout</a>
                                             </div>
                                         </div>
                                     </form>
@@ -154,6 +159,24 @@ td.cakes img {
       </div>
     </div>
 </header>
+
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          ...
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
 {% endblock %}
 
 
