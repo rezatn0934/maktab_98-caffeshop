@@ -131,3 +131,6 @@ class About(models.Model):
             if os.path.exists(self.image.path):
                 os.remove(self.image.path)
         super().delete(*args, **kwargs)
+
+    def __str__(self):
+        return self.title or ''
