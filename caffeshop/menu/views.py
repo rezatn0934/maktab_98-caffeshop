@@ -3,6 +3,7 @@ from .models import Product, Category, ParentCategory
 from django.db.models import Q
 import datetime
 import json
+from . models import Product
 # Create your views here.
 
 
@@ -46,4 +47,6 @@ def search_product(request):
     return render(request, 'menu/search.html')
 
 def search_result(request):
-    return render(request, 'menu/search_result.html')
+    query = request.GET.get('q')
+    products = Product.objects.filter(Q(name__icontains=query))
+    return render(request, 'menu/search_result.html', {'products': products})
