@@ -64,8 +64,7 @@
             <div class="container-fluid">
                 <!-- <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#bs-example-navbar-collapse-1"> <span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </button> -->
             {% if logo %}
-                <a class="navbar-brand" href="{% url 'home' %}"><img src="{{ logo.image.url }}" alt="Logo"
-                                                             class="logo" style="max-width: 100px"></a>
+                <a class="navbar-brand" href="{% url 'home' %}">{{ logo.img_preview }}</a>
             {%else%}
                 <a class="navbar-brand page-scroll" href="{% url 'home' %}">Touché</a>
             {% endif %}
