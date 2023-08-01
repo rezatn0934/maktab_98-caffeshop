@@ -39,12 +39,11 @@ def menu(request):
         html.set_cookie( 'number_of_order_items', sum([int(order_qnt) for order_qnt in orders.values()]))
         return html
 
+
 def product(request, name):
     pro = Product.objects.get(name = name)
     return render(request, 'menu/product.html', {'product':pro})
 
-def search_product(request):
-    return render(request, 'menu/search.html')
 
 def search_result(request):
     query = request.GET.get('q')
