@@ -102,3 +102,9 @@ class About(models.Model):
     def img_preview(self):
         if self.image:
             return mark_safe(f'<img src="{self.image.url}" width="50" height="80"/>')
+
+    def delete(self, *args, **kwargs):
+        if self.image:
+            if os.path.exists(self.image.path):
+                os.remove(self.image.path)
+        super().delete(*args, **kwargs)
