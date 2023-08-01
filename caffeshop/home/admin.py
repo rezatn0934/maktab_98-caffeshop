@@ -3,8 +3,8 @@ from django.contrib.admin import site
 from django.contrib import messages
 from . import models
 
-
 site.disable_action('delete_selected')
+
 
 # Register your models here.
 
@@ -42,3 +42,38 @@ class BackgroundImageAdmin(admin.ModelAdmin):
                 request,
                 f'{count} selected background images were successfully deleted.',
             )
+
+
+@admin.register(models.Info)
+class InfoAdmin(admin.ModelAdmin):
+    actions = ['delete_selected']
+    list_display = ["phone", "email", "work_hours", "address", "instagram", "facebook", "twitter"]
+
+
+@admin.register(models.Logo)
+class InfoAdmin(admin.ModelAdmin):
+    actions = ['delete_logo_image']
+    readonly_fields = ["img_preview"]
+    list_display = ["title", "img_preview", "is_active", ]
+    list_editable = ["is_active"]
+
+    @admin.action(description='Delete selected logo  ')
+    def delete_logo_image(self, request, queryset):
+        count = 0
+        for query in queryset:
+            if query.is_active:
+                self.message_user(
+                    request,
+                    f'{query.title} logo can not be deleted.',
+                    messages.ERROR,
+                )
+            else:
+                count += 1
+                query.delete()
+
+        if count:
+            self.message_user(
+                request,
+                f'{count} selected logo were successfully deleted.',
+            )
+

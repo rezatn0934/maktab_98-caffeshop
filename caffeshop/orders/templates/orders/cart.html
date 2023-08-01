@@ -137,7 +137,7 @@ td.cakes img {
                           <div class="vocher">
                               <div class="dis-card">
                                     <form>
-                                    <h2>Discount Code or Voucher</h2>
+                                    <h5>Discount Code or Voucher</h2>
                                     <p>Enter your discount code or voucher to receive a discount on your total order.</p>
                                         <input type="text" value="">
                                         <input type="submit"  value="Redeem">
@@ -164,15 +164,27 @@ td.cakes img {
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <h5 class="modal-title" id="exampleModalLabel">Reserve</h5>
+            <button class="btn btn-dark mx-5"type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+                Book a Table
+            </button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <div class="modal-body">
-          ...
+        <div class="modal-body d-flex align-items-center"> 
+            <div class="row" class="collapse" id="collapseExample" aria-hidden="true">
+                <label for="table-number" class="col-lg-3 mx-1">Table Number</label>
+                <input type="number" class="col-lg-3 mx-5" min="1" max="15" name="table_number" id="table-number" >
+                <label for="reserve-date" class="col-lg-3 mx-1">Table Number</label>
+                <input type="number" class="col-lg-3 mx-5" min="1" max="15" name="table_number" id="table-number" >
+            </div>
+            <div class="row">
+                <label for="phone-number" class="col-lg-3 mx-1">Phone Number</label>
+                <input type="tel" class="col-lg-6 " name="phone" placeholder="Phone Number" id="phone-number" required>
+            </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary">Save changes</button>
+          <button type="button" class="btn btn-primary">Reserve</button>
         </div>
       </div>
     </div>
