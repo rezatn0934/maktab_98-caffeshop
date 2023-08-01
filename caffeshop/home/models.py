@@ -91,3 +91,10 @@ class Logo(models.Model):
             if os.path.exists(self.image.path):
                 os.remove(self.image.path)
         super().delete(*args, **kwargs)
+
+
+class About(models.Model):
+    title = models.CharField(max_length=30)
+    content = models.TextField()
+    is_active = models.BooleanField(default=True)
+    image = models.ImageField(upload_to='images/about')
