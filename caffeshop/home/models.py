@@ -86,6 +86,15 @@ class Logo(models.Model):
         if self.image:
             return mark_safe(f'<img src="{self.image.url}" width="50" height="80"/>')
 
+    def save(self, *args, **kwargs):
+        if self.pk:
+            old_instance = About.objects.get(pk=self.pk)
+            if not old_instance.image == self.image:
+                if old_instance.image:
+                    if os.path.exists(old_instance.image.path):
+                        os.remove(old_instance.image.path)
+        super().save(*args, **kwargs)
+
     def delete(self, *args, **kwargs):
         if self.image:
             if os.path.exists(self.image.path):
