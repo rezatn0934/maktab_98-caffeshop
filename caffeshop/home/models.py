@@ -98,3 +98,7 @@ class About(models.Model):
     content = models.TextField()
     is_active = models.BooleanField(default=True)
     image = models.ImageField(upload_to='images/about')
+
+    def img_preview(self):
+        if self.image:
+            return mark_safe(f'<img src="{self.image.url}" width="50" height="80"/>')
