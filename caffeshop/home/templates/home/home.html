@@ -25,14 +25,14 @@
     <div class="container">
       <div class="row">
         <div class="col-xs-12 col-md-6 ">
-          <div class="about-img"><img src="{% static 'img/about.jpg'%}" class="img-responsive" alt=""></div>
+          <div class="about-img">{{ about.img_preview }}</div>
 
         </div>
         <div class="col-xs-12 col-md-6">
           <div class="about-text">
-            <h2>Our Restaurant</h2>
+            <h2>{{ about.title }}</h2>
             <hr>
-            <p>The pleasure of eating healthy and authentic food in a suitable environment is one of the feelings that can relieve the fatigue of a hard and worrying week and provide us with the energy we need for the days ahead.At <b>Touch Cafe</b>, with more than 65 years of experience, we are always proud to host your friendly and business circles, celebrations and ceremonies in an original environment based on modern architecture and design, suitable for any kind of taste and taste, relying on the skills of trained chefs. To have a good time together.</p>
+            <p>{{ about.content }}</p>
 
           </div>
         </div>
