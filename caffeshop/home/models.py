@@ -2,6 +2,7 @@ from django.db import models
 from django.utils.html import mark_safe
 import os
 
+
 # Create your models here.
 
 
@@ -61,3 +62,13 @@ class BackgroundImage(models.Model):
 
     def __str__(self):
         return self.title or ''
+
+
+class Info(models.Model):
+    phone = models.CharField(max_length=11)
+    email = models.EmailField()
+    work_hours = models.CharField(max_length=100)
+    address = models.TextField()
+    instagram = models.URLField()
+    facebook = models.URLField()
+    twitter = models.URLField()
