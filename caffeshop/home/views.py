@@ -12,7 +12,7 @@ def home(request):
     parentcat = ParentCategory.objects.all()
     categories = Category.objects.all()
     products = Product.objects.all()
-    about = About.objects.filter(is_active=True)
+    about = About.objects.get(is_active=True)
     context = {'categories': categories, 'products': products,
                'parentcategories': parentcat, 'gallery': gallery,
                'background_image': background_image, 'about': about}
