@@ -47,7 +47,7 @@
                 <div class="portfolio-item container">
                     <div class="hover-bg" style="border: 1px solid black; border-radius: 10px 10px 0 0;">
                       {% if product.image %}
-                      <a href="{{ product.image.url }}" title="{{ product.category }}" data-lightbox-gallery="gallery1">
+                      <a href="{% url 'menu:show_product'  product.name %}" title="{{ product.category }}" data-lightbox-gallery="gallery1">
                           <div class="hover-text">
                               <h4 style="color: chartreuse !important;">{{ product.name }}</h4>                                
                           </div>

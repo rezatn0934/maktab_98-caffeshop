@@ -1,9 +1,7 @@
 from django.core.validators import MinValueValidator
 from django.db import models
-from django.db.models.signals import post_delete, pre_save
 from django.utils.html import mark_safe
-from caffeshop.signals import delete_image_file, change_image
-
+import os
 # Create your models here.
 
 
@@ -18,12 +16,23 @@ class ParentCategory(models.Model):
         if self.image:
             return mark_safe(f'<img src = "{self.image.url}" width = "150" height="150"/> ')
 
+    def delete(self, *args, **kwargs):
+        if self.image:
+            if os.path.exists(self.image.path):
+                os.remove(self.image.path)
+        super().delete(*args, **kwargs)
+
+    def save(self, *args, **kwargs):
+        if self.pk:
+            old_instance = ParentCategory.objects.get(pk=self.pk)
+            if not old_instance.image == self.image:
+                if old_instance.image:
+                    if os.path.exists(old_instance.image.path):
+                        os.remove(old_instance.image.path)
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return self.name
-
-
-post_delete.connect(delete_image_file, ParentCategory)
-pre_save.connect(change_image, ParentCategory)
 
 
 class Category(models.Model):
@@ -38,12 +47,23 @@ class Category(models.Model):
         if self.image:
             return mark_safe(f'<img src = "{self.image.url}" width = "150" height="150"/> ')
 
+    def delete(self, *args, **kwargs):
+        if self.image:
+            if os.path.exists(self.image.path):
+                os.remove(self.image.path)
+        super().delete(*args, **kwargs)
+
+    def save(self, *args, **kwargs):
+        if self.pk:
+            old_instance = Category.objects.get(pk=self.pk)
+            if not old_instance.image == self.image:
+                if old_instance.image:
+                    if os.path.exists(old_instance.image.path):
+                        os.remove(old_instance.image.path)
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return self.name
-
-
-post_delete.connect(delete_image_file, Category)
-pre_save.connect(change_image, Category)
 
 
 class Product(models.Model):
@@ -59,9 +79,20 @@ class Product(models.Model):
         if self.image:
             return mark_safe(f'<img src = "{self.image.url}" width = "150" height="150"/> ')
 
+    def delete(self, *args, **kwargs):
+        if self.image:
+            if os.path.exists(self.image.path):
+                os.remove(self.image.path)
+        super().delete(*args, **kwargs)
+
+    def save(self, *args, **kwargs):
+        if self.pk:
+            old_instance = Product.objects.get(pk=self.pk)
+            if not old_instance.image == self.image:
+                if old_instance.image:
+                    if os.path.exists(old_instance.image.path):
+                        os.remove(old_instance.image.path)
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return self.name
-
-
-post_delete.connect(delete_image_file, Product)
-pre_save.connect(change_image, Product)

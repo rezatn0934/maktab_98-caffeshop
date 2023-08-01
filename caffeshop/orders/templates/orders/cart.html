@@ -6,6 +6,11 @@
 
     <style>
 
+
+        .intro{
+            background-color: rgba(195, 0, 255, 0.686) !important;
+        }
+
         .cart{
             width: 80% !important;
         }
@@ -60,7 +65,7 @@ td.cakes img {
 
 {% block content %}
 <header id="header">
-    <div class="intro">
+    <div class="intro" style="background: url({{ background_image.image.url }}) no-repeat center center">
       <div class="overlay">
             <div class="container justify-content-center">
               <!-- <div class="row justify-content-center" style="height: 100px;"> -->
@@ -81,64 +86,70 @@ td.cakes img {
                                   <tbody class="col-lg-12">
                                       <tr  class="main-heading row justify-content-between">	  	      	
                                           <th class="col-lg-3" >Images</th>
-                                          <th class="long-txt col-lg-3">Product Description</th>
+                                          <th class="long-txt col-lg-2">Product Name</th>
                                           <th class="col-lg-2" >Quantity</th>
                                           <th class="col-lg-1" >Price</th>
                                           <th class="col-lg-1" >Total</th> 		 			 	
+                                          <th class="col-lg-1" ></th> 		 			 	
                                       </tr>
-                                      {% for product , quantity , tt in order_items %}
-                                      <tr class="cake-top row justify-content-around">
-                                          <td class="cakes col-lg-3">	 	     	  
-                                              <div class="product-img  my-5">
-                                                  <img src="{{ product.image.url }}">
-                                              </div>
-                                          </td>
-                                          <td class="cake-text1 col-lg-3">
-                                              <div class="product-text p-2 py-5">
-                                                <div class="p-1" style="overflow: overlay; border: 2px solid rgb(32, 32, 32);border-radius: 10px;">
-                                                    <h6 style=" font-size:2vw !important;">{{ product.description | truncatechars:30 }}</h6>
-                                                    <p style="font-size:2vw !important;">Product Code: {{ product.id }}</p>
+                                      {% for product , quantity , total in order_items %}
+                                      <form action="{% url 'orders:update_or_remove' %}" method="post">
+                                        {% csrf_token %}
+                                      <tr class="cake-top row justify-content-between d-flex align-items-center">
+                                            <td class="cakes col-lg-3">	 	     	  
+                                                <div class="product-img  ">
+                                                    <img src="{{ product.image.url }}">
                                                 </div>
-
-                                              </div>
-                                          </td>
-                                          <td class="quantity col-lg-2"> 	 	     	 
-                                              <div class="product-right py-5 py-md-1 my-5">
-                                                      <!-- <label  class="my-1 mx-4" for="quantity">Qnt</label> -->
-                                                      <input min="1" type="number" id="quantity" name="quantity" value="{{ quantity }}" class="form-control input-small">				  
-                                              </div>
-                                          </td>
-                                          <td class="price col-lg-2 col-xl-1 py-md-1 py-xl-5 m-1 text-center">
-                                              <h4 class="my-5">${{ product.price_per_item }}</h4>	 	     		
-                                          </td>
-                                          <td class="top-remove col-lg-2 col-xl-1  m-1 text-center ">
-                                              <!-- <label  class="my-1 mx-4" for="total-count">Total count</label> -->
-                                              <h4 id="total-count" class="py-5 py-md-1 my-5">${{ tt }}</h4>
-                                              <button class="btn btn-danger">
-                                                  Remove
-                                              </button>
-                                          </td>                                        
-                                      </tr>
+                                            </td>
+                                            <td class="cake-text1 col-lg-2">
+                                                <div class="product-text ">
+                                                        <p style="font-size:1.8vw !important;">{{ product.name }}</p>
+                                                </div>
+                                            </td>
+                                            <td class="quantity col-lg-2"> 	 	     	 
+                                                <div class="product-right">
+                                                        <input class="form-control input-small" min="1" type="number" id="quantity" name="quantity" value="{{ quantity }}" >				  
+                                                </div>
+                                            </td>
+                                            <td class="price col-lg-1 py-2">
+                                                    <span style="font-size:1.8vw !important;" class=" col-lg-110">${{ product.price_per_item }}</span>	
+                                                </td>                                        
+                                            <td class="price col-lg-1 py-2">
+                                                    <span style="font-size:1.8vw !important;" class="" id="total-count" >${{ total }}</span>
+                                                </td>                                        
+                                            <td class="top-remove col-lg-1 text-center ">
+                                                <div class="row">
+                                                    <input name="product" value="{{ product.id }}" type="hidden">
+                                                    <button name="update" value="True" type="submit" class="btn btn-outline-warning my-2" >
+                                                        <i class="bi bi-arrow-repeat"></i>
+                                                    </button>
+                                                    <button name="remove" value="True" type="submit" class="btn btn-outline-danger my-2">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </td>                                        
+                                        </tr>
+                                    </form>
                                       {% endfor %}
                                   </tbody>
                               </table>
                           </div>
                           <div class="vocher">
                               <div class="dis-card">
-                                  <h2>Discount Code or Voucher</h2>
-                                  <p>Enter your discount code or voucher to receive a discount on your total order.</p>
-                                  <form>
-                                      <input type="text" value="">
-                                      <input type="submit"  value="Redeem">
-                                  </form>
-                              </div>
-                              <div class="dis-total">
-                                  <h1>Total $38.97</h1>
-                                  <div class="tot-btn">
-                                      <a class="shop" href="#">Back to Shop</a>
-                                      <a class="check" href="#">Continue to Checkout</a>
-                                  </div>
-                              </div>
+                                    <form>
+                                    <h2>Discount Code or Voucher</h2>
+                                    <p>Enter your discount code or voucher to receive a discount on your total order.</p>
+                                        <input type="text" value="">
+                                        <input type="submit"  value="Redeem">
+                                        </div>
+                                        <div class="dis-total" >
+                                            <h1>Total ${{ order_total_price }}</h1>
+                                            <div class="tot-btn">
+                                                <a class="shop" href="#">Back to Shop</a>
+                                                <a class="check heart" data-bs-toggle="modal" data-bs-target="#exampleModal" href="#" style="color:black !important; background-color: rgb(139, 215, 62);">Continue to Checkout</a>
+                                            </div>
+                                        </div>
+                                    </form>
                               <div class="clear"> </div>
                           </div>
                       </div>
@@ -148,6 +159,24 @@ td.cakes img {
       </div>
     </div>
 </header>
+
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          ...
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
 {% endblock %}
 
 

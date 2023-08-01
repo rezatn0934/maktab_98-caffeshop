@@ -17,6 +17,8 @@ class OrderdetailInline(admin.TabularInline):
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
+    actions = ['delete_selected']
+
     inlines = [OrderdetailInline]
     list_display = ["id", "phone_number", "customer_count", "table_number", "total_price"]
     list_filter = ["phone_number", "date", "table_number", "total_price"]
@@ -42,10 +44,10 @@ class OrderAdmin(admin.ModelAdmin):
     customer_count.admin_order_field = 'customer_count'
 
 
-
-
 @admin.register(Order_detail)
 class OrderDetailAdmin(admin.ModelAdmin):
+    actions = ['delete_selected']
+
     autocomplete_fields = ['order_id', 'product']
     list_display = ["id", "order_id", "product", "quantity", "price", "total_price"]
 
