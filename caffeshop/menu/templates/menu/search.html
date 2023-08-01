@@ -14,13 +14,11 @@
     </div>
     </header>
     <div class="justify-content-center; col-lg-4;" style="margin-left: 30px;">
-        <div class="d-flex align-items-center" style="margin-bottom: 300px;">
-            <div class="input-group mb-3">
-                <div class="input-group-prepend">
-                    <button class="btn btn-outline-secondary" type="button">Button</button>
-                </div>
-                <input type="text" class="form-control" placeholder="type to search" aria-label="" aria-describedby="basic-addon1">
-            </div>
-        </div>
+      <div>
+        <form action="{% url 'menu:search_result' %}" method="GET" style="margin-left: 40%;margin-bottom: 20%;">
+          <input type="text" name="q" >
+          <input type="submit" style="background-color: green;">
+        </form>
+      </div>
     </div>
 {% endblock %}
