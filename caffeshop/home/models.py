@@ -72,3 +72,9 @@ class Info(models.Model):
     instagram = models.URLField()
     facebook = models.URLField()
     twitter = models.URLField()
+
+
+class Logo(models.Model):
+    title = models.CharField(max_length=50, null=True, blank=True)
+    is_active = models.BooleanField(default=True)
+    image = models.ImageField(upload_to='images/HomePageBackground')
