@@ -44,3 +44,6 @@ def product(request, name):
 
 def search_product(request):
     return render(request, 'menu/search.html')
+
+def search_result(request):
+    return render(request, 'menu/search_result.html')
