@@ -106,3 +106,7 @@ class AboutAdmin(admin.ModelAdmin):
                 f'{count} selected about were successfully deleted.',
             )
 
+    def truncated_content(self, obj):
+        return truncatewords(obj.content, 10)
+
+    truncated_content.short_description = 'Content'
