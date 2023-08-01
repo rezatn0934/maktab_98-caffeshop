@@ -45,7 +45,29 @@ def product(request, name):
     return render(request, 'menu/product.html', {'product':pro})
 
 
-def search_result(request):
-    query = request.GET.get('q')
-    products = Product.objects.filter(Q(name__icontains=query))
-    return render(request, 'menu/search_result.html', {'products': products})
+def search_product_view(request):
+    search_query = request.GET.get('search')
+    checkbox = request.GET.getlist('checkbox')
+    if request.method == 'GET':
+        if search_query:
+            query_list = []
+
+            if 'a' in checkbox:
+                query_list.append(Q(name__icontains=search_query))
+            if 'b' in checkbox:
+                query_list.append(Q(description__icontains=search_query))
+            if 'c' in checkbox:
+                query_list.append(Q(category__icontains=search_query))
+
+            if not query_list:
+                query_list.append(Q(name__icontains=search_query) |
+                                  Q(description__icontains=search_query) |
+                                  Q(category__name__icontains=search_query))
+
+            search_results = Product.objects.filter(*query_list).distinct()
+        else:
+            search_results = None
+            return render(request, 'menu/search.html', {'search_query': search_query, 'search_results': search_results})
+    else:
+        return redirect(request.path)
+
