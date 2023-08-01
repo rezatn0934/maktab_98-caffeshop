@@ -77,7 +77,7 @@ class Info(models.Model):
 class Logo(models.Model):
     title = models.CharField(max_length=50, null=True, blank=True)
     is_active = models.BooleanField(default=True)
-    image = models.ImageField(upload_to='images/HomePageBackground')
+    image = models.ImageField(upload_to='images/logo')
 
     def img_preview(self):
         if self.image:
