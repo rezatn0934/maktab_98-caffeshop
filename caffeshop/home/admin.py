@@ -48,3 +48,12 @@ class BackgroundImageAdmin(admin.ModelAdmin):
 class InfoAdmin(admin.ModelAdmin):
     actions = ['delete_selected']
     list_display = ["phone", "email", "work_hours", "address", "instagram", "facebook", "twitter"]
+
+
+@admin.register(models.Logo)
+class InfoAdmin(admin.ModelAdmin):
+    actions = ['delete_logo_image']
+    readonly_fields = ["img_preview"]
+    list_display = ["title", "img_preview", "is_active", ]
+    list_editable = ["is_active"]
+
