@@ -1,44 +1,45 @@
 {% extends 'base.html' %}
 {% block content %}
-<header id="header">
+<!-- <header id="header">
     <div class="intro1">
       <div class="overlay">
         <div class="container">
           <div class="row">
             <div class="intro-text">
-              <h1>Touché</h1>
-              <p><b>Fast-Food / Coffee </b></p>
-  
           </div>
         </div>
       </div>
     </div>
-  </header>
+  </header> -->
   <div class="d-flex justify-content-center">
   </div>
-  <div class="d-flex justify-content-center">
-    <img src="{{ product.image.url }}">
-  </div>
-  <div class="d-flex justify-content-center">
-    <h1>{{ product.name }}</h1><br>
-  </div>
-    <div class="d-flex justify-content-center">
+  <div class="container">
+    <div class="card" style="margin-top: 10%; margin-bottom: 10%;">
+      <div class="d-flex justify-content-center">
+        <img src="{{ product.image.url }}" style="height: 300px; width: 400px;">
+      </div>
+      <div class="d-flex justify-content-center">
+        <h1>{{ product.name }}</h1><br>
+      </div>
+      <div class="d-flex justify-content-center">
         <h4>{{ product.category }}</h4>
-    </div>
-    <div class="d-flex justify-content-center">
-        <h3> {{ product.description }} </h3>
-    </div>
-    <div class="d-flex justify-content-center">
+      </div>
+      <div class="d-flex justify-content-center">
+        <p style="overflow-wrap: break-word;"> {{ product.description }} </p>
+      </div>
+      <div class="d-flex justify-content-center">
         <h3> {{ product.price_per_item }} </h3>
+      </div>
+      <div class="d-flex justify-content-center">
+        <form action="{% url 'menu:menu'  %}" class=" row px-5 py-1" method="post" style="width: fit-content;">
+          {% csrf_token %}
+          <input type="hidden" name="product" value="{{ product.id }}">
+          <!-- <span class="co-sm-1 text-center">Qnt</span> -->
+          <span><input placeholder="Qnt" class="col-sm-1 my-3 text-center  qnt" type="number" min="0" max="{{ product.quantity }}" name="quantity" value="1" style="width: 100%; border-radius: 5px; color: #00014f; font-weight: bold; background-color: rgb(255, 255, 255);"></span>
+          <input type="submit" class="btn btn-cart moving-btn1 heart col-sm-1  " style="border-radius: 10px; color: rgb(3, 0, 38) !important; background-color: rgba(16, 3, 87, 0.142); width: 100%;" value="Add to cart"> 
+       </form>
+      </div>
     </div>
-    <div class="d-flex justify-content-center">
-      <form action="{% url 'menu:menu'  %}" class=" row px-5 py-1" method="post" style="width: fit-content;">
-        {% csrf_token %}
-         <input  type="hidden" name="product" value="{{ product.id }}">
-         <!-- <span class="co-sm-1 text-center">Qnt</span> -->
-         <span><input placeholder="Qnt" class="col-sm-1 my-3 text-center  qnt" type="number" min="0" max="{{ product.quantity }}" name="quantity" value="1" style="width: 100%; border-radius: 5px; color: #00014f; font-weight: bold; background-color: rgb(255, 255, 255);"></span>
-         <input type="submit" class="btn btn-cart moving-btn1 heart col-sm-1  " style="border-radius: 10px; color: rgb(3, 0, 38) !important; background-color: rgba(16, 3, 87, 0.142); width: 100%;" value="Add to cart"> 
-     </form>
-    </div>
+  </div>
     
 {% endblock %}
