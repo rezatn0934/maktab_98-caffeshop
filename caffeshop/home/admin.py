@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.template.defaultfilters import truncatewords
 from django.contrib.admin import site
 from django.contrib import messages
 from . import models
@@ -76,4 +77,11 @@ class InfoAdmin(admin.ModelAdmin):
                 request,
                 f'{count} selected logo were successfully deleted.',
             )
+
+
+class AboutAdmin(admin.ModelAdmin):
+    actions = ['delete_about_image']
+    readonly_fields = ['img_preview']
+    list_display = ['title', 'truncated_content', 'img_preview', 'is_active', ]
+    list_editable = ['is_active']
 
