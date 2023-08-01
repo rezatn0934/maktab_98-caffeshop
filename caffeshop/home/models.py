@@ -119,7 +119,10 @@ class About(models.Model):
                 if old_instance.image:
                     if os.path.exists(old_instance.image.path):
                         os.remove(old_instance.image.path)
-        About.objects.all().update(is_active=False)
+
+        objects = About.objects.all()
+        if objects:
+            objects.update(is_active=False)
         self.is_active = True
         super().save(*args, **kwargs)
 
