@@ -7,7 +7,7 @@ import os
 
 
 class Gallery(models.Model):
-    title = models.CharField(max_length=250, null=True, blank=True)
+    title = models.CharField(max_length=50, null=True, blank=True)
     is_active = models.BooleanField(default=True)
     image = models.ImageField(upload_to='images/gallery')
 
@@ -35,7 +35,7 @@ class Gallery(models.Model):
 
 
 class BackgroundImage(models.Model):
-    title = models.CharField(max_length=250, null=True, blank=True)
+    title = models.CharField(max_length=50, null=True, blank=True)
     is_active = models.BooleanField(default=True)
     image = models.ImageField(upload_to='images/HomePageBackground')
 
