@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils.html import mark_safe
 import os
+from django.core.validators import RegexValidator
 
 
 # Create your models here.
@@ -65,7 +66,8 @@ class BackgroundImage(models.Model):
 
 
 class Info(models.Model):
-    phone = models.CharField(max_length=11)
+    phoneNumberRegex = RegexValidator(regex=r"^09\d{9}$")
+    phone = models.CharField(validators=[phoneNumberRegex])
     email = models.EmailField()
     work_hours = models.CharField(max_length=100)
     address = models.TextField()
@@ -88,14 +90,3 @@ class Logo(models.Model):
             if os.path.exists(self.image.path):
                 os.remove(self.image.path)
         super().delete(*args, **kwargs)
-
-    def save(self, *args, **kwargs):
-        if self.pk:
-            old_instance = Logo.objects.get(pk=self.pk)
-            if not old_instance.image == self.image:
-                if old_instance.image:
-                    if os.path.exists(old_instance.image.path):
-                        os.remove(old_instance.image.path)
-        Logo.objects.all().update(is_active=False)
-        self.is_active = True
-        super().save(*args, **kwargs)
