@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils.html import mark_safe
 import os
+from django.core.validators import RegexValidator
 
 
 # Create your models here.
@@ -65,7 +66,8 @@ class BackgroundImage(models.Model):
 
 
 class Info(models.Model):
-    phone = models.CharField(max_length=11)
+    phoneNumberRegex = RegexValidator(regex=r"^09\d{9}$")
+    phone = models.CharField(validators=[phoneNumberRegex])
     email = models.EmailField()
     work_hours = models.CharField(max_length=100)
     address = models.TextField()
