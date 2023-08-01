@@ -110,7 +110,7 @@ class About(models.Model):
 
     def img_preview(self):
         if self.image:
-            return mark_safe(f'<img src="{self.image.url}" width="50" height="80"/>')
+            return mark_safe(f'<img src="{self.image.url}" width="482" height="316"/>')
 
     def save(self, *args, **kwargs):
         if self.pk:
