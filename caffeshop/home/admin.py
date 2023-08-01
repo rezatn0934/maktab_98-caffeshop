@@ -79,6 +79,7 @@ class InfoAdmin(admin.ModelAdmin):
             )
 
 
+@admin.register(models.About)
 class AboutAdmin(admin.ModelAdmin):
     actions = ['delete_about_image']
     readonly_fields = ['img_preview']
