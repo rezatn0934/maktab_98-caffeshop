@@ -81,9 +81,10 @@ class Logo(models.Model):
     is_active = models.BooleanField(default=True)
     image = models.ImageField(upload_to='images/logo')
 
+
     def img_preview(self):
         if self.image:
-            return mark_safe(f'<img src="{self.image.url}" width="150" height="150"/>')
+            return mark_safe(f'<img src="{self.image.url}" width="50" height="80"/>')
 
     def delete(self, *args, **kwargs):
         if self.image:
