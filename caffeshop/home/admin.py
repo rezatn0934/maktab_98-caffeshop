@@ -3,8 +3,8 @@ from django.contrib.admin import site
 from django.contrib import messages
 from . import models
 
-
 site.disable_action('delete_selected')
+
 
 # Register your models here.
 
@@ -42,3 +42,9 @@ class BackgroundImageAdmin(admin.ModelAdmin):
                 request,
                 f'{count} selected background images were successfully deleted.',
             )
+
+
+@admin.register(models.Info)
+class InfoAdmin(admin.ModelAdmin):
+    actions = ['delete_selected']
+    list_display = ["phone", "email", "work_hours", "address", "instagram", "facebook", "twitter"]
