@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from menu.models import Product
 import json
 from home.models import BackgroundImage
-
+from .forms import ReserveForm
 
 # Create your views here.
 
@@ -11,6 +11,7 @@ def cart(request):
     orders = orders.replace("\'", "\"")
     orders = json.loads(orders)
     updated_orders = orders.copy()
+    form = ReserveForm()
     order_items = []
     for product_id, quantity in orders.items():
         qs = Product.objects.filter(id=product_id)
@@ -24,11 +25,15 @@ def cart(request):
     background_image = BackgroundImage.objects.get(is_active=True)
     context = {'order_items': order_items,
                'order_total_price': order_total_price,
-               'background_image': background_image}
+               'background_image': background_image,
+               'form': form}
     response = render(request, 'orders/cart.html', context=context)
     response.set_cookie('orders', updated_orders)
     response.set_cookie('number_of_order_items', sum([int(order_qnt) for order_qnt in updated_orders.values()]))
     if request.method == 'GET':
+        return response
+    if request.method == 'POST':
+        print(request.POST)
         return response
 
 

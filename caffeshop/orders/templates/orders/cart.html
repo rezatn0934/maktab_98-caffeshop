@@ -8,11 +8,12 @@
 
 
         .intro{
-            background-color: rgba(195, 0, 255, 0.686) !important;
+            background-color: rgb(255, 255, 255) !important;
         }
 
         .cart{
             width: 80% !important;
+            max-width: 750px;
         }
 
         .product-text {
@@ -21,12 +22,6 @@
     height:auto;
     /* height:0; */
     width: auto;
-    
-    /* font-size:50px; */
-    /* background-color: #f3db0e; */
-    /* border: 2px solid rgb(32, 32, 32); */
-    /* border-radius: 10px; */
-    /* border: 2px cadetblue; */
 }
 
 td.cakes img {
@@ -36,6 +31,21 @@ td.cakes img {
     background-size: cover;
     border-radius: 10px;
     /* background-size: cover; */}
+
+    #RadioTarget1{
+	display: none;
+  }
+  
+  #RadioTarget1.active{
+	display: inline-flex;
+  }
+    #RadioTarget2{
+	display: none;
+  }
+  
+  #RadioTarget2.active{
+	display: inline-flex;
+  }
 
     </style>
 
@@ -65,10 +75,9 @@ td.cakes img {
 
 {% block content %}
 <header id="header">
-    <div class="intro" style="background: url({{ background_image.image.url }}) no-repeat center center">
+    <div class="intro" style="background-repeat: no-repeat; background-image: url({{ background_image.image.url }});  background-size: cover ; ">
       <div class="overlay">
-            <div class="container justify-content-center">
-              <!-- <div class="row justify-content-center" style="height: 100px;"> -->
+            <div class="container justify-content-center" style="background-color: rgba(255, 255, 255, 0);">
                   <div style="height: 100px;">
                   </div>
                   <div class="logo">
@@ -136,7 +145,7 @@ td.cakes img {
                           </div>
                           <div class="vocher">
                               <div class="dis-card">
-                                    <form>
+                                    
                                     <h5>Discount Code or Voucher</h2>
                                     <p>Enter your discount code or voucher to receive a discount on your total order.</p>
                                         <input type="text" value="">
@@ -146,15 +155,14 @@ td.cakes img {
                                             <h1>Total ${{ order_total_price }}</h1>
                                             <div class="tot-btn">
                                                 <a class="shop" href="#">Back to Shop</a>
-                                                <a class="check heart" data-bs-toggle="modal" data-bs-target="#exampleModal" href="#" style="color:black !important; background-color: rgb(139, 215, 62);">Continue to Checkout</a>
+                                                <a class="check heart2" data-bs-toggle="modal" data-bs-target="#exampleModal" href="#" style="color:black !important; background-color: rgb(139, 215, 62);">Continue to Checkout</a>
                                             </div>
                                         </div>
-                                    </form>
+                                    
                               <div class="clear"> </div>
                           </div>
                       </div>
                   </div>
-              <!-- </div> -->
             </div>
       </div>
     </div>
@@ -165,26 +173,102 @@ td.cakes img {
       <div class="modal-content">
         <div class="modal-header">
             <h5 class="modal-title" id="exampleModalLabel">Reserve</h5>
-            <button class="btn btn-dark mx-5"type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
-                Book a Table
-            </button>
+            <div class="form-check form-check-inline mx-3">
+                <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="indoor" checked>
+                <label class="form-check-label" for="inlineRadio1">Book a Table</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="outdoor">
+                <label class="form-check-label" for="inlineRadio2">outdoor order</label>
+              </div>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body d-flex align-items-center"> 
-            <div class="row" class="collapse" id="collapseExample" aria-hidden="true">
-                <label for="table-number" class="col-lg-3 mx-1">Table Number</label>
-                <input type="number" class="col-lg-3 mx-5" min="1" max="15" name="table_number" id="table-number" >
-                <label for="reserve-date" class="col-lg-3 mx-1">Table Number</label>
-                <input type="number" class="col-lg-3 mx-5" min="1" max="15" name="table_number" id="table-number" >
+            <form action="{% url 'orders:cart' %}" method="post">
+                <div class="row justify-content-between active" id="RadioTarget1" aria-hidden="true">
+                    <div class="col-lg-5"  >
+                        <div class="row">
+                            {{ form }}
+                        </div>
+                    </div>
+                    <div class="col-lg-5 mx-1">
+                        <div class="row">
+                            <tr>
+                                <th><label for="reserve_date">Date: </label></th>
+                                <td>
+                                    <input id="reserve_date" class="form-control reserve_date" type="date" name="reserve_date"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th><label for="reserve_time">Time: </label></th> 
+                                <td>
+                                    <input  type="time" name="reserve_time" id="reserve_time"  style="height:40px; border-radius: 10px;">
+                                </td>
+                            </tr>
+                        </div>
+                    </div>
+                </div>
+                <div class="row justify-content-center" id="RadioTarget2" aria-hidden="true">
+                    <div class="col-lg-5 mx-1">
+                        <div class="row">
+                            <tr class="required">
+                                <th><label for="phone-input" class="required">Phone:</label></th>
+                                <td>
+                                    {{ form.phone }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th><label for="reserve_date">Date: </label></th>
+                                <td>
+                                    <input id="reserve_date" class="form-control reserve_date" type="date" name="reserve_date"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th><label for="reserve_time">Time: </label></th> 
+                                <td>
+                                    <input  type="time" name="reserve_time" id="reserve_time"  style="height:40px; border-radius: 10px;">
+                                </td>
+                            </tr>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="row">
-                <label for="phone-number" class="col-lg-3 mx-1">Phone Number</label>
-                <input type="tel" class="col-lg-6 " name="phone" placeholder="Phone Number" id="phone-number" required>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Reserve</button>
             </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+            <tr>
+                <h6 class="modal-title" id="staticBackdropLabel">Verfication code has sent to your phone.</h6>
+            </tr>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form method="post">
+            <div class="modal-body">
+            <tr>
+                <p class="modal-title" id="staticBackdropLabel">Please enter the code to final registration.</p>
+            </tr>
+            <tr class="py-2">
+                <th>
+                    <label for="#vf-code">Verfication code: </label>
+                </th>
+                <td>
+                    <input type="password" id="vf-code" name="verfication_user_code">
+                </td>
+            </tr>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary">Reserve</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-success">Finish</button>
+        </form>
         </div>
       </div>
     </div>
@@ -193,5 +277,37 @@ td.cakes img {
 
 
 {% block footerlink %}
+<script>
+    $(function(){
+    var dtToday = new Date();
 
+    var month = dtToday.getMonth() + 1;
+    var day = dtToday.getDate();
+    var year = dtToday.getFullYear();
+    if(month < 10)
+        month = '0' + month.toString();
+    if(day < 10)
+        day = '0' + day.toString();
+
+    var minDate= year + '-' + month + '-' + day;
+
+    $('.reserve_date').attr('min', minDate);
+});
+</script>
+
+<script>
+    const radio1 = document.querySelector("#inlineRadio1");
+    const radio2 = document.querySelector("#inlineRadio2");
+    const radioTarget1 = document.querySelector("#RadioTarget1");
+    const radioTarget2 = document.querySelector("#RadioTarget2");
+
+    radio1.onclick = () => {
+    radioTarget1.classList.add("active");
+    radioTarget2.classList.remove("active");}
+
+    radio2.onclick = () => {
+    radioTarget2.classList.add("active");
+    radioTarget1.classList.remove("active");}
+
+  </script>
 {% endblock %}

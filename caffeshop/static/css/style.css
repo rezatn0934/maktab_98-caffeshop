@@ -45,6 +45,32 @@ body, html {
 	  transform: scale(0.8);
 	}
   }
+.shadow2:hover {
+	animation: animateHeart 1.5s infinite;
+	/* background-color: rgb(255, 130, 29) !important; */
+	box-shadow: 0 0 25px 0 rgb(111, 255, 33) !important;
+  }
+  
+  @keyframes animateHeart {
+	0% {
+	  transform: scale(0.8);
+	}
+	5% {
+	  transform: scale(0.9);
+	}
+	10% {
+	  transform: scale(0.8);
+	}
+	15% {
+	  transform: scale(1);
+	}
+	50% {
+	  transform: scale(0.8);
+	}
+	100% {
+	  transform: scale(0.8);
+	}
+  }
   
   .search-box{
 	position:relative;
