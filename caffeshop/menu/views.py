@@ -64,10 +64,10 @@ def search_product_view(request):
                                   Q(description__icontains=search_query) |
                                   Q(category__name__icontains=search_query))
 
-            search_results = Product.objects.filter(*query_list).distinct()
+            products = Product.objects.filter(*query_list).distinct()
         else:
-            search_results = None
-            return render(request, 'menu/search.html', {'search_query': search_query, 'search_results': search_results})
+            products = None
+        return render(request, 'menu/search.html', {'search_query': search_query, 'products': products})
     else:
         return redirect(request.path)
 
