@@ -16,7 +16,7 @@ class Order(models.Model):
     total_price = models.FloatField(validators=[MinValueValidator(0.0)], null=True, blank=True)
     delivery = models.CharField(choices=delivery_choices)
     status = models.CharField(choices=status_choices, default=('Customer_confirm', (('UC', 'Undetermined'))))
-
+    reservation_date = models.DateTimeField()
 
     def __str__(self):
         return f"Order{self.id}, order total price: {self.total_price}"
