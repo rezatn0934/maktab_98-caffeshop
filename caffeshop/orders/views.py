@@ -89,25 +89,25 @@ def update_or_remove(request):
 
 def create_order(request):
     if request.method == 'POST':
-        user_verfication_input = request.POST.get('verfication_user_code')
+        user_verification_input = request.POST.get('verfication_user_code')
         otp_code = request.session["otp_code"]
         otp_valid_date = request.session["otp_valid_date"]
         valid_until = datetime.datetime.fromisoformat(otp_valid_date)
         if timezone.now() < valid_until:
-            if otp_code == user_verfication_input:
-                if request.session['pre_order']['delivery'][0] == 'in':
-                    customer_order = Order.objects.create(phone_number=request.session['pre_order']['phone'],
-                                                          table_number=int(
-                                                              request.session['pre_order']['table_number']),
-                                                          delivery=tuple(request.session['pre_order']['delivery'])[0],
+            if otp_code == user_verification_input:
+                pre_order = request.session['pre_order']
+                if pre_order['delivery'][0] == 'in':
+                    customer_order = Order.objects.create(phone_number=pre_order['phone'],
+                                                          table_number=int(pre_order['table_number']),
+                                                          delivery=tuple(pre_order['delivery'])[0],
                                                           reservation_date=datetime.datetime.fromisoformat(
-                                                              request.session['pre_order']['reserve_date']))
+                                                              pre_order['reserve_date']))
 
-                elif request.session['pre_order']['delivery'][0] == 'out':
-                    customer_order = Order.objects.create(phone_number=request.session['pre_order']['phone'],
-                                                          delivery=tuple(request.session['pre_order']['delivery'])[0],
+                elif pre_order['delivery'][0] == 'out':
+                    customer_order = Order.objects.create(phone_number=pre_order['phone'],
+                                                          delivery=tuple(pre_order['delivery'])[0],
                                                           reservation_date=datetime.datetime.fromisoformat(
-                                                              request.session['pre_order']['reserve_date']))
+                                                              pre_order['reserve_date']))
 
                 orders = request.COOKIES.get('orders', '{}')
                 orders = orders.replace("\'", "\"")
@@ -138,6 +138,7 @@ def create_order(request):
 
                 del request.session["otp_code"]
                 del request.session["otp_valid_date"]
+                del request.session['pre_order']
                 return res
             else:
                 messages.error(request, "Your verification code is invalid")
