@@ -127,4 +127,12 @@ def create_order(request):
                 customer_order.total_price = total_order_price
                 customer_order.save()
 
-
+                message = "order created and is to be confirm by staff"
+                print('message: ', message)
+                print('session: ', request.session)
+                request.COOKIES['message'] = message
+                res = redirect("home")
+                res.delete_cookie('orders')
+                del request.session["otp_code"]
+                del request.session["otp_valid_date"]
+                return res
