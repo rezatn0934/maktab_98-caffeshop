@@ -88,7 +88,7 @@ class Logo(models.Model):
 
     def save(self, *args, **kwargs):
         if self.pk:
-            old_instance = About.objects.get(pk=self.pk)
+            old_instance = Logo.objects.get(pk=self.pk)
             if not old_instance.image == self.image:
                 if old_instance.image:
                     if os.path.exists(old_instance.image.path):
