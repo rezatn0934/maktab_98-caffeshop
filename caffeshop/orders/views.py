@@ -8,8 +8,7 @@ from .forms import ReserveForm
 from utils import send_otp_code
 import datetime
 import json
-
-
+import re
 
 
 # Create your views here.
@@ -56,12 +55,17 @@ def cart(request):
                     send_otp_code(request, phone)
                     return render(request, 'orders/cart.html', context)
             else:
-                if form["phone"]:
-                    phone = form.cleaned_data["phone"]
+                if form["phone"].value() and re.match(r"^09\d{9}$", str(form["phone"].value())):
+                    phone = form["phone"].value()
                     pre_order = {"phone": phone, "reserve_date": str(reserve_date), "delivery": ('out', 'outdoor')}
                     request.session['pre_order'] = pre_order
+                    request.session.modify = True
                     send_otp_code(request, phone)
+
                     return render(request, 'orders/cart.html', context)
+                else:
+                    messages.error(request, 'Your phone number is not valid!!')
+                    return redirect('orders:cart')
         else:
             messages.error(request, "You didn't choose a date!!")
             return redirect('orders:cart')
@@ -131,6 +135,7 @@ def create_order(request):
                 res = redirect("home")
                 res.delete_cookie('orders')
                 res.delete_cookie('number_of_order_items')
+
                 del request.session["otp_code"]
                 del request.session["otp_valid_date"]
                 return res
