@@ -94,4 +94,9 @@ def create_order(request):
         if timezone.now() < valid_until:
             if otp_code == user_verfication_input:
                 print('delivery', request.session['pre_order']['delivery'])
+                if request.session['pre_order']['delivery'][0] == 'in':
+                    customer_order = Order.objects.create(phone_number=request.session['pre_order']['phone'],
+                                                          table_number=int(request.session['pre_order']['table_number']),
+                                                          delivery=tuple(request.session['pre_order']['delivery'])[0],
+                                                          reservation_date=datetime.datetime.fromisoformat( request.session['pre_order']['reserve_date']))
 
