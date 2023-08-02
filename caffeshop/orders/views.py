@@ -100,3 +100,8 @@ def create_order(request):
                                                           delivery=tuple(request.session['pre_order']['delivery'])[0],
                                                           reservation_date=datetime.datetime.fromisoformat( request.session['pre_order']['reserve_date']))
 
+                elif request.session['pre_order']['delivery'][0] == 'out':
+                    customer_order = Order.objects.create(phone_number=request.session['pre_order']['phone'],
+                                                          delivery=tuple(request.session['pre_order']['delivery'])[0],
+                                                          reservation_date=datetime.datetime.fromisoformat( request.session['pre_order']['reserve_date']))
+
