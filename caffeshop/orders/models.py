@@ -12,7 +12,7 @@ class Order(models.Model):
     phoneNumberRegex = RegexValidator(regex=r"^09\d{9}$")
     phone_number = models.CharField(validators=[phoneNumberRegex], max_length=12)
     date = models.DateTimeField(auto_now=True)
-    table_number = models.PositiveIntegerField(validators=[MinValueValidator(0.0)])
+    table_number = models.PositiveIntegerField(validators=[MinValueValidator(0.0)], null=True, blank=True)
     total_price = models.FloatField(validators=[MinValueValidator(0.0)], null=True, blank=True)
     delivery = models.CharField(choices=delivery_choices)
     status = models.CharField(choices=status_choices, default=('Customer_confirm', (('UC', 'Undetermined'))))
