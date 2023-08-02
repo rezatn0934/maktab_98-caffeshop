@@ -2,162 +2,156 @@
 {% load static %}
 {% block link %}
 
-{% endblock%}
+{% endblock %}
 {% block content %}
-
-<header id="header">
-  <div class="intro" style="background: url({{ background_image.image.url }}) no-repeat center center">
-    <div class="overlay">
-      <div class="container">
-        <div class="row">
-          <div class="intro-text">
-            <h1>Touché</h1>
-            <p><b>Fast-Food / Coffee </b></p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</header>
-<main id="main">
-  <!-- About Section -->
-  <div id="about">
-    <div class="container">
-      <div class="row">
-        <div class="col-xs-12 col-md-6 ">
-          <div class="about-img">{{ about.img_preview }}</div>
-
-        </div>
-        <div class="col-xs-12 col-md-6">
-          <div class="about-text">
-            <h2>{{ about.title }}</h2>
-            <hr>
-            <p>{{ about.content }}</p>
-
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-   <div id="test">
-    <!-- ======= Gallery Section ======= -->
-    <section class="gallery section-bg">
-      <div class="container" data-aos="fade-up">
-
-        <div class="section-header">
-          <h2>Category</h2>
-
-        </div>
-
-
-          <div class="gallery-slider swiper">
-            <div class="swiper-wrapper align-items-center">
-              {% for category in parentcategories %}
-              <div class="swiper-slide"><a  class="glightbox" data-gallery="images-gallery" href="{{ category.image.url }}"><img  src="{{ category.image.url }}" class="img-fluid"  style=" width:273px ; height:200px;" alt=""></a></div>
-              {%endfor%}
-
-          </div>
-          <div class="swiper-pagination"></div>
-        </div>
-
-      </div>
-    </section><!-- End Gallery Section -->
-  </div>
-
-
-  <div id="portfolio">
-    <!-- ======= Gallery Section ======= -->
-    <section id="gallery" class="gallery section-bg">
-      <div class="container" data-aos="fade-up">
-
-        <div class="section-header">
-          <h2>gallery</h2>
-          <p>Check <span>Our Gallery</span></p>
-        </div>
-          <div class="gallery-slider swiper">
-           <div class="swiper-wrapper align-items-center">
-             {% for pic in gallery %}
-            <div class="swiper-slide"><a class="glightbox" data-gallery="images-gallery" href="{{ pic.image.url }}"><img src="{{ pic.image.url }}" class="img-fluid" alt=""></a></div>
-            {% endfor %}
-          </div>
-          <div class="swiper-pagination"></div>
-        </div>
-
-      </div>
-    </section><!-- End Gallery Section -->
-  </div>
-  <!-- Team Section -->
-  <div id="call-reservation" class="text-center">
-    <div class="container">
-      <h2>Want to make a reservation? Call <strong>{{info.phone}}</strong></h2>
-    </div>
-  </div>
- <!-- Contact Section -->
-  <div id="contact" class="text-center">
-    <div class="container container">
-      <div class="row justify-content-center">
-        <div class="section-title text-center">
-          <h2>Contact Form</h2>
-          <hr>
-
-        </div>
-        <div class="col-md-10 col-md-offset-1">
-          <form name="sentMessage" id="contactForm" novalidate>
-            <div class="row">
-              <div class="col-md-6">
-                <div class="form-group">
-                  <input type="text" id="name" class="form-control" placeholder="Name" required="required">
-                  <p class="help-block text-danger"></p>
+    <header id="header">
+        <div class="intro" style="background: url({{ background_image.image.url }}) no-repeat center center">
+            <div class="overlay">
+                <div class="container">
+                    <div class="row">
+                        <div class="intro-text">
+                            {% if messages %}
+                                {% for message in messages %}
+                                    <div id="msg" class="alert {{ message.tags }}" role="alert">
+                                        {{ message }}
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+                            <h1>Touché</h1>
+                            <p><b>Fast-Food / Coffee </b></p>
+                        </div>
+                    </div>
                 </div>
-              </div>
-              <div class="col-md-6">
-                <div class="form-group">
-                  <input type="email" id="email" class="form-control" placeholder="Email" required="required">
-                  <p class="help-block text-danger"></p>
-                </div>
-              </div>
             </div>
-            <div class="form-group">
-              <textarea name="message" id="message" class="form-control" rows="4" placeholder="Message" required></textarea>
-              <p class="help-block text-danger"></p>
-            </div>
-            <div id="success"></div>
-            <button type="submit" class="btn btn-custom btn-lg">Send Message</button>
-          </form>
         </div>
-      </div>
+    </header>
+    <main id="main">
+        <!-- About Section -->
+        <div id="about">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xs-12 col-md-6 ">
+                        <div class="about-img">{{ about.img_preview }}</div>
+                    </div>
+                    <div class="col-xs-12 col-md-6">
+                        <div class="about-text">
+                            <h2>{{ about.title }}</h2>
+                            <hr>
+                            <p>{{ about.content }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="test">
+            <!-- ======= Gallery Section ======= -->
+            <section class="gallery section-bg">
+                <div class="container" data-aos="fade-up">
+                    <div class="section-header">
+                        <h2>Category</h2>
+                    </div>
+                    <div class="gallery-slider swiper">
+                        <div class="swiper-wrapper align-items-center">
+                            {% for category in parentcategories %}
+                                <div class="swiper-slide"><a class="glightbox" data-gallery="images-gallery"
+                                                             href="{{ category.image.url }}"><img
+                                        src="{{ category.image.url }}" class="img-fluid"
+                                        style=" width:273px ; height:200px;" alt=""></a></div>
+                            {% endfor %}
+                        </div>
+                        <div class="swiper-pagination"></div>
+                    </div>
+                </div>
+            </section><!-- End Gallery Section -->
+        </div>
+        <div id="portfolio">
+            <!-- ======= Gallery Section ======= -->
+            <section id="gallery" class="gallery section-bg">
+                <div class="container" data-aos="fade-up">
+                    <div class="section-header">
+                        <h2>gallery</h2>
+                        <p>Check <span>Our Gallery</span></p>
+                    </div>
+                    <div class="gallery-slider swiper">
+                        <div class="swiper-wrapper align-items-center">
+                            {% for pic in gallery %}
+                                <div class="swiper-slide"><a class="glightbox" data-gallery="images-gallery"
+                                                             href="{{ pic.image.url }}"><img src="{{ pic.image.url }}"
+                                                                                             class="img-fluid"
+                                                                                             alt=""></a></div>
+                            {% endfor %}
+                        </div>
+                        <div class="swiper-pagination"></div>
+                    </div>
 
+                </div>
+            </section><!-- End Gallery Section -->
+        </div>
+        <!-- Team Section -->
+        <div id="call-reservation" class="text-center">
+            <div class="container">
+                <h2>Want to make a reservation? Call <strong>{{ info.phone }}</strong></h2>
+            </div>
+        </div>
+        <!-- Contact Section -->
+        <div id="contact" class="text-center">
+            <div class="container container">
+                <div class="row justify-content-center">
+                    <div class="section-title text-center">
+                        <h2>Contact Form</h2>
+                        <hr>
+                    </div>
+                    <div class="col-md-10 col-md-offset-1">
+                        <form name="sentMessage" id="contactForm" novalidate>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <input type="text" id="name" class="form-control" placeholder="Name"
+                                               required="required">
+                                        <p class="help-block text-danger"></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <input type="email" id="email" class="form-control" placeholder="Email"
+                                               required="required">
+                                        <p class="help-block text-danger"></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <textarea name="message" id="message" class="form-control" rows="4"
+                                          placeholder="Message" required></textarea>
+                                <p class="help-block text-danger"></p>
+                            </div>
+                            <div id="success"></div>
+                            <button type="submit" class="btn btn-custom btn-lg">Send Message</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <div class="container-fluid text-center copyrights">
+        <div class="col-md-8 col-md-offset-2">
+            <div class="social">
+                <ul>
+                    <li><a href="#"><i class="fa fa-facebook"></i></a></li>
+                    <li><a href="#"><i class="fa fa-twitter"></i></a></li>
+                    <li><a href="#"><i class="fa fa-google-plus"></i></a></li>
+                </ul>
+            </div>
+        </div>
     </div>
-  </div>
-
-</main>
-
-  <div class="container-fluid text-center copyrights">
-    <div class="col-md-8 col-md-offset-2">
-      <div class="social">
-        <ul>
-          <li><a href="#"><i class="fa fa-facebook"></i></a></li>
-          <li><a href="#"><i class="fa fa-twitter"></i></a></li>
-          <li><a href="#"><i class="fa fa-google-plus"></i></a></li>
-        </ul>
-      </div>
-
     </div>
-  </div>
-</div>
-<script type="text/javascript" src="js/jquery.1.11.1.js"></script>
-<script type="text/javascript" src="js/bootstrap.js"></script>
-<script type="text/javascript" src="js/SmoothScroll.js"></script>
-<script type="text/javascript" src="js/nivo-lightbox.js"></script>
-<script type="text/javascript" src="js/jquery.isotope.js"></script>
-<script type="text/javascript" src="js/jqBootstrapValidation.js"></script>
-<!--<script type="text/javascript" src="js/contact_me.js"></script> -->
-<script type="text/javascript" src="js/main.js"></script>
-
-<!-- <a href="#" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a> -->
-
-  <!-- <div id="preloader"></div> -->
-
-
-{% endblock%}
+    <script type="text/javascript" src="js/jquery.1.11.1.js"></script>
+    <script type="text/javascript" src="js/bootstrap.js"></script>
+    <script type="text/javascript" src="js/SmoothScroll.js"></script>
+    <script type="text/javascript" src="js/nivo-lightbox.js"></script>
+    <script type="text/javascript" src="js/jquery.isotope.js"></script>
+    <script type="text/javascript" src="js/jqBootstrapValidation.js"></script>
+    <!--<script type="text/javascript" src="js/contact_me.js"></script> -->
+    <script type="text/javascript" src="js/main.js"></script>
+    <!-- <a href="#" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a> -->
+    <!-- <div id="preloader"></div> -->
+{% endblock %}
