@@ -449,9 +449,9 @@ select.dropdown {
     margin: 0em 0em 0.5em 0em;
 }
 td.cake-text {
-    /* display: block; */
+    /* display: block;
     display: none;
-}
+} */
 th.long-txt {
     display: none;
 }
@@ -489,7 +489,6 @@ tr.main-heading th {
 .close-btm h5 {
     padding: 0.4em 0.8em;
     font-size: 0.7em;
-}
 }
 @media (max-width:414px){
 .dis-card {
