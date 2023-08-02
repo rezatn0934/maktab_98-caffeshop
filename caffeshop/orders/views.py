@@ -5,7 +5,7 @@ from menu.models import Product
 from home.models import BackgroundImage
 from .models import Order, Order_detail
 from .forms import ReserveForm
-from utils import send_otp_code
+from utils import send_otp_code, check_availability
 import datetime
 import json
 import re
@@ -24,9 +24,15 @@ def cart(request):
         qs = Product.objects.filter(id=product_id)
         if qs.exists():
             obj = qs.get(id=product_id)
-            tp = obj.price_per_item * int(quantity)
-            order_items.append((obj, quantity, tp))
+            message, obj = check_availability(obj, quantity)
+            if obj:
+                tp = obj.price_per_item * int(quantity)
+                order_items.append((obj, quantity, tp))
+            else:
+                updated_orders.pop(product_id)
+                messages.error(request, message)
         else:
+            messages.error(request, f'Product {obj.name} is not available!!')
             updated_orders.pop(product_id)
     order_total_price = sum(map(lambda item: int(item[2]), order_items))
     background_image = BackgroundImage.objects.get(is_active=True)
@@ -34,9 +40,9 @@ def cart(request):
                'order_total_price': order_total_price,
                'background_image': background_image,
                'form': form}
+    request.COOKIES['number_of_order_items'] = sum([int(order_qnt) for order_qnt in updated_orders.values()])
     response = render(request, 'orders/cart.html', context=context)
     response.set_cookie('orders', updated_orders)
-    response.set_cookie('number_of_order_items', sum([int(order_qnt) for order_qnt in updated_orders.values()]))
     if request.method == 'GET':
         return response
     if request.method == 'POST':
@@ -112,22 +118,27 @@ def create_order(request):
                 orders = request.COOKIES.get('orders', '{}')
                 orders = orders.replace("\'", "\"")
                 orders = json.loads(orders)
-                updated_orders = orders.copy()
                 total_order_price = 0
+                available_pro = []
                 for product_id, quantity in orders.items():
                     qs = Product.objects.filter(id=product_id)
                     if qs.exists():
                         obj = qs.get(id=product_id)
-                        tp = obj.price_per_item * int(quantity)
-                        total_order_price += tp
-                        Order_detail.objects.create(
-                            order=customer_order,
-                            product=obj,
-                            quantity=int(quantity),
-                            price=obj.price_per_item,
-                            total_price=tp)
+                        result = check_availability(obj, quantity)
+                        if result[1]:
+                            tp = obj.price_per_item * int(quantity)
+                            total_order_price += tp
+                            available_pro.append([customer_order, obj, int(quantity), obj.price_per_item, tp])
+                        else:
+                            messages.error(request, result[0])
+                            customer_order.delete()
+                            return redirect("orders:cart")
                     else:
-                        updated_orders.pop(product_id)
+                        messages.error(request, f'Product {obj.name} is not available!!')
+                        customer_order.delete()
+                        return redirect("orders:cart")
+                [Order_detail.objects.create(order=res[0], product=res[1], quantity=res[2],
+                    price=res[3], total_price=res[4]) for res in available_pro]
                 customer_order.total_price = total_order_price
                 customer_order.save()
 
