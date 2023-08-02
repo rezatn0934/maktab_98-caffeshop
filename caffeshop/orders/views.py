@@ -130,9 +130,9 @@ def create_order(request):
                             tp = obj.price_per_item * int(quantity)
                             total_order_price += tp
                             available_pro.append([customer_order, obj, int(quantity), obj.price_per_item, tp])
-                            order_details_list.append([f"Name: {obj.name}", f"Quantity: {int(quantity)}",
-                                                       f"Price:{obj.price_per_item}", f"total price:{tp}",
-                                                       f"Order date: {str(customer_order.date)}"])
+                            order_details_list.append([obj.name, int(quantity),
+                                                       obj.price_per_item, tp,
+                                                       str(customer_order.date)])
 
                         else:
                             messages.error(request, result[0])
@@ -154,8 +154,11 @@ def create_order(request):
 
                 if request.session.get('order_history'):
                     request.session['order_history'].append(order_details_list)
+                    request.session['order_info'].append([customer_order.id, total_order_price])
                 else:
                     request.session['order_history'] = [order_details_list]
+                    info = [customer_order.id, total_order_price]
+                    request.session['order_info'] = [info]
 
                 request.session.modify = True
 
@@ -174,7 +177,9 @@ def create_order(request):
 def order_history(request):
     if request.method == "GET":
         order_list = request.session['order_history']
+        order_info = request.session['order_info']
+        order_info = order_info[-1]
         last_order = order_list[-1]
         pre_order = order_list[:-1]
-        context = {"last_order": last_order, "pre_order": pre_order}
+        context = {"last_order": last_order, "pre_order": pre_order, 'last_order_info': order_info}
         return render(request, "orders/order_history.html", context=context)
