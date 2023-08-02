@@ -62,6 +62,11 @@ def cart(request):
                     request.session['pre_order'] = pre_order
                     send_otp_code(request, phone)
                     return render(request, 'orders/cart.html' , context)
+        else:
+            message = 'your booking faild'
+            request.COOKIES['message'] = message
+            print('message: ', message)
+            return redirect('orders:cart')
 
 
 def update_or_remove(request):
