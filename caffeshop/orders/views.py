@@ -141,4 +141,9 @@ def create_order(request):
                 request.COOKIES['message'] = message
                 print('message: ', message)
                 return redirect("orders:cart")
-
+        else:
+            message = "code expired"
+            request.COOKIES['message'] = message
+            print('message: ', message)
+            print('session: ', request.session)
+            return redirect("orders:cart")
