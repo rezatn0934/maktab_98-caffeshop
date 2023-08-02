@@ -105,3 +105,26 @@ def create_order(request):
                                                           delivery=tuple(request.session['pre_order']['delivery'])[0],
                                                           reservation_date=datetime.datetime.fromisoformat( request.session['pre_order']['reserve_date']))
 
+                orders = request.COOKIES.get('orders', '{}')
+                orders = orders.replace("\'", "\"")
+                orders = json.loads(orders)
+                updated_orders = orders.copy()
+                total_order_price = 0
+                for product_id, quantity in orders.items():
+                    qs = Product.objects.filter(id=product_id)
+                    if qs.exists():
+                        obj = qs.get(id=product_id)
+                        tp = obj.price_per_item * int(quantity)
+                        total_order_price += tp
+                        order_item = Order_detail.objects.create(
+                                        order=customer_order,
+                                        product= obj,
+                                        quantity= int(quantity),
+                                        price=obj.price_per_item,
+                                        total_price= tp)
+                    else:
+                        updated_orders.pop(product_id)
+                customer_order.total_price = total_order_price
+                customer_order.save()
+
+
