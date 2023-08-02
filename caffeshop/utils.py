@@ -1,7 +1,6 @@
+from django.utils import timezone
 from kavenegar import *
 import pyotp
-from django.utils import timezone
-
 
 def send_otp_code(request, phone):
     totp = pyotp.TOTP(pyotp.random_base32(), interval=60)
@@ -24,3 +23,19 @@ def send_otp_code(request, phone):
         print(e)
     except HTTPException as e:
         print(e)
+
+
+def check_availability(obj, quantity):
+    if obj.active:
+        if obj.daily_availability >= quantity:
+            obj.daily_availability -= quantity
+            obj.save()
+            message = 'product {obj.name} is available'
+            return message, obj
+        else:
+            message = f"Availability of product {obj.name} is {obj.daily_availability}  " \
+                      f"and less than what you want."
+    else:
+        message = 'Product is not active!!'
+
+    return message, None
