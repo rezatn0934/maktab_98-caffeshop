@@ -136,3 +136,9 @@ def create_order(request):
                 del request.session["otp_code"]
                 del request.session["otp_valid_date"]
                 return res
+            else: 
+                message = "your verification code is invalid"
+                request.COOKIES['message'] = message
+                print('message: ', message)
+                return redirect("orders:cart")
+
