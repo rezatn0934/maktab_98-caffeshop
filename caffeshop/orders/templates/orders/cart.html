@@ -7,70 +7,83 @@
     <style>
 
 
-        .intro{
+        .intro {
             background-color: rgb(255, 255, 255) !important;
         }
 
-        .cart{
+        .cart {
             /* width: 80% !important; */
             max-width: 750px;
         }
 
         .product-text {
-    /* padding: 0em 0em 0em 1em; */
-    margin: 5px ;
-    height:auto;
-    /* height:0; */
-    width: auto;
-}
+            /* padding: 0em 0em 0em 1em; */
+            margin: 5px;
+            height: auto;
+            /* height:0; */
+            width: auto;
+        }
 
-td.cakes img {
-    /* padding: 1em 0em; */
-    /* background-color: yellow; */
-    background-color: blue;
-    background-size: cover;
-    border-radius: 10px;
-    /* background-size: cover; */}
+        td.cakes img {
+            /* padding: 1em 0em; */
+            /* background-color: yellow; */
+            background-color: blue;
+            background-size: cover;
+            border-radius: 10px;
+            /* background-size: cover; */
+        }
 
-    #RadioTarget1{
-	display: none;
-  }
-  
-  #RadioTarget1.active{
-	display: inline-flex;
-  }
-    #RadioTarget2{
-	display: none;
-  }
-  
-  #RadioTarget2.active{
-	display: inline-flex;
-  }
+        #RadioTarget1 {
+            display: none;
+        }
 
-  #rt-btn-1{ display: none; }
-  #rt-btn-1.active{ display: inline-flex; }
-  #rt-btn-2{ display: none; }
-  #rt-btn-2.active{ display: inline-flex; }
+        #RadioTarget1.active {
+            display: inline-flex;
+        }
+
+        #RadioTarget2 {
+            display: none;
+        }
+
+        #RadioTarget2.active {
+            display: inline-flex;
+        }
+
+        #rt-btn-1 {
+            display: none;
+        }
+
+        #rt-btn-1.active {
+            display: inline-flex;
+        }
+
+        #rt-btn-2 {
+            display: none;
+        }
+
+        #rt-btn-2.active {
+            display: inline-flex;
+        }
 
     </style>
 
     <link rel="stylesheet" href="{% static 'flat_cart_widget\web\css\style.css' %}">
     <script>
-        $(document).ready(function(c) {
-            $('.close').on('click', function(c){
-                $('.cake-top').fadeOut('slow', function(c){
+        $(document).ready(function (c) {
+            $('.close').on('click', function (c) {
+                $('.cake-top').fadeOut('slow', function (c) {
                     $('.cake-top').remove();
                 });
-            });	  
+            });
         });
     </script>
     <script>
-        $(document).ready(function(c) {
-            $('.close-btm').on('click', function(c){
-                $('.cake-bottom').fadeOut('slow', function(c){
+        $(document).ready(function (c) {
+            $('.close-btm').on('click', function (c) {
+                $('.cake-bottom').fadeOut('slow', function (c) {
                     $('.cake-bottom').remove();
                 });
-            });	  
+            });
         });
     </script>
 {% endblock %}
@@ -79,259 +92,295 @@ td.cakes img {
 {% block order_number %} {{ request.COOKIES.number_of_order_items }} {% endblock %}
 
 {% block content %}
-<header id="header">
-    <div class="intro" style="background-repeat: no-repeat; background-image: url({{ background_image.image.url }});  background-size: cover ; ">
-      <div class="overlay">
-            <div class="container justify-content-center" style="background-color: rgba(255, 255, 255, 0);">
-                  <div style="height: 100px;">
-                  </div>
-                  <div class="logo">
-                      <!-- <h3>Flat Cart Widget</h3> -->
-                  </div>
-                  <div class="cart">
-                      <div class="cart-top row text-center justify-content-center">
-                          <div class="cart-experience col-sm-4">
-                              <h4>Shopping Cart</h4>
-                          </div>
-                      </div>
-                      <div class="cart-bottom row">
-                          <div class="table">
-                              <table>
-                                  <tbody class="col-sm-12">
-                                      <!-- <tr  class="main-heading row justify-content-between">	  	      	
-                                          <th class="col-sm-3" >Images</th>
-                                          <th class="long-txt col-sm-2">Product Name</th>
-                                          <th class="col-sm-2" >Quantity</th>
-                                          <th class="col-sm-1" >Price</th>
-                                          <th class="col-sm-1" >Total</th> 		 			 	
-                                          <th class="col-sm-1" ></th> 		 			 	
-                                      </tr> -->
-                                      {% for product , quantity , total in order_items %}
-                                      <form action="{% url 'orders:update_or_remove' %}" method="post">
-                                        {% csrf_token %}
-                                      <tr class="cake-top row justify-content-between d-flex align-items-center">
-                                            <td class="cakes col-sm-3">	 	     	  
-                                                <div class="product-img  ">
-                                                    <img src="{{ product.image.url }}">
-                                                </div>
-                                            </td>
-                                            <td class="cake-text1 col-sm-2">
-                                                <div class="product-text">
-                                                        <p class="my-5" style="font-size:1.8vw !important;">{{ product.name }}</p>
-                                                </div>
-                                            </td>
-                                            <td class="quantity col-sm-3 col-md-2"> 	 	     	 
-                                                <div class="product-right">
-                                                        <input class="form-control input-small" min="1" type="number" id="quantity" name="quantity" value="{{ quantity }}" >				  
-                                                </div>
-                                            </td>
-                                            <td class="price col-sm-1 py-2">
-                                                    <span style="font-size:1.8vw !important;" class=" col-sm-110">${{ product.price_per_item }}</span>	
-                                                </td>                                        
-                                            <td class="price col-sm-1 py-2">
-                                                    <span style="font-size:1.8vw !important;" class="" id="total-count" >${{ total }}</span>
-                                                </td>                                        
-                                            <td class="top-remove col-sm-12 col-md-2 text-center mx-1 ">
-                                                <div class="row px-1 justify-content-around">
-                                                    <input name="product" value="{{ product.id }}" type="hidden">
-                                                    <button  name="update" value="True" type="submit" class="col-sm-4 btn btn-outline-warning m-auto  d-flex justify-content-center" >
-                                                        <i class="bi bi-arrow-repeat"></i>
-                                                    </button>
-                                                    <button name="remove" value="True" type="submit" class="col-sm-4 mx-1 btn btn-outline-danger d-flex justify-content-center">
-                                                        <i class="bi bi-trash"></i>
-                                                    </button>
-                                                </div>
-                                            </td>                                        
-                                        </tr>
-                                    </form>
-                                      {% endfor %}
-                                  </tbody>
-                              </table>
-                          </div>
-                          <div class="vocher">
-                              <div class="dis-card">                                 
-                                        <!-- <h5>Discount Code or Voucher</h2>
-                                        <p>Enter your discount code or voucher to receive a discount on your total order.</p>
-                                        <input type="text" value="">
-                                        <input type="submit"  value="Redeem"> -->
-                                    </div>
-                                    <div class="dis-total" >
-                                        <h1>Total ${{ order_total_price }}</h1>
-                                        <div class="tot-btn">
-                                            <a class="shop" href="#">Back to Shop</a>
-                                            <a class="check heart2" data-bs-toggle="modal" data-bs-target="#exampleModal" href="#" style="color:black !important; background-color: rgb(139, 215, 62);">Continue to Checkout</a>
-                                        </div>
-                                    </div>
-                                    
-                              <div class="clear"> </div>
-                          </div>
-                      </div>
-                  </div>
-            </div>
-      </div>
-    </div>
-</header>
 
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">Reserve</h5>
-            <div class="form-check form-check-inline mx-3">
-                <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="indoor" checked>
-                <label class="form-check-label" for="inlineRadio1">Book a Table</label>
-              </div>
-              <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="outdoor">
-                <label class="form-check-label" for="inlineRadio2">outdoor order</label>
-              </div>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body d-flex align-items-center"> 
-            <form action="{% url 'orders:cart' %}" id="table-reserve-form" method="post">
-                {% csrf_token %}
-                <div class="row justify-content-between active" id="RadioTarget1" aria-hidden="true">
-                    <div class="col-sm-5"  >
-                        <div class="row">
-                            {{ form }}
-                        </div>
+    <header id="header">
+        <div class="intro"
+             style="background-repeat: no-repeat; background-image: url({{ background_image.image.url }});  background-size: cover ; ">
+            <div class="overlay">
+                <div class="container justify-content-center" style="background-color: rgba(255, 255, 255, 0);">
+                    <div style="height: 100px;">
                     </div>
-                    <div class="col-sm-5 mx-1">
-                        <div class="row">
-                            <tr>
-                                <th><label for="reserve_date">Date: </label></th>
-                                <td>
-                                    <input id="reserve_date" class="form-control reserve_date" type="date" name="reserve_date" required />
-                                </td>
-                            </tr>
-                            <tr>
-                                <th><label for="reserve_time">Time: </label></th> 
-                                <td>
-                                    <input  type="time" name="reserve_time" id="reserve_time"  style="height:40px; border-radius: 10px;" required />
-                                </td>
-                            </tr>
+                    <div class="logo">
+                        <!-- <h3>Flat Cart Widget</h3> -->
+                    </div>
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div id="msg" class="alert {{ message.tags }}" role="alert">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                    <div class="cart">
+                        <div class="cart-top row text-center justify-content-center">
+                            <div class="cart-experience col-sm-4">
+                                <h4>Shopping Cart</h4>
+                            </div>
+                        </div>
+                        <div class="cart-bottom row">
+                            <div class="table">
+                                <table>
+                                    <tbody class="col-sm-12">
+                                    <!-- <tr  class="main-heading row justify-content-between">
+                                        <th class="col-sm-3" >Images</th>
+                                        <th class="long-txt col-sm-2">Product Name</th>
+                                        <th class="col-sm-2" >Quantity</th>
+                                        <th class="col-sm-1" >Price</th>
+                                        <th class="col-sm-1" >Total</th>
+                                        <th class="col-sm-1" ></th>
+                                    </tr> -->
+                                    {% for product , quantity , total in order_items %}
+                                        <form action="{% url 'orders:update_or_remove' %}" method="post">
+                                            {% csrf_token %}
+                                            <tr class="cake-top row justify-content-between d-flex align-items-center">
+                                                <td class="cakes col-sm-3">
+                                                    <div class="product-img  ">
+                                                        <img src="{{ product.image.url }}">
+                                                    </div>
+                                                </td>
+                                                <td class="cake-text1 col-sm-2">
+                                                    <div class="product-text">
+                                                        <p class="my-5"
+                                                           style="font-size:1.8vw !important;">{{ product.name }}</p>
+                                                    </div>
+                                                </td>
+                                                <td class="quantity col-sm-3 col-md-2">
+                                                    <div class="product-right">
+                                                        <input class="form-control input-small" min="1" type="number"
+                                                               id="quantity" name="quantity" value="{{ quantity }}">
+                                                    </div>
+                                                </td>
+                                                <td class="price col-sm-1 py-2">
+                                                    <span style="font-size:1.8vw !important;"
+                                                          class=" col-sm-110">${{ product.price_per_item }}</span>
+                                                </td>
+                                                <td class="price col-sm-1 py-2">
+                                                    <span style="font-size:1.8vw !important;" class="" id="total-count">${{ total }}</span>
+                                                </td>
+                                                <td class="top-remove col-sm-12 col-md-2 text-center mx-1 ">
+                                                    <div class="row px-1 justify-content-around">
+                                                        <input name="product" value="{{ product.id }}" type="hidden">
+                                                        <button name="update" value="True" type="submit"
+                                                                class="col-sm-4 btn btn-outline-warning m-auto  d-flex justify-content-center">
+                                                            <i class="bi bi-arrow-repeat"></i>
+                                                        </button>
+                                                        <button name="remove" value="True" type="submit"
+                                                                class="col-sm-4 mx-1 btn btn-outline-danger d-flex justify-content-center">
+                                                            <i class="bi bi-trash"></i>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </form>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="vocher">
+                                <div class="dis-card">
+                                    <!-- <h5>Discount Code or Voucher</h2>
+                                    <p>Enter your discount code or voucher to receive a discount on your total order.</p>
+                                    <input type="text" value="">
+                                    <input type="submit"  value="Redeem"> -->
+                                </div>
+                                <div class="dis-total">
+                                    <h1>Total ${{ order_total_price }}</h1>
+                                    <div class="tot-btn">
+                                        <a class="shop" href="#">Back to Shop</a>
+                                        <a class="check heart2" data-bs-toggle="modal" data-bs-target="#exampleModal"
+                                           href="#"
+                                           style="color:black !important; background-color: rgb(139, 215, 62);">Continue
+                                            to Checkout</a>
+                                    </div>
+                                </div>
+
+                                <div class="clear"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </form>
-            <form action="{% url 'orders:cart' %}" id="outdoor-reserve-form" method="post">
-            {% csrf_token %}
-                <div class="row justify-content-center" id="RadioTarget2" aria-hidden="true">
-                    <div class="col-lg-5 mx-1">
-                        <div class="row">
-                            <tr class="required">
-                                <th><label for="phone-input" class="required">Phone:</label></th>
-                                <td>
-                                    {{ form.phone }}
-                                </td>
-                            </tr>
-                            <tr>
-                                <th><label for="reserve_date">Date: </label></th>
-                                <td>
-                                    <input id="reserve_date" class="form-control reserve_date" type="date" name="reserve_date" required/>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th><label for="reserve_time">Time: </label></th> 
-                                <td>
-                                    <input  type="time" name="reserve_time" id="reserve_time"  style="height:40px; border-radius: 10px;" required>
-                                </td>
-                            </tr>
-                        </div>
-                    </div>
-                </div>
-            </form>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="submit" form="table-reserve-form" id="rt-btn-1" class="btn btn-primary active">Reserve1</button>
-                <button type="submit" form="outdoor-reserve-form" id="rt-btn-2" class="btn btn-primary">Reserve2</button>
-            </div>
-      </div>
-    </div>
-  </div>
+        </div>
+    </header>
 
-  <div class="modal fade hide" id="myModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-            <tr>
-                <h6 class="modal-title" id="staticBackdropLabel">Verfication code has sent to your phone.</h6>
-            </tr>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Reserve</h5>
+                    <div class="form-check form-check-inline mx-3">
+                        <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1"
+                               value="indoor" checked>
+                        <label class="form-check-label" for="inlineRadio1">Book a Table</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2"
+                               value="outdoor">
+                        <label class="form-check-label" for="inlineRadio2">outdoor order</label>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body d-flex align-items-center">
+                    <form action="{% url 'orders:cart' %}" id="table-reserve-form" method="post">
+                        {% csrf_token %}
+                        <div class="row justify-content-between active" id="RadioTarget1" aria-hidden="true">
+                            <div class="col-sm-5">
+                                <div class="row">
+                                    {{ form }}
+                                </div>
+                            </div>
+                            <div class="col-sm-5 mx-1">
+                                <div class="row">
+                                    <tr>
+                                        <th><label for="reserve_date">Date: </label></th>
+                                        <td>
+                                            <input id="reserve_date" class="form-control reserve_date" type="date"
+                                                   name="reserve_date" required/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th><label for="reserve_time">Time: </label></th>
+                                        <td>
+                                            <input type="time" name="reserve_time" id="reserve_time"
+                                                   style="height:40px; border-radius: 10px;" required/>
+                                        </td>
+                                    </tr>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <form action="{% url 'orders:cart' %}" id="outdoor-reserve-form" method="post">
+                        {% csrf_token %}
+                        <div class="row justify-content-center" id="RadioTarget2" aria-hidden="true">
+                            <div class="col-lg-5 mx-1">
+                                <div class="row">
+                                    <tr class="required">
+                                        <th><label for="phone-input" class="required">Phone:</label></th>
+                                        <td>
+                                            {{ form.phone }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th><label for="reserve_date">Date: </label></th>
+                                        <td>
+                                            <input id="reserve_date" class="form-control reserve_date" type="date"
+                                                   name="reserve_date" required/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th><label for="reserve_time">Time: </label></th>
+                                        <td>
+                                            <input type="time" name="reserve_time" id="reserve_time"
+                                                   style="height:40px; border-radius: 10px;" required>
+                                        </td>
+                                    </tr>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" form="table-reserve-form" id="rt-btn-1" class="btn btn-primary active">
+                        Reserve1
+                    </button>
+                    <button type="submit" form="outdoor-reserve-form" id="rt-btn-2" class="btn btn-primary">Reserve2
+                    </button>
+                </div>
+            </div>
         </div>
-        <form action="{% url 'orders:create_order' %}" method="post">
-            {% csrf_token %}
-            <div class="modal-body">
-            <tr>
-                <p class="modal-title" id="staticBackdropLabel">Please enter the code to final registration.</p>
-            </tr>
-            <tr class="py-2">
-                <th>
-                    <label for="#vf-code">Verfication code: </label>
-                </th>
-                <td>
-                    <input type="password" id="vf-code" name="verfication_user_code" required>
-                </td>
-            </tr>
-        </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            <button type="submit" class="btn btn-success">Finish</button>
-        </form>
-        </div>
-      </div>
     </div>
-  </div>
+
+    <div class="modal fade hide" id="myModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+         aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <tr>
+                        <h6 class="modal-title" id="staticBackdropLabel">Verfication code has sent to your phone.</h6>
+                    </tr>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{% url 'orders:create_order' %}" method="post">
+                    {% csrf_token %}
+                    <div class="modal-body">
+                        <tr>
+                            <p class="modal-title" id="staticBackdropLabel">Please enter the code to final
+                                registration.</p>
+                        </tr>
+                        <tr class="py-2">
+                            <th>
+                                <label for="#vf-code">Verfication code: </label>
+                            </th>
+                            <td>
+                                <input type="password" id="vf-code" name="verfication_user_code" required>
+                            </td>
+                        </tr>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-success">Finish</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    </div>
 {% endblock %}
 
 
 {% block footerlink %}
-{% if reserve_validation %}
-<script type="text/javascript">
-    $(window).on('load', function() {
-        $('#myModal').modal('show');
-    });
-</script>
-{% endif %}
+    {% if reserve_validation %}
+        <script type="text/javascript">
+            $(window).on('load', function () {
+                $('#myModal').modal('show');
+            });
+        </script>
+    {% endif %}
 
-<script>
-    $(function(){
-    var dtToday = new Date();
+    <script>
+        $(function () {
+            var dtToday = new Date();
 
-    var month = dtToday.getMonth() + 1;
-    var day = dtToday.getDate();
-    var year = dtToday.getFullYear();
-    if(month < 10)
-        month = '0' + month.toString();
-    if(day < 10)
-        day = '0' + day.toString();
+            var month = dtToday.getMonth() + 1;
+            var day = dtToday.getDate();
+            var year = dtToday.getFullYear();
+            if (month < 10)
+                month = '0' + month.toString();
+            if (day < 10)
+                day = '0' + day.toString();
 
-    var minDate= year + '-' + month + '-' + day;
+            var minDate = year + '-' + month + '-' + day;
 
-    $('.reserve_date').attr('min', minDate);
-});
-</script>
+            $('.reserve_date').attr('min', minDate);
+        });
+    </script>
 
-<script>
-    const radio1 = document.querySelector("#inlineRadio1");
-    const radio2 = document.querySelector("#inlineRadio2");
-    const radioTarget1 = document.querySelector("#RadioTarget1");
-    const radioTarget2 = document.querySelector("#RadioTarget2");
-    const rtBtn1 = document.querySelector("#rt-btn-1");
-    const rtBtn2 = document.querySelector("#rt-btn-2");
+    <script>
+        const radio1 = document.querySelector("#inlineRadio1");
+        const radio2 = document.querySelector("#inlineRadio2");
+        const radioTarget1 = document.querySelector("#RadioTarget1");
+        const radioTarget2 = document.querySelector("#RadioTarget2");
+        const rtBtn1 = document.querySelector("#rt-btn-1");
+        const rtBtn2 = document.querySelector("#rt-btn-2");
 
-    radio1.onclick = () => {
-    radioTarget1.classList.add("active");
-    radioTarget2.classList.remove("active");
-    rtBtn1.classList.add("active");
-    rtBtn2.classList.remove("active");}
+        radio1.onclick = () => {
+            radioTarget1.classList.add("active");
+            radioTarget2.classList.remove("active");
+            rtBtn1.classList.add("active");
+            rtBtn2.classList.remove("active");
+        }
 
-    radio2.onclick = () => {
-    radioTarget2.classList.add("active");
-    radioTarget1.classList.remove("active");
-    rtBtn2.classList.add("active");
-    rtBtn1.classList.remove("active");}
+        radio2.onclick = () => {
+            radioTarget2.classList.add("active");
+            radioTarget1.classList.remove("active");
+            rtBtn2.classList.add("active");
+            rtBtn1.classList.remove("active");
+        }
 
-  </script>
+    setTimeout(function(){
+        if ($('#msg').length > 0) {
+            $('#msg').remove();
+        }
+    }, 5000)
+
+    </script>
 {% endblock %}
