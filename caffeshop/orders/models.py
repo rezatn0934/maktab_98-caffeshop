@@ -6,11 +6,11 @@ from django.core.validators import RegexValidator, MinValueValidator
 
 class Order(models.Model):
     delivery_choices = (('in', 'indoor'), ('out', 'outdoor'))
-    status_choices = (('Customer_confirm', (('U', 'Undetermind'), ('C', 'Confirmed'), ('C', 'Canceled'))),
-                      ('Staff_confirm', (('U', 'Undetermind'), ('C', 'Confirmed'), ('C', 'Canceled'))),
-                      ('delivery_confirm', (('U', 'Undetermind'), ('C', 'Confirmed'), ('C', 'Canceled'))))
+    status_choices = (('Customer_confirm', (('UC', 'Undetermined'), ('AC', 'Approved'), ('CC', 'Canceled'))),
+                      ('Staff_confirm', (('US', 'Undetermined'), ('AS', 'Approved'), ('CS', 'Canceled'))),
+                      ('delivery_confirm', (('UD', 'Undetermined'), ('AD', 'Approved'), ('CD', 'Canceled'))))
     phoneNumberRegex = RegexValidator(regex=r"^09\d{9}$")
-    phone_number = models.CharField(validators=[phoneNumberRegex], unique=True, max_length=12)
+    phone_number = models.CharField(validators=[phoneNumberRegex], max_length=12)
     date = models.DateTimeField(auto_now=True)
     table_number = models.PositiveIntegerField(validators=[MinValueValidator(0.0)])
     total_price = models.FloatField(validators=[MinValueValidator(0.0)], null=True, blank=True)
