@@ -26,6 +26,7 @@ def send_otp_code(request, phone):
 
 
 def check_availability(obj, quantity):
+    quantity = int(quantity)
     if obj.active:
         if obj.daily_availability >= quantity:
             obj.daily_availability -= quantity
