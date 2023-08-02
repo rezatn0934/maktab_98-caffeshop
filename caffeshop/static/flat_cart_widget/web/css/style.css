@@ -318,12 +318,12 @@ td.btm-remove {
   -o-transition: 0.5s all;
 }
 /*--media quiries start here--*/
-@media (max-width:1600px){
+/* @media (max-width:1600px){
 .cart-experience {
-    width: 50%;
+    width: 50% !important;
 }
 .cart-login {
-    width: 50%;
+    width: 50% !important;
 }	
 }
 @media (max-width:1440px){
@@ -331,7 +331,7 @@ td.btm-remove {
 }
 @media (max-width:1366px){
 .cart {
-    width: 60%;	
+    width: 60% !important;	
 }
 }
 @media (max-width:1280px){
@@ -339,12 +339,12 @@ td.btm-remove {
 }
 @media (max-width:1024px){
 .cart {
-    width: 70%;
+    width: 70% !important;
 }	
 }
 @media (max-width:786px){
 .cart {
-    width: 90%;
+    width: 90% !important;
 }	
 body {
     min-height: 865px;
@@ -352,7 +352,7 @@ body {
 }
 @media (max-width:667px){
 .cart {
-    width: 95%;
+    width: 95% !important;
 }
 .dis-card p {
     font-size: 0.8em;	
@@ -372,19 +372,19 @@ body {
     font-size: 0.85em;
 }
 .cart-login {
-    width: 55%;
+    width: 55% !important;
 }
 .cart-experience {
-    width: 40%;
+    width: 40% !important;
 }
 .cart-login-img {
-    width: 12%;
+    width: 12% !important;
 }
 .cart-login-text {
-    width: 30%;
+    width: 30% !important;
 }
 .lang_list {
-    width: 58%;
+    width: 58% !important;
 }
 select.dropdown {
     font-size: 0.9em;
@@ -393,10 +393,10 @@ select.dropdown {
     font-size: 0.8em;
 }
 .dis-card input[type="text"] {
-    width: 60%;
+    width: 60% !important;
 }
 .dis-card input[type="submit"] {
-    width: 30%;
+    width: 30% !important;
 }
 .tot-btn a.check {
     font-size: 0.7em;
@@ -414,7 +414,7 @@ select.dropdown {
 }
 @media (max-width:600px){
 .cart {
-    width: 98%;
+    width: 98% !important;
 }
 }
 @media (max-width:568px){
@@ -436,13 +436,13 @@ select.dropdown {
 }
 @media (max-width:480px){
 .cart-experience {
-    width: 100%;
+    width: 100% !important;
     float: none;
     text-align: center;
 }	
 .cart-login {
     float: none;
-    width: 80%;
+    width: 80% !important;
     margin: 0 auto;
 }
 .cart-experience h4 {
@@ -542,5 +542,5 @@ h4 {
 .cart-login {
     width: 98%;
 }
-}
+} */
 /*--media quiries end here--*/
