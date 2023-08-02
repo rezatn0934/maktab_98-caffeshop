@@ -1,12 +1,15 @@
-from django.shortcuts import render, redirect, HttpResponse, HttpResponseRedirect
-from menu.models import Product
-import json
-from home.models import BackgroundImage
-from .forms import ReserveForm
-import datetime
-from utils import send_otp_code
-from .models import Order, Order_detail
+from django.contrib import messages
+from django.shortcuts import render, redirect
 from django.utils import timezone
+from menu.models import Product
+from home.models import BackgroundImage
+from .models import Order, Order_detail
+from .forms import ReserveForm
+from utils import send_otp_code
+import datetime
+import json
+
+
 
 
 # Create your views here.
@@ -39,7 +42,7 @@ def cart(request):
         return response
     if request.method == 'POST':
         form = ReserveForm(request.POST)
-        date = " ".join([request.POST.get('reserve_date') , request.POST.get('reserve_time')])
+        date = " ".join([request.POST.get('reserve_date'), request.POST.get('reserve_time')])
         reserve_date = datetime.datetime.strptime(date, "%Y-%m-%d %H:%M")
         if date:
             context['reserve_validation'] = True
@@ -51,17 +54,16 @@ def cart(request):
                     request.session['pre_order'] = pre_order
                     request.session.modify = True
                     send_otp_code(request, phone)
-                    return render(request, 'orders/cart.html' , context)
+                    return render(request, 'orders/cart.html', context)
             else:
                 if form["phone"]:
                     phone = form.cleaned_data["phone"]
                     pre_order = {"phone": phone, "reserve_date": str(reserve_date), "delivery": ('out', 'outdoor')}
                     request.session['pre_order'] = pre_order
                     send_otp_code(request, phone)
-                    return render(request, 'orders/cart.html' , context)
+                    return render(request, 'orders/cart.html', context)
         else:
-            message = 'your booking faild'
-            request.COOKIES['message'] = message
+            messages.error(request, "You didn't choose a date!!")
             return redirect('orders:cart')
 
 
@@ -91,14 +93,17 @@ def create_order(request):
             if otp_code == user_verfication_input:
                 if request.session['pre_order']['delivery'][0] == 'in':
                     customer_order = Order.objects.create(phone_number=request.session['pre_order']['phone'],
-                                                          table_number=int(request.session['pre_order']['table_number']),
+                                                          table_number=int(
+                                                              request.session['pre_order']['table_number']),
                                                           delivery=tuple(request.session['pre_order']['delivery'])[0],
-                                                          reservation_date=datetime.datetime.fromisoformat( request.session['pre_order']['reserve_date']))
+                                                          reservation_date=datetime.datetime.fromisoformat(
+                                                              request.session['pre_order']['reserve_date']))
 
                 elif request.session['pre_order']['delivery'][0] == 'out':
                     customer_order = Order.objects.create(phone_number=request.session['pre_order']['phone'],
                                                           delivery=tuple(request.session['pre_order']['delivery'])[0],
-                                                          reservation_date=datetime.datetime.fromisoformat( request.session['pre_order']['reserve_date']))
+                                                          reservation_date=datetime.datetime.fromisoformat(
+                                                              request.session['pre_order']['reserve_date']))
 
                 orders = request.COOKIES.get('orders', '{}')
                 orders = orders.replace("\'", "\"")
@@ -111,30 +116,27 @@ def create_order(request):
                         obj = qs.get(id=product_id)
                         tp = obj.price_per_item * int(quantity)
                         total_order_price += tp
-                        order_item = Order_detail.objects.create(
-                                        order=customer_order,
-                                        product=obj,
-                                        quantity=int(quantity),
-                                        price=obj.price_per_item,
-                                        total_price=tp)
+                        Order_detail.objects.create(
+                            order=customer_order,
+                            product=obj,
+                            quantity=int(quantity),
+                            price=obj.price_per_item,
+                            total_price=tp)
                     else:
                         updated_orders.pop(product_id)
                 customer_order.total_price = total_order_price
                 customer_order.save()
 
-                message = "order created and is to be confirm by staff"
-                request.COOKIES['message'] = message
+                messages.success(request, "Order has been created successfully.")
                 res = redirect("home")
                 res.delete_cookie('orders')
                 res.delete_cookie('number_of_order_items')
                 del request.session["otp_code"]
                 del request.session["otp_valid_date"]
                 return res
-            else: 
-                message = "your verification code is invalid"
-                request.COOKIES['message'] = message
+            else:
+                messages.error(request, "Your verification code is invalid")
                 return redirect("orders:cart")
         else:
-            message = "code expired"
-            request.COOKIES['message'] = message
+            messages.error(request, "Code has been expired")
             return redirect("orders:cart")
