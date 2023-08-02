@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="mt-5">
+<div class=" row d-flex justify-content-center mt-5">
+    {% for item in last_order %}
+    <div class="container">
+        <div class="card" style="margin-top: 5%; margin-bottom: 1%;">
+            {% for info in item %}
+            <span>{{info}}</span>
+            {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+</div>
+
+<div class=" row d-flex justify-content-center">
+    {% for items in pre_order %}
+    <div class="container">
+        {% for infos in items %}
+        <div class="card" style="margin-top: 1%; margin-bottom: 1%;">
+            {% for infoss in infos %}
+            <span>{{infoss}}</span>
+            {% endfor %}
+        </div><hr>
+        {% endfor %}
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
