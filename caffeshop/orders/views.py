@@ -120,6 +120,7 @@ def create_order(request):
                 orders = json.loads(orders)
                 total_order_price = 0
                 available_pro = []
+                order_details_list = []
                 for product_id, quantity in orders.items():
                     qs = Product.objects.filter(id=product_id)
                     if qs.exists():
@@ -129,6 +130,10 @@ def create_order(request):
                             tp = obj.price_per_item * int(quantity)
                             total_order_price += tp
                             available_pro.append([customer_order, obj, int(quantity), obj.price_per_item, tp])
+                            order_details_list.append([f"Name: {obj.name}", f"Quantity: {int(quantity)}",
+                                                       f"Price:{obj.price_per_item}", f"total price:{tp}",
+                                                       f"Order date: {str(customer_order.date)}"])
+
                         else:
                             messages.error(request, result[0])
                             customer_order.delete()
@@ -147,6 +152,13 @@ def create_order(request):
                 res.delete_cookie('orders')
                 res.delete_cookie('number_of_order_items')
 
+                if request.session.get('order_history'):
+                    request.session['order_history'].append(order_details_list)
+                else:
+                    request.session['order_history'] = [order_details_list]
+
+                request.session.modify = True
+
                 del request.session["otp_code"]
                 del request.session["otp_valid_date"]
                 del request.session['pre_order']
@@ -157,3 +169,12 @@ def create_order(request):
         else:
             messages.error(request, "Code has been expired")
             return redirect("orders:cart")
+
+
+def order_history(request):
+    if request.method == "GET":
+        order_list = request.session['order_history']
+        last_order = order_list[-1]
+        pre_order = order_list[:-1]
+        context = {"last_order": last_order, "pre_order": pre_order}
+        return render(request, "orders/order_history.html", context=context)
