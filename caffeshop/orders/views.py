@@ -38,16 +38,13 @@ def cart(request):
     if request.method == 'GET':
         return response
     if request.method == 'POST':
-        print('request.post: ', request.POST)
         form = ReserveForm(request.POST)
         date = " ".join([request.POST.get('reserve_date') , request.POST.get('reserve_time')])
         reserve_date = datetime.datetime.strptime(date, "%Y-%m-%d %H:%M")
-        print('date: ', date)
         if date:
             context['reserve_validation'] = True
             if request.POST.get('table_number'):
                 if form.is_valid():
-                    print('somthing')
                     phone = form.cleaned_data["phone"]
                     pre_order = {"phone": phone, "table_number": request.POST.get('table_number'),
                                  "reserve_date": str(reserve_date), "delivery": ('in', 'indoor')}
@@ -65,7 +62,6 @@ def cart(request):
         else:
             message = 'your booking faild'
             request.COOKIES['message'] = message
-            print('message: ', message)
             return redirect('orders:cart')
 
 
@@ -93,7 +89,6 @@ def create_order(request):
         valid_until = datetime.datetime.fromisoformat(otp_valid_date)
         if timezone.now() < valid_until:
             if otp_code == user_verfication_input:
-                print('delivery', request.session['pre_order']['delivery'])
                 if request.session['pre_order']['delivery'][0] == 'in':
                     customer_order = Order.objects.create(phone_number=request.session['pre_order']['phone'],
                                                           table_number=int(request.session['pre_order']['table_number']),
@@ -128,8 +123,6 @@ def create_order(request):
                 customer_order.save()
 
                 message = "order created and is to be confirm by staff"
-                print('message: ', message)
-                print('session: ', request.session)
                 request.COOKIES['message'] = message
                 res = redirect("home")
                 res.delete_cookie('orders')
@@ -140,11 +133,8 @@ def create_order(request):
             else: 
                 message = "your verification code is invalid"
                 request.COOKIES['message'] = message
-                print('message: ', message)
                 return redirect("orders:cart")
         else:
             message = "code expired"
             request.COOKIES['message'] = message
-            print('message: ', message)
-            print('session: ', request.session)
             return redirect("orders:cart")
