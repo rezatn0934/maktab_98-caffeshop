@@ -22,7 +22,7 @@ class OrderAdmin(admin.ModelAdmin):
     inlines = [OrderdetailInline]
     list_display = ["id", "phone_number", "customer_count", "table_number", "total_price"]
     list_filter = ["phone_number", "date", "table_number", "total_price"]
-    list_editable = ["phone_number", "table_number", "total_price"]
+    list_editable = ["table_number", ]
 
     search_fields = ["phone_number__istartswith", "table_number__istartswith"]
     ordering = ["phone_number", "date", "table_number", "total_price"]
@@ -53,6 +53,7 @@ class OrderDetailAdmin(admin.ModelAdmin):
 
     list_filter = ["product", "quantity", "price", "total_price"]
     list_editable = ["quantity", "price", "total_price"]
+
     list_select_related = ['order']
 
     def order_id(self, obj):
