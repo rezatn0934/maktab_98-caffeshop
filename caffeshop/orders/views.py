@@ -1,10 +1,13 @@
-from django.shortcuts import render, redirect , HttpResponse , HttpResponseRedirect
+from django.shortcuts import render, redirect, HttpResponse, HttpResponseRedirect
 from menu.models import Product
 import json
 from home.models import BackgroundImage
 from .forms import ReserveForm
 import datetime
-import random
+from utils import send_otp_code
+from .models import Order, Order_detail
+from django.utils import timezone
+
 
 # Create your views here.
 
@@ -35,26 +38,30 @@ def cart(request):
     if request.method == 'GET':
         return response
     if request.method == 'POST':
-        print("222222222")
         print('request.post: ', request.POST)
         form = ReserveForm(request.POST)
         date = " ".join([request.POST.get('reserve_date') , request.POST.get('reserve_time')])
-        date = datetime.datetime.strptime(date, "%Y-%m-%d %H:%M")
+        reserve_date = datetime.datetime.strptime(date, "%Y-%m-%d %H:%M")
         print('date: ', date)
         if date:
             context['reserve_validation'] = True
             if request.POST.get('table_number'):
                 if form.is_valid():
                     print('somthing')
-                    # print('form:', form)
-
+                    phone = form.cleaned_data["phone"]
+                    pre_order = {"phone": phone, "table_number": request.POST.get('table_number'),
+                                 "reserve_date": str(reserve_date), "delivery": ('in', 'indoor')}
+                    request.session['pre_order'] = pre_order
+                    request.session.modify = True
+                    send_otp_code(request, phone)
                     return render(request, 'orders/cart.html' , context)
             else:
                 if form["phone"]:
-                    print('yes')
-                    return response
-        else:
-            return redirect('orders:cart')
+                    phone = form.cleaned_data["phone"]
+                    pre_order = {"phone": phone, "reserve_date": str(reserve_date), "delivery": ('out', 'outdoor')}
+                    request.session['pre_order'] = pre_order
+                    send_otp_code(request, phone)
+                    return render(request, 'orders/cart.html' , context)
 
 
 def update_or_remove(request):
