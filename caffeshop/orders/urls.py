@@ -7,4 +7,5 @@ app_name = "orders"
 urlpatterns = [
     path('', views.cart, name='cart'),
     path('update_or_remove', views.update_or_remove, name='update_or_remove'),
+    path('create_order', views.create_order, name='create_order'),
 ]
