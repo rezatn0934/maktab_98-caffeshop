@@ -118,10 +118,10 @@ def create_order(request):
                         total_order_price += tp
                         order_item = Order_detail.objects.create(
                                         order=customer_order,
-                                        product= obj,
-                                        quantity= int(quantity),
+                                        product=obj,
+                                        quantity=int(quantity),
                                         price=obj.price_per_item,
-                                        total_price= tp)
+                                        total_price=tp)
                     else:
                         updated_orders.pop(product_id)
                 customer_order.total_price = total_order_price
@@ -133,6 +133,7 @@ def create_order(request):
                 request.COOKIES['message'] = message
                 res = redirect("home")
                 res.delete_cookie('orders')
+                res.delete_cookie('number_of_order_items')
                 del request.session["otp_code"]
                 del request.session["otp_valid_date"]
                 return res
