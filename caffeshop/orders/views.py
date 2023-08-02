@@ -91,4 +91,7 @@ def create_order(request):
         otp_code = request.session["otp_code"]
         otp_valid_date = request.session["otp_valid_date"]
         valid_until = datetime.datetime.fromisoformat(otp_valid_date)
+        if timezone.now() < valid_until:
+            if otp_code == user_verfication_input:
+                print('delivery', request.session['pre_order']['delivery'])
 
