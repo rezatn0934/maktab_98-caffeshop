@@ -261,6 +261,7 @@ td.cakes img {
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <form action="{% url 'orders:create_order' %}" method="post">
+            {% csrf_token %}
             <div class="modal-body">
             <tr>
                 <p class="modal-title" id="staticBackdropLabel">Please enter the code to final registration.</p>
@@ -270,7 +271,7 @@ td.cakes img {
                     <label for="#vf-code">Verfication code: </label>
                 </th>
                 <td>
-                    <input type="password" id="vf-code" name="verfication_user_code">
+                    <input type="password" id="vf-code" name="verfication_user_code" required>
                 </td>
             </tr>
         </div>
