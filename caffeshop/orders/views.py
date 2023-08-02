@@ -83,3 +83,12 @@ def update_or_remove(request):
         response.set_cookie('orders', updated_orders)
         response.set_cookie('number_of_order_items', sum([int(order_qnt) for order_qnt in updated_orders.values()]))
         return response
+
+
+def create_order(request):
+    if request.method == 'POST':
+        user_verfication_input = request.POST.get('verfication_user_code')
+        otp_code = request.session["otp_code"]
+        otp_valid_date = request.session["otp_valid_date"]
+        valid_until = datetime.datetime.fromisoformat(otp_valid_date)
+
