@@ -57,7 +57,7 @@ def search_product_view(request):
             if 'b' in checkbox:
                 query_list.append(Q(description__icontains=search_query))
             if 'c' in checkbox:
-                query_list.append(Q(category__icontains=search_query))
+                query_list.append(Q(category__name__icontains=search_query))
 
             if not query_list:
                 query_list.append(Q(name__icontains=search_query) |
