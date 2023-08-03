@@ -33,6 +33,12 @@
             /* background-size: cover; */
         }
 
+        #checkout1{
+            {% if request.COOKIES.number_of_order_items == 0 %}
+                pointer-events: none;
+            {% endif %}
+        }
+
         #RadioTarget1 {
             display: none;
         }
@@ -186,7 +192,7 @@
                                     <h1>Total ${{ order_total_price }}</h1>
                                     <div class="tot-btn">
                                         <a class="shop" href="#">Back to Shop</a>
-                                        <a class="check heart2" data-bs-toggle="modal" data-bs-target="#exampleModal"
+                                        <a class="check heart2" id="checkout1" data-bs-toggle="modal" data-bs-target="#exampleModal"
                                            href="#"
                                            style="color:black !important; background-color: rgb(139, 215, 62);">Continue
                                             to Checkout</a>
