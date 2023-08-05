@@ -295,41 +295,6 @@
             </div>
         </div>
     </div>
-
-    <div class="modal fade hide" id="myModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-         aria-labelledby="staticBackdropLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <tr>
-                        <h6 class="modal-title" id="staticBackdropLabel">Verfication code has sent to your phone.</h6>
-                    </tr>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <form action="{% url 'orders:create_order' %}" method="post">
-                    {% csrf_token %}
-                    <div class="modal-body">
-                        <tr>
-                            <p class="modal-title" id="staticBackdropLabel">Please enter the code to final
-                                registration.</p>
-                        </tr>
-                        <tr class="py-2">
-                            <th>
-                                <label for="#vf-code">Verfication code: </label>
-                            </th>
-                            <td>
-                                <input type="password" id="vf-code" name="verfication_user_code" required>
-                            </td>
-                        </tr>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-success">Finish</button>
-                </form>
-            </div>
-        </div>
-    </div>
-    </div>
 {% endblock %}
 
 
