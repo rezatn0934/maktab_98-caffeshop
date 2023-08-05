@@ -57,6 +57,24 @@ class Info(models.Model):
         if self.logo:
             return mark_safe(f'<img src = "{self.background_image.url}" width = "150" height="150"/> ')
 
+    def save(self, *args, **kwargs):
+
+        if not self.pk and Info.objects.exists():
+            raise Info.ValidationError('There can be only one instance of Info')
+
+        if self.pk:
+            old_instance = Info.objects.get(pk=self.pk)
+            if (not old_instance.background_image == self.background_image and
+                    old_instance.background_image and
+                    os.path.exists(old_instance.background_image.path)):
+                os.remove(old_instance.background_image.path)
+
+            if (not old_instance.logo == self.logo and
+                    old_instance.logo and
+                    os.path.exists(old_instance.logo.path)):
+                os.remove(old_instance.logo.path)
+
+        super().save(*args, **kwargs)
 
 
 class About(models.Model):
