@@ -19,9 +19,12 @@ class GalleryAdmin(admin.ModelAdmin):
 
 @admin.register(models.Info)
 class InfoAdmin(admin.ModelAdmin):
-    actions = ['delete_selected']
+    # actions = ['delete_selected']
     list_display = ["cafe_title", "phone", "email", "work_hours", "address", "instagram", "facebook", "twitter", "logo",
                     "background_image"]
+
+    def has_delete_permission(self, request, obj=None):
+        return False
 
 
 @admin.register(models.About)
