@@ -1,9 +1,12 @@
+from django.core.validators import RegexValidator
 from django.utils import timezone
+from dotenv import load_dotenv
 from kavenegar import *
 import pyotp
-from dotenv import load_dotenv
 import os
+
 load_dotenv()
+phoneNumberRegex = RegexValidator(regex=r"^09\d{9}$")
 
 
 def send_otp_code(request, phone):
@@ -37,3 +40,17 @@ def check_availability(obj):
     else:
         message = 'Product is not active!!'
         return message, None
+
+
+class ImageMixin:
+    def change_image(self, old_instance, field):
+        target = getattr(old_instance, field)
+
+        if (not target == getattr(self, field) and
+                target and os.path.exists(target.path)):
+            os.remove(target.path)
+
+    def delete_image(self, field):
+        target = getattr(self, field)
+        if os.path.exists(target.path):
+            os.remove(target.path)

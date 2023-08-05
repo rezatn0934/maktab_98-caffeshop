@@ -24,15 +24,17 @@ class StaffLogin(View):
 
     def post(self, request):
         form = self.form(request.POST)
-        phone = form["phone"].value()
-        user = PhoneAuthBackend().authenticate(request, phone=phone)
-        if user is not None:
-            request.session["phone"] = phone
-            return redirect("verify")
-        else:
-            message = "Invalid phone number"
-            context = {"message": message, "form": self.form()}
-            return render(request, self.html_temp, context=context)
+        if form.is_valid():
+            cd = form.cleaned_data
+            phone = cd["phone"]
+            user = PhoneAuthBackend().authenticate(request, phone=phone)
+            if user is not None:
+                request.session["phone"] = phone
+                return redirect("verify")
+            else:
+                message = "Invalid phone number"
+                context = {"message": message, "form": self.form()}
+                return render(request, self.html_temp, context=context)
 
 
 class Verify(View):
@@ -53,29 +55,31 @@ class Verify(View):
 
     def post(self, request):
         form = self.form(request.POST)
-        code = form["code"].value()
-        phone = request.session["phone"]
-        otp_key = request.session.get("otp_code")
-        otp_valid_date = request.session.get("otp_valid_date")
-        if otp_key is not None and otp_valid_date is not None:
-            valid_until = datetime.datetime.fromisoformat(otp_valid_date)
-            if valid_until > timezone.now():
-                if code == otp_key:
-                    user = User.objects.get(phone=phone)
-                    login(request, user, backend='accounts.authentication.PhoneAuthBackend')
-                    del request.session["otp_code"]
-                    del request.session["otp_valid_date"]
-                    return redirect("dashboard")
+        if form.is_valid():
+            cd = form.cleaned_data
+            code = cd["code"]
+            phone = request.session["phone"]
+            otp_key = request.session.get("otp_code")
+            otp_valid_date = request.session.get("otp_valid_date")
+            if otp_key is not None and otp_valid_date is not None:
+                valid_until = datetime.datetime.fromisoformat(otp_valid_date)
+                if valid_until > timezone.now():
+                    if code == otp_key:
+                        user = User.objects.get(phone=phone)
+                        login(request, user, backend='accounts.authentication.PhoneAuthBackend')
+                        del request.session["otp_code"]
+                        del request.session["otp_valid_date"]
+                        return redirect("dashboard")
+                    else:
+                        message = "Invalid OTP"
                 else:
-                    message = "Invalid OTP"
+                    message = "OTP has been expired"
             else:
-                message = "OTP has been expired"
-        else:
-            message = "Start from here!"
+                message = "Start from here!"
 
-        form = self.form()
-        context = {"message": message, "form": form}
-        return render(request, self.html_temp, context=context)
+            form = self.form()
+            context = {"message": message, "form": form}
+            return render(request, self.html_temp, context=context)
 
 
 def dashboard(request):

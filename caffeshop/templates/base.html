@@ -69,8 +69,8 @@
         <!-- Brand and toggle get grouped for better mobile display -->
         <div class="container-fluid">
             <!-- <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#bs-example-navbar-collapse-1"> <span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </button> -->
-            {% if logo %}
-                <a class="navbar-brand" href="{% url 'home' %}">{{ logo.img_preview }}</a>
+            {% if info.logo %}
+                <a class="navbar-brand" href="{% url 'home' %}">{{ info.logo_preview }}</a>
             {% else %}
                 <a class="navbar-brand page-scroll" href="{% url 'home' %}">Touché</a>
             {% endif %}

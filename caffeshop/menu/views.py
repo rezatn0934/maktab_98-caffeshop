@@ -1,14 +1,14 @@
-from django.shortcuts import render, redirect, get_list_or_404, get_object_or_404 , HttpResponse, HttpResponseRedirect                      
-from .models import Product, Category, ParentCategory
 from django.db.models import Q
-import datetime
+from django.shortcuts import render, redirect, HttpResponseRedirect
+from .models import Product, Category
 import json
-from . models import Product
+
+
 # Create your views here.
 
 
 def menu(request):
-    categories = ParentCategory.objects.all()
+    categories = Category.objects.all()
     products = Product.objects.all()
     orders = request.COOKIES.get('orders', '{}')
     orders = orders.replace("\'", "\"")
@@ -27,7 +27,7 @@ def menu(request):
                 orders[product] += number_of_product
                 message = "Order updated"
             else:
-                orders[product] = number_of_product 
+                orders[product] = number_of_product
                 message = "Order added"
             html.set_cookie('orders', orders)
             html.set_cookie('message', message)
@@ -36,13 +36,13 @@ def menu(request):
             html.set_cookie('orders', orders)
             message = "you created a shopping cart"
             html.set_cookie('message', message)
-        html.set_cookie( 'number_of_order_items', sum([int(order_qnt) for order_qnt in orders.values()]))
+        html.set_cookie('number_of_order_items', sum([int(order_qnt) for order_qnt in orders.values()]))
         return html
 
 
 def product(request, name):
-    pro = Product.objects.get(name = name)
-    return render(request, 'menu/product.html', {'product':pro})
+    product = Product.objects.get(name=name)
+    return render(request, 'menu/product.html', {'product': product})
 
 
 def search_product_view(request):
@@ -70,4 +70,3 @@ def search_product_view(request):
         return render(request, 'menu/search.html', {'search_query': search_query, 'products': products})
     else:
         return redirect(request.path)
-

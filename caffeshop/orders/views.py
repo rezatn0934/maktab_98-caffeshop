@@ -1,13 +1,9 @@
 from django.contrib import messages
 from django.shortcuts import render, redirect
-from django.utils import timezone
 from menu.models import Product
-from home.models import BackgroundImage
 from .models import Order, Order_detail
 from .forms import OrderForm
 from utils import send_otp_code, check_availability
-import datetime
-import json
 import re
 
 
@@ -34,10 +30,8 @@ def cart(request):
             messages.error(request, f'Product {obj.name} is not available!!')
             updated_orders.pop(product_id)
     order_total_price = sum(map(lambda item: int(item[2]), order_items))
-    background_image = BackgroundImage.objects.get(is_active=True)
     context = {'order_items': order_items,
                'order_total_price': order_total_price,
-               'background_image': background_image,
                'form': form}
     request.COOKIES['number_of_order_items'] = sum([int(order_qnt) for order_qnt in updated_orders.values()])
     response = render(request, 'orders/cart.html', context=context)
@@ -82,7 +76,6 @@ def update_or_remove(request):
 
 def create_order(request):
     pre_order = request.session['pre_order']
-    print('1 '*25)
     customer_order = Order.objects.create(phone_number=pre_order['phone'],
                                             table_number=int(pre_order['table_number']))
 
@@ -123,11 +116,9 @@ def create_order(request):
     res.delete_cookie('number_of_order_items')
 
     if request.session.get('order_history'):
-        print(' 5.1 '*25)
         request.session['order_history'].append(order_details_list)
         request.session['order_info'].append([customer_order.id, total_order_price])
     else:
-        print(' 5.2 '*25)
         request.session['order_history'] = [order_details_list]
         info = [customer_order.id, total_order_price]
         request.session['order_info'] = [info]

@@ -16,13 +16,13 @@ class ProductAdmin(admin.ModelAdmin):
     readonly_fields = ['img_preview']
 
     list_display = [
-        'name', 'category', 'price_per_item', 'order_count', 'active', 'daily_availability',
+        'name', 'category', 'price', 'order_count', 'is_active',
         'truncated_description', 'img_preview'
     ]
-    list_editable = ['category', 'price_per_item', 'active', 'daily_availability']
-    list_filter = ['name', 'category', 'price_per_item', 'active', 'daily_availability']
+    list_editable = ['category', 'price', 'is_active']
+    list_filter = ['name', 'category', 'price', 'is_active']
     search_fields = ['name__istartswith', 'category__istartswith']
-    ordering = ['name', 'category', 'price_per_item', 'active', 'daily_availability']
+    ordering = ['name', 'category', 'price', 'is_active']
     list_per_page = 15
 
     @admin.display(ordering='order_count')
@@ -72,29 +72,3 @@ class CategoryAdmin(admin.ModelAdmin):
             product_count=Count('product')
         )
 
-
-@admin.register(models.ParentCategory)
-class ParentCategoryAdmin(admin.ModelAdmin):
-    actions = ['delete_selected']
-
-    list_display = ['name', 'category_count', 'img_preview']
-    list_filter = ['name']
-
-    search_fields = ['name__istartswith']
-    ordering = ['name']
-    list_per_page = 15
-
-    @admin.display(ordering='category_count')
-    def category_count(self, parent_category):
-        url = (reverse('admin:menu_category_changelist')
-               + '?'
-               + urlencode({
-                    'parent_category__id': str(parent_category.id)
-                }))
-
-        return format_html('<a href="{}">{}</a>', url, parent_category.category_count)
-
-    def get_queryset(self, request):
-        return super().get_queryset(request).annotate(
-            category_count=Count('category__parent_category')
-        )

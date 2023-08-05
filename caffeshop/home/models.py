@@ -1,14 +1,13 @@
-from django.db import models
 from django.utils.html import mark_safe
-import os
-from django.core.validators import RegexValidator
+from utils import phoneNumberRegex, ImageMixin
+from django.db import models
 
 
 # Create your models here.
 
 
-class Gallery(models.Model):
-    title = models.CharField(max_length=50, null=True, blank=True)
+class Gallery(ImageMixin, models.Model):
+    title = models.CharField(max_length=50)
     is_active = models.BooleanField(default=True)
     image = models.ImageField(upload_to='images/gallery')
 
@@ -18,55 +17,23 @@ class Gallery(models.Model):
 
     def delete(self, *args, **kwargs):
         if self.image:
-            if os.path.exists(self.image.path):
-                os.remove(self.image.path)
+            self.delete_image("image")
+
         super().delete(*args, **kwargs)
 
     def save(self, *args, **kwargs):
         if self.pk:
             old_instance = Gallery.objects.get(pk=self.pk)
-            if not old_instance.image == self.image:
-                if old_instance.image:
-                    if os.path.exists(old_instance.image.path):
-                        os.remove(old_instance.image.path)
+            self.change_image(old_instance, "image")
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return self.title or ''
+        return self.title
 
 
-class BackgroundImage(models.Model):
-    title = models.CharField(max_length=50, null=True, blank=True)
-    is_active = models.BooleanField(default=True)
-    image = models.ImageField(upload_to='images/HomePageBackground')
-
-    def img_preview(self):
-        if self.image:
-            return mark_safe(f'<img src="{self.image.url}" width="150" height="150"/>')
-
-    def delete(self, *args, **kwargs):
-        if self.image:
-            if os.path.exists(self.image.path):
-                os.remove(self.image.path)
-        super().delete(*args, **kwargs)
-
-    def save(self, *args, **kwargs):
-        if self.pk:
-            old_instance = BackgroundImage.objects.get(pk=self.pk)
-            if not old_instance.image == self.image:
-                if old_instance.image:
-                    if os.path.exists(old_instance.image.path):
-                        os.remove(old_instance.image.path)
-        BackgroundImage.objects.all().update(is_active=False)
-        self.is_active = True
-        super().save(*args, **kwargs)
-
-    def __str__(self):
-        return self.title or ''
-
-
-class Info(models.Model):
-    phoneNumberRegex = RegexValidator(regex=r"^09\d{9}$")
+class Info(ImageMixin, models.Model):
+    cafe_title = models.CharField(max_length=25)
+    cafe_motto = models.TextField()
     phone = models.CharField(validators=[phoneNumberRegex])
     email = models.EmailField()
     work_hours = models.CharField(max_length=100)
@@ -74,35 +41,36 @@ class Info(models.Model):
     instagram = models.URLField()
     facebook = models.URLField()
     twitter = models.URLField()
+    background_image = models.ImageField(upload_to='images/HomePageBackground')
+    logo = models.ImageField(upload_to='images/logo', null=True, blank=True)
 
+    def logo_preview(self):
+        if self.logo:
+            return mark_safe(f'<img src = "{self.logo.url}" width = "50" height="80"/> ')
 
-class Logo(models.Model):
-    title = models.CharField(max_length=50, null=True, blank=True)
-    is_active = models.BooleanField(default=True)
-    image = models.ImageField(upload_to='images/logo')
-
-
-    def img_preview(self):
-        if self.image:
-            return mark_safe(f'<img src="{self.image.url}" width="50" height="80"/>')
+    def background_image_preview(self):
+        if self.logo:
+            return mark_safe(f'<img src = "{self.background_image.url}" width = "150" height="150"/> ')
 
     def save(self, *args, **kwargs):
-        if self.pk:
-            old_instance = Logo.objects.get(pk=self.pk)
-            if not old_instance.image == self.image:
-                if old_instance.image:
-                    if os.path.exists(old_instance.image.path):
-                        os.remove(old_instance.image.path)
-        super().save(*args, **kwargs)
+
+        if not Info.objects.exists():
+            super().save(*args, **kwargs)
+        else:
+            if self.pk:
+                old_instance = Info.objects.get(pk=self.pk)
+                self.change_image(old_instance, "background_image")
+                self.change_image(old_instance, "logo")
+                super().save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
-        if self.image:
-            if os.path.exists(self.image.path):
-                os.remove(self.image.path)
-        super().delete(*args, **kwargs)
+        pass
+
+    def __str__(self):
+        return self.cafe_title
 
 
-class About(models.Model):
+class About(ImageMixin, models.Model):
     title = models.CharField(max_length=30)
     content = models.TextField()
     is_active = models.BooleanField(default=True)
@@ -115,10 +83,7 @@ class About(models.Model):
     def save(self, *args, **kwargs):
         if self.pk:
             old_instance = About.objects.get(pk=self.pk)
-            if not old_instance.image == self.image:
-                if old_instance.image:
-                    if os.path.exists(old_instance.image.path):
-                        os.remove(old_instance.image.path)
+            self.change_image(old_instance, "image")
 
         objects = About.objects.all()
         if objects:
@@ -128,9 +93,9 @@ class About(models.Model):
 
     def delete(self, *args, **kwargs):
         if self.image:
-            if os.path.exists(self.image.path):
-                os.remove(self.image.path)
+            self.delete_image("image")
+
         super().delete(*args, **kwargs)
 
     def __str__(self):
-        return self.title or ''
+        return self.title

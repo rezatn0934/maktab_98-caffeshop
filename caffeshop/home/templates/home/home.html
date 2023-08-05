@@ -5,7 +5,7 @@
 {% endblock %}
 {% block content %}
     <header id="header">
-        <div class="intro" style="background: url({{ background_image.image.url }}) no-repeat center center">
+        <div class="intro" style="background: url({{ info.background_image.url }}) no-repeat center center">
             <div class="overlay">
                 <div class="container">
                     <div class="row">
@@ -17,8 +17,10 @@
                                     </div>
                                 {% endfor %}
                             {% endif %}
-                            <h1>Touché</h1>
-                            <p><b>Fast-Food / Coffee </b></p>
+<!--                            <h1>Touché</h1>-->
+                            <h1>{{info.cafe_title}}</h1>
+<!--                            <p><b>Fast-Food / Coffee </b></p>-->
+                            <p><b>{{info.cafe_motto}}</b></p>
                         </div>
                     </div>
                 </div>
@@ -52,7 +54,7 @@
                     </div>
                     <div class="gallery-slider swiper">
                         <div class="swiper-wrapper align-items-center">
-                            {% for category in parentcategories %}
+                            {% for category in categories %}
                                 <div class="swiper-slide"><a class="glightbox" data-gallery="images-gallery"
                                                              href="{{ category.image.url }}"><img
                                         src="{{ category.image.url }}" class="img-fluid"
