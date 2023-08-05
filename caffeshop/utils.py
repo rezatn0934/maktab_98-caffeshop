@@ -49,3 +49,8 @@ class ImageMixin:
         if (not target == getattr(self, field) and
                 target and os.path.exists(target.path)):
             os.remove(target.path)
+
+    def delete_image(self, field):
+        target = getattr(self, field)
+        if os.path.exists(target.path):
+            os.remove(target.path)
