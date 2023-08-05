@@ -149,29 +149,37 @@
                                     </tbody>
                                 </table>
                             </div>
-                            <div class="vocher">
-                                <div class="dis-card">
-                                    <!-- <h5>Discount Code or Voucher</h2>
+                            <div class="vocher pt-0">
+                                <!-- <div class="dis-card">
+                                    <h5>Discount Code or Voucher</h2>
                                     <p>Enter your discount code or voucher to receive a discount on your total order.</p>
                                     <input type="text" value="">
-                                    <input type="submit"  value="Redeem"> -->
-                                </div>
+                                    <input type="submit"  value="Redeem">
+                                </div> -->
                                 <div class="dis-total">
-                                    <h1>Total ${{ order_total_price }}</h1>
-                                    <div class="tot-btn">
-                                        <a class="shop" href="#">Back to Shop</a>
+                                    <div class="tot-btn1 ">
                                         <form action="{% url 'orders:cart' %}" id="table-reserve-form" method="post">
                                             {% csrf_token %}
                                             <div class="row justify-content-between active" id="RadioTarget1" aria-hidden="true">
-                                                <div class="col-sm-5">
+                                                <div class="col-sm-5 d-flex align-items-end">
                                                     <div class="row">
-                                                        {{ form }}
+                                                        {% for field in form %}
+                                                        <div class="py-1" style="color: black;">
+                                                            {{ field.errors }}
+                                                            {{ field.label_tag }} {{ field }}
+                                                        </div> 
+                                                        {% endfor %}
                                                     </div>
                                                 </div>
-                                                <a class="check heart2" id="checkout1" 
-                                                type="submit"
-                                                style="color:black !important; background-color: rgb(139, 215, 62);">Continue
-                                                    to Checkout</a>
+                                                <div class="col-sm-5">
+                                                    <h1 class="mx-1">Total ${{ order_total_price }}</h1>
+                                                    <div class="row justify-content-around">
+                                                        <button class="shop btn btn-dark col-sm-4 p-1 mx-2" href="#">Back to Shop</button>
+                                                        <button class="col-sm-5 check p-1 mx-1 heart2 btn btn-success" id="checkout1" style="color:black !important; background-color: rgb(139, 215, 62);" type="submit" form="table-reserve-form">
+                                                             Continue to Checkout
+                                                        </button>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </form>
                                     </div>
