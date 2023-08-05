@@ -5,7 +5,6 @@ from django.core.validators import RegexValidator, MinValueValidator
 
 
 class Order(models.Model):
-    delivery_choices = (('in', 'indoor'), ('out', 'outdoor'))
     status_choices = (('Customer_confirm', (('UC', 'Undetermined'), ('AC', 'Approved'), ('CC', 'Canceled'))),
                       ('Staff_confirm', (('US', 'Undetermined'), ('AS', 'Approved'), ('CS', 'Canceled'))),
                       ('delivery_confirm', (('UD', 'Undetermined'), ('AD', 'Approved'), ('CD', 'Canceled'))))
@@ -14,9 +13,7 @@ class Order(models.Model):
     date = models.DateTimeField(auto_now=True)
     table_number = models.PositiveIntegerField(validators=[MinValueValidator(0.0)], null=True, blank=True)
     total_price = models.FloatField(validators=[MinValueValidator(0.0)], null=True, blank=True)
-    delivery = models.CharField(choices=delivery_choices)
     status = models.CharField(choices=status_choices, default=('Customer_confirm', (('UC', 'Undetermined'))))
-    reservation_date = models.DateTimeField()
 
     def __str__(self):
         return f"Order{self.id}, order total price: {self.total_price}"

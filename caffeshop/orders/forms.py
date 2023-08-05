@@ -1,6 +1,6 @@
 from django import forms
 
-class ReserveForm(forms.Form):
+class OrderForm(forms.Form):
     error_css_class = "error"
     required_css_class = "required"
     table_number = forms.IntegerField(max_value=15, min_value=1, widget=forms.NumberInput(attrs={"id":"select-box"}))

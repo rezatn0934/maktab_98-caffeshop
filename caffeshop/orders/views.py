@@ -4,7 +4,7 @@ from django.utils import timezone
 from menu.models import Product
 from home.models import BackgroundImage
 from .models import Order, Order_detail
-from .forms import ReserveForm
+from .forms import OrderForm
 from utils import send_otp_code, check_availability
 import datetime
 import json
@@ -17,13 +17,13 @@ def cart(request):
     orders = request.COOKIES.get('orders', '{}')
     orders = eval(orders)
     updated_orders = orders.copy()
-    form = ReserveForm()
+    form = OrderForm()
     order_items = []
     for product_id, quantity in orders.items():
         qs = Product.objects.filter(id=product_id)
         if qs.exists():
             obj = qs.get(id=product_id)
-            message, obj = check_availability(obj, quantity)
+            message, obj = check_availability(obj)
             if obj:
                 tp = obj.price_per_item * int(quantity)
                 order_items.append((obj, quantity, tp))
@@ -45,31 +45,24 @@ def cart(request):
     if request.method == 'GET':
         return response
     if request.method == 'POST':
-        form = ReserveForm(request.POST)
-        date = " ".join([request.POST.get('reserve_date'), request.POST.get('reserve_time')])
-        reserve_date = datetime.datetime.strptime(date, "%Y-%m-%d %H:%M")
-        if date:
-            if request.POST.get('table_number'):
-                if form.is_valid():
-                    phone = form.cleaned_data["phone"]
-                    pre_order = {"phone": phone, "table_number": request.POST.get('table_number'),
-                                 "reserve_date": str(reserve_date), "delivery": ('in', 'indoor')}
-                    request.session['pre_order'] = pre_order
-                    request.session.modify = True
-                    return redirect('orders:create_order')
-            else:
-                if form["phone"].value() and re.match(r"^09\d{9}$", str(form["phone"].value())):
-                    phone = form["phone"].value()
-                    pre_order = {"phone": phone, "reserve_date": str(reserve_date), "delivery": ('out', 'outdoor')}
-                    request.session['pre_order'] = pre_order
-                    request.session.modify = True
-                    return redirect('orders:create_order')
-                else:
-                    messages.error(request, 'Your phone number is not valid!!')
-                    return redirect('orders:cart')
+        form = OrderForm(request.POST)
+        if request.POST.get('table_number'):
+            if form.is_valid():
+                phone = form.cleaned_data["phone"]
+                pre_order = {"phone": phone, "table_number": request.POST.get('table_number')}
+                request.session['pre_order'] = pre_order
+                request.session.modify = True
+                return redirect('orders:create_order')
         else:
-            messages.error(request, "You didn't choose a date!!")
-            return redirect('orders:cart')
+            if form["phone"].value() and re.match(r"^09\d{9}$", str(form["phone"].value())):
+                phone = form["phone"].value()
+                pre_order = {"phone": phone}
+                request.session['pre_order'] = pre_order
+                request.session.modify = True
+                return redirect('orders:create_order')
+            else:
+                messages.error(request, 'Your phone number is not valid!!')
+                return redirect('orders:cart')
 
 
 def update_or_remove(request):
@@ -90,20 +83,8 @@ def update_or_remove(request):
 def create_order(request):
     pre_order = request.session['pre_order']
     print('1 '*25)
-    if pre_order['delivery'][0] == 'in':
-        print(' 2.1 '*25)
-        customer_order = Order.objects.create(phone_number=pre_order['phone'],
-                                                table_number=int(pre_order['table_number']),
-                                                delivery=tuple(pre_order['delivery'])[0],
-                                                reservation_date=datetime.datetime.fromisoformat(
-                                                    pre_order['reserve_date']))
-
-    elif pre_order['delivery'][0] == 'out':
-        print(' 2.2 '*25)
-        customer_order = Order.objects.create(phone_number=pre_order['phone'],
-                                                delivery=tuple(pre_order['delivery'])[0],
-                                                reservation_date=datetime.datetime.fromisoformat(
-                                                    pre_order['reserve_date']))
+    customer_order = Order.objects.create(phone_number=pre_order['phone'],
+                                            table_number=int(pre_order['table_number']))
 
     orders = request.COOKIES.get('orders', '{}')
     orders = eval(orders)
@@ -113,11 +94,9 @@ def create_order(request):
     for product_id, quantity in orders.items():
         qs = Product.objects.filter(id=product_id)
         if qs.exists():
-            print(' 3.1 '*25)
             obj = qs.get(id=product_id)
-            result = check_availability(obj, quantity)
+            result = check_availability(obj)
             if result[1]:
-                print(' 4.1 '*25)
                 tp = obj.price_per_item * int(quantity)
                 total_order_price += tp
                 available_pro.append([customer_order, obj, int(quantity), obj.price_per_item, tp])
@@ -126,12 +105,10 @@ def create_order(request):
                                             str(customer_order.date)])
 
             else:
-                print(' 4.2 '*25)
                 messages.error(request, result[0])
                 customer_order.delete()
                 return redirect("orders:cart")
         else:
-            print(' 3.2 '*25)
             messages.error(request, f'Product {obj.name} is not available!!')
             customer_order.delete()
             return redirect("orders:cart")
