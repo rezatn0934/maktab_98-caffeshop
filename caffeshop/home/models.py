@@ -69,6 +69,9 @@ class Info(models.Model):
 
         super().save(*args, **kwargs)
 
+    def delete(self, *args, **kwargs):
+        pass
+
     def change_image(self, old_instance, field):
         target = getattr(old_instance, field)
 
