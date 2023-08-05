@@ -6,29 +6,33 @@ from .models import User
 from utils import send_otp_code
 import datetime
 from django.utils import timezone
+from django.views import View
 
 
 # Create your views here.
 
-
-def staff_login(request):
+class StaffLogin(View):
     message = None
-    if request.method == "POST":
-        form = StaffLoginForm(request.POST)
-        if form.is_valid():
-            cd = form.cleaned_data
-            user = PhoneAuthBackend().authenticate(request, phone=cd["phone"])
-            if user is not None:
-                request.session["phone"] = cd["phone"]
-                return redirect("verify")
-            else:
-                message = "Invalid phone number or password"
+    form = StaffLoginForm
+    html_temp = "login.html"
 
-    elif request.method == "GET":
+    def get(self, request):
         if request.user.is_authenticated:
             return redirect("dashboard")
-    form = StaffLoginForm()
-    return render(request, "login.html", {"message": message, "form": form})
+        context = {"message": self.message, "form": self.form()}
+        return render(request, self.html_temp, context=context)
+
+    def post(self, request):
+        form = self.form(request.POST)
+        phone = form["phone"].value()
+        user = PhoneAuthBackend().authenticate(request, phone=phone)
+        if user is not None:
+            request.session["phone"] = phone
+            return redirect("verify")
+        else:
+            message = "Invalid phone number"
+            context = {"message": message, "form": self.form()}
+            return render(request, self.html_temp, context=context)
 
 
 def verify(request):
