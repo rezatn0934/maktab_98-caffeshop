@@ -192,10 +192,20 @@
                                     <h1>Total ${{ order_total_price }}</h1>
                                     <div class="tot-btn">
                                         <a class="shop" href="#">Back to Shop</a>
-                                        <a class="check heart2" id="checkout1" data-bs-toggle="modal" data-bs-target="#exampleModal"
-                                           href="#"
-                                           style="color:black !important; background-color: rgb(139, 215, 62);">Continue
-                                            to Checkout</a>
+                                        <form action="{% url 'orders:cart' %}" id="table-reserve-form" method="post">
+                                            {% csrf_token %}
+                                            <div class="row justify-content-between active" id="RadioTarget1" aria-hidden="true">
+                                                <div class="col-sm-5">
+                                                    <div class="row">
+                                                        {{ form }}
+                                                    </div>
+                                                </div>
+                                                <a class="check heart2" id="checkout1" 
+                                                type="submit"
+                                                style="color:black !important; background-color: rgb(139, 215, 62);">Continue
+                                                    to Checkout</a>
+                                            </div>
+                                        </form>
                                     </div>
                                 </div>
 
@@ -208,93 +218,7 @@
         </div>
     </header>
 
-    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Reserve</h5>
-                    <div class="form-check form-check-inline mx-3">
-                        <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1"
-                               value="indoor" checked>
-                        <label class="form-check-label" for="inlineRadio1">Book a Table</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2"
-                               value="outdoor">
-                        <label class="form-check-label" for="inlineRadio2">outdoor order</label>
-                    </div>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body d-flex align-items-center">
-                    <form action="{% url 'orders:cart' %}" id="table-reserve-form" method="post">
-                        {% csrf_token %}
-                        <div class="row justify-content-between active" id="RadioTarget1" aria-hidden="true">
-                            <div class="col-sm-5">
-                                <div class="row">
-                                    {{ form }}
-                                </div>
-                            </div>
-                            <div class="col-sm-5 mx-1">
-                                <div class="row">
-                                    <tr>
-                                        <th><label for="reserve_date">Date: </label></th>
-                                        <td>
-                                            <input id="reserve_date" class="form-control reserve_date" type="date"
-                                                   name="reserve_date" required/>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <th><label for="reserve_time">Time: </label></th>
-                                        <td>
-                                            <input type="time" name="reserve_time" id="reserve_time"
-                                                   style="height:40px; border-radius: 10px;" required/>
-                                        </td>
-                                    </tr>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-                    <form action="{% url 'orders:cart' %}" id="outdoor-reserve-form" method="post">
-                        {% csrf_token %}
-                        <div class="row justify-content-center" id="RadioTarget2" aria-hidden="true">
-                            <div class="col-lg-5 mx-1">
-                                <div class="row">
-                                    <tr class="required">
-                                        <th><label for="phone-input" class="required">Phone:</label></th>
-                                        <td>
-                                            {{ form.phone }}
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <th><label for="reserve_date">Date: </label></th>
-                                        <td>
-                                            <input id="reserve_date" class="form-control reserve_date" type="date"
-                                                   name="reserve_date" required/>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <th><label for="reserve_time">Time: </label></th>
-                                        <td>
-                                            <input type="time" name="reserve_time" id="reserve_time"
-                                                   style="height:40px; border-radius: 10px;" required>
-                                        </td>
-                                    </tr>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" form="table-reserve-form" id="rt-btn-1" class="btn btn-primary active">
-                        Reserve1
-                    </button>
-                    <button type="submit" form="outdoor-reserve-form" id="rt-btn-2" class="btn btn-primary">Reserve2
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
+    
 {% endblock %}
 
 
