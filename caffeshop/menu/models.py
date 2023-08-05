@@ -38,7 +38,7 @@ class Product(ImageMixin, models.Model):
     category = models.ForeignKey(Category, on_delete=models.PROTECT)
     name = models.CharField(max_length=50, unique=True)
     description = models.TextField()
-    price_per_item = models.DecimalField(validators=[MinValueValidator(0.0)])
+    price = models.DecimalField(validators=[MinValueValidator(0.0)])
     is_active = models.BooleanField(default=True)
     image = models.ImageField(upload_to='images/product/')
 
