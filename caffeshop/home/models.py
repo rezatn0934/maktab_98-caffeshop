@@ -1,5 +1,6 @@
-from django.db import models
 from django.utils.html import mark_safe
+from utils import phoneNumberRegex
+from django.db import models
 import os
 from django.core.validators import RegexValidator
 
@@ -66,7 +67,8 @@ class BackgroundImage(models.Model):
 
 
 class Info(models.Model):
-    phoneNumberRegex = RegexValidator(regex=r"^09\d{9}$")
+    cafe_title = models.CharField(max_length=25)
+    cafe_motto = models.TextField()
     phone = models.CharField(validators=[phoneNumberRegex])
     email = models.EmailField()
     work_hours = models.CharField(max_length=100)
@@ -74,6 +76,8 @@ class Info(models.Model):
     instagram = models.URLField()
     facebook = models.URLField()
     twitter = models.URLField()
+    background_image = models.ImageField(upload_to='images/HomePageBackground')
+    logo = models.ImageField(upload_to='images/logo')
 
 
 class Logo(models.Model):
