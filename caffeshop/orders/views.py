@@ -15,8 +15,7 @@ import re
 
 def cart(request):
     orders = request.COOKIES.get('orders', '{}')
-    orders = orders.replace("\'", "\"")
-    orders = json.loads(orders)
+    orders = eval(orders)
     updated_orders = orders.copy()
     form = ReserveForm()
     order_items = []
@@ -50,7 +49,6 @@ def cart(request):
         date = " ".join([request.POST.get('reserve_date'), request.POST.get('reserve_time')])
         reserve_date = datetime.datetime.strptime(date, "%Y-%m-%d %H:%M")
         if date:
-            context['reserve_validation'] = True
             if request.POST.get('table_number'):
                 if form.is_valid():
                     phone = form.cleaned_data["phone"]
@@ -58,17 +56,14 @@ def cart(request):
                                  "reserve_date": str(reserve_date), "delivery": ('in', 'indoor')}
                     request.session['pre_order'] = pre_order
                     request.session.modify = True
-                    send_otp_code(request, phone)
-                    return render(request, 'orders/cart.html', context)
+                    return redirect('orders:create_order')
             else:
                 if form["phone"].value() and re.match(r"^09\d{9}$", str(form["phone"].value())):
                     phone = form["phone"].value()
                     pre_order = {"phone": phone, "reserve_date": str(reserve_date), "delivery": ('out', 'outdoor')}
                     request.session['pre_order'] = pre_order
                     request.session.modify = True
-                    send_otp_code(request, phone)
-
-                    return render(request, 'orders/cart.html', context)
+                    return redirect('orders:create_order')
                 else:
                     messages.error(request, 'Your phone number is not valid!!')
                     return redirect('orders:cart')
@@ -80,8 +75,7 @@ def cart(request):
 def update_or_remove(request):
     if request.method == 'POST':
         orders = request.COOKIES.get('orders', '{}')
-        orders = orders.replace("\'", "\"")
-        orders = json.loads(orders)
+        orders = eval(orders)
         updated_orders = orders.copy()
         if request.POST.get('update'):
             updated_orders[request.POST.get('product')] = request.POST.get('quantity')
@@ -94,84 +88,76 @@ def update_or_remove(request):
 
 
 def create_order(request):
-    if request.method == 'POST':
-        user_verification_input = request.POST.get('verfication_user_code')
-        otp_code = request.session["otp_code"]
-        otp_valid_date = request.session["otp_valid_date"]
-        valid_until = datetime.datetime.fromisoformat(otp_valid_date)
-        if timezone.now() < valid_until:
-            if otp_code == user_verification_input:
-                pre_order = request.session['pre_order']
-                if pre_order['delivery'][0] == 'in':
-                    customer_order = Order.objects.create(phone_number=pre_order['phone'],
-                                                          table_number=int(pre_order['table_number']),
-                                                          delivery=tuple(pre_order['delivery'])[0],
-                                                          reservation_date=datetime.datetime.fromisoformat(
-                                                              pre_order['reserve_date']))
+    pre_order = request.session['pre_order']
+    print('1 '*25)
+    if pre_order['delivery'][0] == 'in':
+        print(' 2.1 '*25)
+        customer_order = Order.objects.create(phone_number=pre_order['phone'],
+                                                table_number=int(pre_order['table_number']),
+                                                delivery=tuple(pre_order['delivery'])[0],
+                                                reservation_date=datetime.datetime.fromisoformat(
+                                                    pre_order['reserve_date']))
 
-                elif pre_order['delivery'][0] == 'out':
-                    customer_order = Order.objects.create(phone_number=pre_order['phone'],
-                                                          delivery=tuple(pre_order['delivery'])[0],
-                                                          reservation_date=datetime.datetime.fromisoformat(
-                                                              pre_order['reserve_date']))
+    elif pre_order['delivery'][0] == 'out':
+        print(' 2.2 '*25)
+        customer_order = Order.objects.create(phone_number=pre_order['phone'],
+                                                delivery=tuple(pre_order['delivery'])[0],
+                                                reservation_date=datetime.datetime.fromisoformat(
+                                                    pre_order['reserve_date']))
 
-                orders = request.COOKIES.get('orders', '{}')
-                orders = orders.replace("\'", "\"")
-                orders = json.loads(orders)
-                total_order_price = 0
-                available_pro = []
-                order_details_list = []
-                for product_id, quantity in orders.items():
-                    qs = Product.objects.filter(id=product_id)
-                    if qs.exists():
-                        obj = qs.get(id=product_id)
-                        result = check_availability(obj, quantity)
-                        if result[1]:
-                            tp = obj.price_per_item * int(quantity)
-                            total_order_price += tp
-                            available_pro.append([customer_order, obj, int(quantity), obj.price_per_item, tp])
-                            order_details_list.append([obj.name, int(quantity),
-                                                       obj.price_per_item, tp,
-                                                       str(customer_order.date)])
+    orders = request.COOKIES.get('orders', '{}')
+    orders = eval(orders)
+    total_order_price = 0
+    available_pro = []
+    order_details_list = []
+    for product_id, quantity in orders.items():
+        qs = Product.objects.filter(id=product_id)
+        if qs.exists():
+            print(' 3.1 '*25)
+            obj = qs.get(id=product_id)
+            result = check_availability(obj, quantity)
+            if result[1]:
+                print(' 4.1 '*25)
+                tp = obj.price_per_item * int(quantity)
+                total_order_price += tp
+                available_pro.append([customer_order, obj, int(quantity), obj.price_per_item, tp])
+                order_details_list.append([obj.name, int(quantity),
+                                            obj.price_per_item, tp,
+                                            str(customer_order.date)])
 
-                        else:
-                            messages.error(request, result[0])
-                            customer_order.delete()
-                            return redirect("orders:cart")
-                    else:
-                        messages.error(request, f'Product {obj.name} is not available!!')
-                        customer_order.delete()
-                        return redirect("orders:cart")
-                [Order_detail.objects.create(order=res[0], product=res[1], quantity=res[2],
-                    price=res[3], total_price=res[4]) for res in available_pro]
-                customer_order.total_price = total_order_price
-                customer_order.save()
-
-                messages.success(request, "Order has been created successfully.")
-                res = redirect("home")
-                res.delete_cookie('orders')
-                res.delete_cookie('number_of_order_items')
-
-                if request.session.get('order_history'):
-                    request.session['order_history'].append(order_details_list)
-                    request.session['order_info'].append([customer_order.id, total_order_price])
-                else:
-                    request.session['order_history'] = [order_details_list]
-                    info = [customer_order.id, total_order_price]
-                    request.session['order_info'] = [info]
-
-                request.session.modify = True
-
-                del request.session["otp_code"]
-                del request.session["otp_valid_date"]
-                del request.session['pre_order']
-                return res
             else:
-                messages.error(request, "Your verification code is invalid")
+                print(' 4.2 '*25)
+                messages.error(request, result[0])
+                customer_order.delete()
                 return redirect("orders:cart")
         else:
-            messages.error(request, "Code has been expired")
+            print(' 3.2 '*25)
+            messages.error(request, f'Product {obj.name} is not available!!')
+            customer_order.delete()
             return redirect("orders:cart")
+    [Order_detail.objects.create(order=res[0], product=res[1], quantity=res[2],
+        price=res[3], total_price=res[4]) for res in available_pro]
+    customer_order.total_price = total_order_price
+    customer_order.save()
+
+    messages.success(request, "Order has been created successfully.")
+    res = redirect("home")
+    res.delete_cookie('orders')
+    res.delete_cookie('number_of_order_items')
+
+    if request.session.get('order_history'):
+        print(' 5.1 '*25)
+        request.session['order_history'].append(order_details_list)
+        request.session['order_info'].append([customer_order.id, total_order_price])
+    else:
+        print(' 5.2 '*25)
+        request.session['order_history'] = [order_details_list]
+        info = [customer_order.id, total_order_price]
+        request.session['order_info'] = [info]
+
+    request.session.modify = True
+    del request.session['pre_order']
+    return res
 
 
 def order_history(request):
