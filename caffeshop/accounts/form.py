@@ -1,6 +1,7 @@
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from .models import User
 from django import forms
+import re
 
 
 class CustomUserCreationForm(UserCreationForm):
@@ -38,3 +39,12 @@ class StaffLoginForm(forms.Form):
 
 class VerifyCodeForm(forms.Form):
     code = forms.CharField()
+
+    def clean(self):
+        cleaned_data = super().clean()
+        code = cleaned_data.get("code")
+        if not re.match(r"^\d{6}$", code):
+            raise forms.ValidationError(" Wrong Input")
+        return cleaned_data
+
+
