@@ -208,7 +208,6 @@
                                         </form>
                                     </div>
                                 </div>
-
                                 <div class="clear"></div>
                             </div>
                         </div>
@@ -223,46 +222,6 @@
 
 
 {% block footerlink %}
-    <script>
-        $(function () {
-            var dtToday = new Date();
-
-            var month = dtToday.getMonth() + 1;
-            var day = dtToday.getDate();
-            var year = dtToday.getFullYear();
-            if (month < 10)
-                month = '0' + month.toString();
-            if (day < 10)
-                day = '0' + day.toString();
-
-            var minDate = year + '-' + month + '-' + day;
-
-            $('.reserve_date').attr('min', minDate);
-        });
-    </script>
-
-    <script>
-        const radio1 = document.querySelector("#inlineRadio1");
-        const radio2 = document.querySelector("#inlineRadio2");
-        const radioTarget1 = document.querySelector("#RadioTarget1");
-        const radioTarget2 = document.querySelector("#RadioTarget2");
-        const rtBtn1 = document.querySelector("#rt-btn-1");
-        const rtBtn2 = document.querySelector("#rt-btn-2");
-
-        radio1.onclick = () => {
-            radioTarget1.classList.add("active");
-            radioTarget2.classList.remove("active");
-            rtBtn1.classList.add("active");
-            rtBtn2.classList.remove("active");
-        }
-
-        radio2.onclick = () => {
-            radioTarget2.classList.add("active");
-            radioTarget1.classList.remove("active");
-            rtBtn2.classList.add("active");
-            rtBtn1.classList.remove("active");
-        }
-
     setTimeout(function(){
         if ($('#msg').length > 0) {
             $('#msg').remove();
