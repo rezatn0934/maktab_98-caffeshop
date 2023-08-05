@@ -54,15 +54,14 @@ class Info(ImageMixin, models.Model):
 
     def save(self, *args, **kwargs):
 
-        if not self.pk and Info.objects.exists():
-            raise Info.ValidationError('There can be only one instance of Info')
-
-        if self.pk:
-            old_instance = Info.objects.get(pk=self.pk)
-            self.change_image(old_instance, "background_image")
-            self.change_image(old_instance, "logo")
-
-        super().save(*args, **kwargs)
+        if not Info.objects.exists():
+            super().save(*args, **kwargs)
+        else:
+            if self.pk:
+                old_instance = Info.objects.get(pk=self.pk)
+                self.change_image(old_instance, "background_image")
+                self.change_image(old_instance, "logo")
+                super().save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
         pass
