@@ -57,17 +57,14 @@ def cart(request):
                                  "reserve_date": str(reserve_date), "delivery": ('in', 'indoor')}
                     request.session['pre_order'] = pre_order
                     request.session.modify = True
-                    send_otp_code(request, phone)
-                    return render(request, 'orders/cart.html', context)
+                    return redirect('orders:create_order')
             else:
                 if form["phone"].value() and re.match(r"^09\d{9}$", str(form["phone"].value())):
                     phone = form["phone"].value()
                     pre_order = {"phone": phone, "reserve_date": str(reserve_date), "delivery": ('out', 'outdoor')}
                     request.session['pre_order'] = pre_order
                     request.session.modify = True
-                    send_otp_code(request, phone)
-
-                    return render(request, 'orders/cart.html', context)
+                    return redirect('orders:create_order')
                 else:
                     messages.error(request, 'Your phone number is not valid!!')
                     return redirect('orders:cart')
