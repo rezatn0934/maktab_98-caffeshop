@@ -45,7 +45,7 @@ class Info(ImageMixin, models.Model):
     twitter = models.URLField()
     max_table_number = models.PositiveIntegerField()
     background_image = models.ImageField(upload_to='images/HomePageBackground')
-    logo = models.ImageField(upload_to='images/logo')
+    logo = models.ImageField(upload_to='images/logo', null=True, blank=True)
 
     @classmethod
     def get_max_table_number(cls):
