@@ -40,3 +40,12 @@ def check_availability(obj):
     else:
         message = 'Product is not active!!'
         return message, None
+
+
+class ImageMixin:
+    def change_image(self, old_instance, field):
+        target = getattr(old_instance, field)
+
+        if (not target == getattr(self, field) and
+                target and os.path.exists(target.path)):
+            os.remove(target.path)
