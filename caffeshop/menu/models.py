@@ -38,13 +38,12 @@ class Category(models.Model):
 
 
 class Product(models.Model):
-    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
-    name = models.CharField(max_length=250, unique=True)
-    price_per_item = models.FloatField(validators=[MinValueValidator(0.0)])
-    active = models.BooleanField(default=True)
-    daily_availability = models.IntegerField(default=0)
+    category = models.ForeignKey(Category, on_delete=models.PROTECT)
+    name = models.CharField(max_length=50, unique=True)
     description = models.TextField()
-    image = models.ImageField(upload_to='images/product/', blank=True, null=True)
+    price_per_item = models.DecimalField(validators=[MinValueValidator(0.0)])
+    is_active = models.BooleanField(default=True)
+    image = models.ImageField(upload_to='images/product/')
 
     def img_preview(self):
         if self.image:
