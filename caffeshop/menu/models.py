@@ -9,7 +9,6 @@ import os
 
 class Category(models.Model):
     name = models.CharField(max_length=250, unique=True)
-    parent_category = models.ForeignKey(ParentCategory, on_delete=models.SET_NULL, null=True)
     image = models.ImageField(upload_to='images/category/', blank=True, null=True)
 
     class Meta:
