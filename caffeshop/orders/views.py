@@ -4,7 +4,7 @@ from django.utils import timezone
 from menu.models import Product
 from home.models import BackgroundImage
 from .models import Order, Order_detail
-from .forms import ReserveForm
+from .forms import OrderForm
 from utils import send_otp_code, check_availability
 import datetime
 import json
@@ -17,7 +17,7 @@ def cart(request):
     orders = request.COOKIES.get('orders', '{}')
     orders = eval(orders)
     updated_orders = orders.copy()
-    form = ReserveForm()
+    form = OrderForm()
     order_items = []
     for product_id, quantity in orders.items():
         qs = Product.objects.filter(id=product_id)
@@ -45,25 +45,25 @@ def cart(request):
     if request.method == 'GET':
         return response
     if request.method == 'POST':
-        form = ReserveForm(request.POST)
-            if request.POST.get('table_number'):
-                if form.is_valid():
-                    phone = form.cleaned_data["phone"]
-                    pre_order = {"phone": phone, "table_number": request.POST.get('table_number'),
-                                 "delivery": ('in', 'indoor')}
-                    request.session['pre_order'] = pre_order
-                    request.session.modify = True
-                    return redirect('orders:create_order')
+        form = OrderForm(request.POST)
+        if request.POST.get('table_number'):
+            if form.is_valid():
+                phone = form.cleaned_data["phone"]
+                pre_order = {"phone": phone, "table_number": request.POST.get('table_number'),
+                                "delivery": ('in', 'indoor')}
+                request.session['pre_order'] = pre_order
+                request.session.modify = True
+                return redirect('orders:create_order')
+        else:
+            if form["phone"].value() and re.match(r"^09\d{9}$", str(form["phone"].value())):
+                phone = form["phone"].value()
+                pre_order = {"phone": phone, "delivery": ('out', 'outdoor')}
+                request.session['pre_order'] = pre_order
+                request.session.modify = True
+                return redirect('orders:create_order')
             else:
-                if form["phone"].value() and re.match(r"^09\d{9}$", str(form["phone"].value())):
-                    phone = form["phone"].value()
-                    pre_order = {"phone": phone, "delivery": ('out', 'outdoor')}
-                    request.session['pre_order'] = pre_order
-                    request.session.modify = True
-                    return redirect('orders:create_order')
-                else:
-                    messages.error(request, 'Your phone number is not valid!!')
-                    return redirect('orders:cart')
+                messages.error(request, 'Your phone number is not valid!!')
+                return redirect('orders:cart')
 
 
 def update_or_remove(request):
