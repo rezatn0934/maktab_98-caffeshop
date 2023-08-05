@@ -69,6 +69,9 @@ class Info(ImageMixin, models.Model):
     def delete(self, *args, **kwargs):
         pass
 
+    def __str__(self):
+        return self.cafe_title
+
 
 class About(ImageMixin, models.Model):
     title = models.CharField(max_length=30)
