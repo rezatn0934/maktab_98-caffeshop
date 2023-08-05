@@ -11,6 +11,7 @@ import os
 class Category(ImageMixin, models.Model):
     name = models.CharField(max_length=250, unique=True)
     image = models.ImageField(upload_to='images/category/')
+    parent_category = models.ForeignKey("self", on_delete=models.PROTECT, null=True, blank=True)
 
     class Meta:
         verbose_name_plural = "Categories"
