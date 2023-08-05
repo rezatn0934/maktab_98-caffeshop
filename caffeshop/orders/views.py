@@ -49,7 +49,6 @@ def cart(request):
         date = " ".join([request.POST.get('reserve_date'), request.POST.get('reserve_time')])
         reserve_date = datetime.datetime.strptime(date, "%Y-%m-%d %H:%M")
         if date:
-            context['reserve_validation'] = True
             if request.POST.get('table_number'):
                 if form.is_valid():
                     phone = form.cleaned_data["phone"]
