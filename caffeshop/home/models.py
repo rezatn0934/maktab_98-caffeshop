@@ -1,8 +1,6 @@
 from django.utils.html import mark_safe
 from utils import phoneNumberRegex, ImageMixin
 from django.db import models
-import os
-from django.core.validators import RegexValidator
 
 
 # Create your models here.
