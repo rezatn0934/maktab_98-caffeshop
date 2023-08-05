@@ -15,8 +15,7 @@ import re
 
 def cart(request):
     orders = request.COOKIES.get('orders', '{}')
-    orders = orders.replace("\'", "\"")
-    orders = json.loads(orders)
+    orders = eval(orders)
     updated_orders = orders.copy()
     form = ReserveForm()
     order_items = []
@@ -80,8 +79,7 @@ def cart(request):
 def update_or_remove(request):
     if request.method == 'POST':
         orders = request.COOKIES.get('orders', '{}')
-        orders = orders.replace("\'", "\"")
-        orders = json.loads(orders)
+        orders = eval(orders)
         updated_orders = orders.copy()
         if request.POST.get('update'):
             updated_orders[request.POST.get('product')] = request.POST.get('quantity')
