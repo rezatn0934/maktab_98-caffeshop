@@ -53,6 +53,10 @@ class Info(models.Model):
         if self.logo:
             return mark_safe(f'<img src = "{self.logo.url}" width = "50" height="80"/> ')
 
+    def background_image_preview(self):
+        if self.logo:
+            return mark_safe(f'<img src = "{self.background_image.url}" width = "150" height="150"/> ')
+
 
 
 class About(models.Model):
