@@ -89,68 +89,67 @@ def update_or_remove(request):
 
 def create_order(request):
     if request.method == 'POST':
-                pre_order = request.session['pre_order']
-                if pre_order['delivery'][0] == 'in':
-                    customer_order = Order.objects.create(phone_number=pre_order['phone'],
-                                                          table_number=int(pre_order['table_number']),
-                                                          delivery=tuple(pre_order['delivery'])[0],
-                                                          reservation_date=datetime.datetime.fromisoformat(
-                                                              pre_order['reserve_date']))
+        pre_order = request.session['pre_order']
+        if pre_order['delivery'][0] == 'in':
+            customer_order = Order.objects.create(phone_number=pre_order['phone'],
+                                                    table_number=int(pre_order['table_number']),
+                                                    delivery=tuple(pre_order['delivery'])[0],
+                                                    reservation_date=datetime.datetime.fromisoformat(
+                                                        pre_order['reserve_date']))
 
-                elif pre_order['delivery'][0] == 'out':
-                    customer_order = Order.objects.create(phone_number=pre_order['phone'],
-                                                          delivery=tuple(pre_order['delivery'])[0],
-                                                          reservation_date=datetime.datetime.fromisoformat(
-                                                              pre_order['reserve_date']))
+        elif pre_order['delivery'][0] == 'out':
+            customer_order = Order.objects.create(phone_number=pre_order['phone'],
+                                                    delivery=tuple(pre_order['delivery'])[0],
+                                                    reservation_date=datetime.datetime.fromisoformat(
+                                                        pre_order['reserve_date']))
 
-                orders = request.COOKIES.get('orders', '{}')
-                orders = orders.replace("\'", "\"")
-                orders = json.loads(orders)
-                total_order_price = 0
-                available_pro = []
-                order_details_list = []
-                for product_id, quantity in orders.items():
-                    qs = Product.objects.filter(id=product_id)
-                    if qs.exists():
-                        obj = qs.get(id=product_id)
-                        result = check_availability(obj, quantity)
-                        if result[1]:
-                            tp = obj.price_per_item * int(quantity)
-                            total_order_price += tp
-                            available_pro.append([customer_order, obj, int(quantity), obj.price_per_item, tp])
-                            order_details_list.append([obj.name, int(quantity),
-                                                       obj.price_per_item, tp,
-                                                       str(customer_order.date)])
+        orders = request.COOKIES.get('orders', '{}')
+        orders = eval(orders)
+        total_order_price = 0
+        available_pro = []
+        order_details_list = []
+        for product_id, quantity in orders.items():
+            qs = Product.objects.filter(id=product_id)
+            if qs.exists():
+                obj = qs.get(id=product_id)
+                result = check_availability(obj, quantity)
+                if result[1]:
+                    tp = obj.price_per_item * int(quantity)
+                    total_order_price += tp
+                    available_pro.append([customer_order, obj, int(quantity), obj.price_per_item, tp])
+                    order_details_list.append([obj.name, int(quantity),
+                                                obj.price_per_item, tp,
+                                                str(customer_order.date)])
 
-                        else:
-                            messages.error(request, result[0])
-                            customer_order.delete()
-                            return redirect("orders:cart")
-                    else:
-                        messages.error(request, f'Product {obj.name} is not available!!')
-                        customer_order.delete()
-                        return redirect("orders:cart")
-                [Order_detail.objects.create(order=res[0], product=res[1], quantity=res[2],
-                    price=res[3], total_price=res[4]) for res in available_pro]
-                customer_order.total_price = total_order_price
-                customer_order.save()
-
-                messages.success(request, "Order has been created successfully.")
-                res = redirect("home")
-                res.delete_cookie('orders')
-                res.delete_cookie('number_of_order_items')
-
-                if request.session.get('order_history'):
-                    request.session['order_history'].append(order_details_list)
-                    request.session['order_info'].append([customer_order.id, total_order_price])
                 else:
-                    request.session['order_history'] = [order_details_list]
-                    info = [customer_order.id, total_order_price]
-                    request.session['order_info'] = [info]
+                    messages.error(request, result[0])
+                    customer_order.delete()
+                    return redirect("orders:cart")
+            else:
+                messages.error(request, f'Product {obj.name} is not available!!')
+                customer_order.delete()
+                return redirect("orders:cart")
+        [Order_detail.objects.create(order=res[0], product=res[1], quantity=res[2],
+            price=res[3], total_price=res[4]) for res in available_pro]
+        customer_order.total_price = total_order_price
+        customer_order.save()
 
-                request.session.modify = True
-                del request.session['pre_order']
-                return res
+        messages.success(request, "Order has been created successfully.")
+        res = redirect("home")
+        res.delete_cookie('orders')
+        res.delete_cookie('number_of_order_items')
+
+        if request.session.get('order_history'):
+            request.session['order_history'].append(order_details_list)
+            request.session['order_info'].append([customer_order.id, total_order_price])
+        else:
+            request.session['order_history'] = [order_details_list]
+            info = [customer_order.id, total_order_price]
+            request.session['order_info'] = [info]
+
+        request.session.modify = True
+        del request.session['pre_order']
+        return res
 
 
 def order_history(request):
