@@ -34,7 +34,7 @@ def send_otp_code(request, phone):
 
 
 def check_availability(obj):
-    if obj.active:
+    if obj.is_active:
         message = 'product {obj.name} is available'
         return message, obj
     else:
