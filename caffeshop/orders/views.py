@@ -49,15 +49,14 @@ def cart(request):
         if request.POST.get('table_number'):
             if form.is_valid():
                 phone = form.cleaned_data["phone"]
-                pre_order = {"phone": phone, "table_number": request.POST.get('table_number'),
-                                "delivery": ('in', 'indoor')}
+                pre_order = {"phone": phone, "table_number": request.POST.get('table_number')}
                 request.session['pre_order'] = pre_order
                 request.session.modify = True
                 return redirect('orders:create_order')
         else:
             if form["phone"].value() and re.match(r"^09\d{9}$", str(form["phone"].value())):
                 phone = form["phone"].value()
-                pre_order = {"phone": phone, "delivery": ('out', 'outdoor')}
+                pre_order = {"phone": phone}
                 request.session['pre_order'] = pre_order
                 request.session.modify = True
                 return redirect('orders:create_order')
@@ -84,16 +83,8 @@ def update_or_remove(request):
 def create_order(request):
     pre_order = request.session['pre_order']
     print('1 '*25)
-    if pre_order['delivery'][0] == 'in':
-        print(' 2.1 '*25)
-        customer_order = Order.objects.create(phone_number=pre_order['phone'],
-                                                table_number=int(pre_order['table_number']),
-                                                delivery=tuple(pre_order['delivery'])[0])
-
-    elif pre_order['delivery'][0] == 'out':
-        print(' 2.2 '*25)
-        customer_order = Order.objects.create(phone_number=pre_order['phone'],
-                                                delivery=tuple(pre_order['delivery'])[0])
+    customer_order = Order.objects.create(phone_number=pre_order['phone'],
+                                            table_number=int(pre_order['table_number']))
 
     orders = request.COOKIES.get('orders', '{}')
     orders = eval(orders)
@@ -103,11 +94,9 @@ def create_order(request):
     for product_id, quantity in orders.items():
         qs = Product.objects.filter(id=product_id)
         if qs.exists():
-            print(' 3.1 '*25)
             obj = qs.get(id=product_id)
             result = check_availability(obj, quantity)
             if result[1]:
-                print(' 4.1 '*25)
                 tp = obj.price_per_item * int(quantity)
                 total_order_price += tp
                 available_pro.append([customer_order, obj, int(quantity), obj.price_per_item, tp])
@@ -116,12 +105,10 @@ def create_order(request):
                                             str(customer_order.date)])
 
             else:
-                print(' 4.2 '*25)
                 messages.error(request, result[0])
                 customer_order.delete()
                 return redirect("orders:cart")
         else:
-            print(' 3.2 '*25)
             messages.error(request, f'Product {obj.name} is not available!!')
             customer_order.delete()
             return redirect("orders:cart")
