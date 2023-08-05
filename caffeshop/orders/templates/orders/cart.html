@@ -334,14 +334,6 @@
 
 
 {% block footerlink %}
-    {% if reserve_validation %}
-        <script type="text/javascript">
-            $(window).on('load', function () {
-                $('#myModal').modal('show');
-            });
-        </script>
-    {% endif %}
-
     <script>
         $(function () {
             var dtToday = new Date();
