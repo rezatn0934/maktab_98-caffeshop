@@ -48,17 +48,13 @@ class Product(ImageMixin, models.Model):
 
     def delete(self, *args, **kwargs):
         if self.image:
-            if os.path.exists(self.image.path):
-                os.remove(self.image.path)
+            self.delete_image("image")
         super().delete(*args, **kwargs)
 
     def save(self, *args, **kwargs):
         if self.pk:
             old_instance = Product.objects.get(pk=self.pk)
-            if not old_instance.image == self.image:
-                if old_instance.image:
-                    if os.path.exists(old_instance.image.path):
-                        os.remove(old_instance.image.path)
+            self.change_image(old_instance, "image")
         super().save(*args, **kwargs)
 
     def __str__(self):
