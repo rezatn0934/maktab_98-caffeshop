@@ -9,7 +9,7 @@ from django.core.validators import RegexValidator
 
 
 class Gallery(ImageMixin, models.Model):
-    title = models.CharField(max_length=50, null=True, blank=True)
+    title = models.CharField(max_length=50)
     is_active = models.BooleanField(default=True)
     image = models.ImageField(upload_to='images/gallery')
 
@@ -19,8 +19,8 @@ class Gallery(ImageMixin, models.Model):
 
     def delete(self, *args, **kwargs):
         if self.image:
-            if os.path.exists(self.image.path):
-                os.remove(self.image.path)
+            self.delete_image("image")
+
         super().delete(*args, **kwargs)
 
     def save(self, *args, **kwargs):
@@ -30,7 +30,7 @@ class Gallery(ImageMixin, models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return self.title or ''
+        return self.title
 
 
 class Info(ImageMixin, models.Model):
@@ -102,9 +102,9 @@ class About(ImageMixin, models.Model):
 
     def delete(self, *args, **kwargs):
         if self.image:
-            if os.path.exists(self.image.path):
-                os.remove(self.image.path)
+            self.delete_image("image")
+
         super().delete(*args, **kwargs)
 
     def __str__(self):
-        return self.title or ''
+        return self.title
