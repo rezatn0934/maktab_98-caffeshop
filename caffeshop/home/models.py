@@ -49,6 +49,11 @@ class Info(models.Model):
     background_image = models.ImageField(upload_to='images/HomePageBackground')
     logo = models.ImageField(upload_to='images/logo')
 
+    def logo_preview(self):
+        if self.logo:
+            return mark_safe(f'<img src = "{self.logo.url}" width = "50" height="80"/> ')
+
+
 
 class About(models.Model):
     title = models.CharField(max_length=30)
