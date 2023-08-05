@@ -89,12 +89,6 @@ def update_or_remove(request):
 
 def create_order(request):
     if request.method == 'POST':
-        user_verification_input = request.POST.get('verfication_user_code')
-        otp_code = request.session["otp_code"]
-        otp_valid_date = request.session["otp_valid_date"]
-        valid_until = datetime.datetime.fromisoformat(otp_valid_date)
-        if timezone.now() < valid_until:
-            if otp_code == user_verification_input:
                 pre_order = request.session['pre_order']
                 if pre_order['delivery'][0] == 'in':
                     customer_order = Order.objects.create(phone_number=pre_order['phone'],
@@ -155,17 +149,8 @@ def create_order(request):
                     request.session['order_info'] = [info]
 
                 request.session.modify = True
-
-                del request.session["otp_code"]
-                del request.session["otp_valid_date"]
                 del request.session['pre_order']
                 return res
-            else:
-                messages.error(request, "Your verification code is invalid")
-                return redirect("orders:cart")
-        else:
-            messages.error(request, "Code has been expired")
-            return redirect("orders:cart")
 
 
 def order_history(request):
