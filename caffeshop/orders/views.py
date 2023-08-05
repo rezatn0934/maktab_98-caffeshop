@@ -23,7 +23,7 @@ def cart(request):
         qs = Product.objects.filter(id=product_id)
         if qs.exists():
             obj = qs.get(id=product_id)
-            message, obj = check_availability(obj, quantity)
+            message, obj = check_availability(obj)
             if obj:
                 tp = obj.price_per_item * int(quantity)
                 order_items.append((obj, quantity, tp))
@@ -95,7 +95,7 @@ def create_order(request):
         qs = Product.objects.filter(id=product_id)
         if qs.exists():
             obj = qs.get(id=product_id)
-            result = check_availability(obj, quantity)
+            result = check_availability(obj)
             if result[1]:
                 tp = obj.price_per_item * int(quantity)
                 total_order_price += tp

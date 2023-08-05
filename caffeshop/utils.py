@@ -25,18 +25,10 @@ def send_otp_code(request, phone):
         print(e)
 
 
-def check_availability(obj, quantity):
-    quantity = int(quantity)
+def check_availability(obj):
     if obj.active:
-        if obj.daily_availability >= quantity:
-            obj.daily_availability -= quantity
-            obj.save()
-            message = 'product {obj.name} is available'
-            return message, obj
-        else:
-            message = f"Availability of product {obj.name} is {obj.daily_availability}  " \
-                      f"and less than what you want."
+        message = 'product {obj.name} is available'
+        return message, obj
     else:
         message = 'Product is not active!!'
-
-    return message, None
+        return message, None
