@@ -20,8 +20,8 @@ class GalleryAdmin(admin.ModelAdmin):
 @admin.register(models.Info)
 class InfoAdmin(admin.ModelAdmin):
     actions = ['delete_selected']
-    list_display = ["cafe_title","phone", "email", "work_hours", "address", "instagram", "facebook", "twitter","logo","background_image"]
-
+    list_display = ["cafe_title", "phone", "email", "work_hours", "address", "instagram", "facebook", "twitter", "logo",
+                    "background_image"]
 
 
 @admin.register(models.About)
