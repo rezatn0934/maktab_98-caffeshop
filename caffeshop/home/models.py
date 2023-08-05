@@ -41,14 +41,8 @@ class Info(ImageMixin, models.Model):
     instagram = models.URLField()
     facebook = models.URLField()
     twitter = models.URLField()
-    max_table_number = models.PositiveIntegerField()
     background_image = models.ImageField(upload_to='images/HomePageBackground')
     logo = models.ImageField(upload_to='images/logo', null=True, blank=True)
-
-    @classmethod
-    def get_max_table_number(cls):
-        info_obj = cls.objects.get()
-        return info_obj.max_table_number
 
     def logo_preview(self):
         if self.logo:
