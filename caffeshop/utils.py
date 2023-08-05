@@ -1,6 +1,10 @@
 from django.utils import timezone
 from kavenegar import *
 import pyotp
+from dotenv import load_dotenv
+import os
+load_dotenv()
+
 
 def send_otp_code(request, phone):
     totp = pyotp.TOTP(pyotp.random_base32(), interval=60)
@@ -9,7 +13,8 @@ def send_otp_code(request, phone):
     valid_date = timezone.now() + timezone.timedelta(minutes=1)
     request.session["otp_valid_date"] = str(valid_date)
     try:
-        api = KavenegarAPI('65736836486F3952684276335857666E66443074646F544D79303677342F744C3865624A62673762476A6F3D')
+        API_KEY = os.environ.get('API_KEY')
+        api = KavenegarAPI(API_KEY)
 
         params = {
             'receptor': f"{phone}",
