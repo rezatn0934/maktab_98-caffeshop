@@ -2,7 +2,6 @@ from django.core.validators import MinValueValidator
 from django.utils.html import mark_safe
 from utils import ImageMixin
 from django.db import models
-import os
 
 
 # Create your models here.
