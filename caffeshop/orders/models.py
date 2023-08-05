@@ -22,15 +22,10 @@ class Order(models.Model):
 
 
 class Order_detail(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    quantity = models.IntegerField(default=1)
-    price = models.FloatField(
-        null=True,
-        blank=True,
-        validators=[MinValueValidator(0.0)]
-    )
-    total_price = models.FloatField(validators=[MinValueValidator(0.0)], null=True, blank=True)
+    order = models.ForeignKey(Order, on_delete=models.PROTECT)
+    product = models.ForeignKey(Product, on_delete=models.PROTECT)
+    quantity = models.IntegerField()
+    price = models.DecimalField(max_digits=5, decimal_places=2)
 
     def __str__(self):
         return f"order: {self.order}, order item total price: {self.total_price}"
