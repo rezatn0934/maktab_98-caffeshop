@@ -52,7 +52,7 @@
                     </div>
                     <div class="gallery-slider swiper">
                         <div class="swiper-wrapper align-items-center">
-                            {% for category in parentcategories %}
+                            {% for category in categories %}
                                 <div class="swiper-slide"><a class="glightbox" data-gallery="images-gallery"
                                                              href="{{ category.image.url }}"><img
                                         src="{{ category.image.url }}" class="img-fluid"
