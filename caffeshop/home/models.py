@@ -64,17 +64,18 @@ class Info(models.Model):
 
         if self.pk:
             old_instance = Info.objects.get(pk=self.pk)
-            if (not old_instance.background_image == self.background_image and
-                    old_instance.background_image and
-                    os.path.exists(old_instance.background_image.path)):
-                os.remove(old_instance.background_image.path)
-
-            if (not old_instance.logo == self.logo and
-                    old_instance.logo and
-                    os.path.exists(old_instance.logo.path)):
-                os.remove(old_instance.logo.path)
+            self.change_image(old_instance, "background_image")
+            self.change_image(old_instance, "logo")
 
         super().save(*args, **kwargs)
+
+    def change_image(self, old_instance, field):
+        target = getattr(old_instance, field)
+
+        if (not target == getattr(self, field) and
+                target and os.path.exists(target.path)):
+            os.remove(target.path)
+
 
 
 class About(models.Model):
