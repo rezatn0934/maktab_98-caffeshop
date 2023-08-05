@@ -1,5 +1,5 @@
 from django.utils.html import mark_safe
-from utils import phoneNumberRegex
+from utils import phoneNumberRegex, ImageMixin
 from django.db import models
 import os
 from django.core.validators import RegexValidator
@@ -8,7 +8,7 @@ from django.core.validators import RegexValidator
 # Create your models here.
 
 
-class Gallery(models.Model):
+class Gallery(ImageMixin, models.Model):
     title = models.CharField(max_length=50, null=True, blank=True)
     is_active = models.BooleanField(default=True)
     image = models.ImageField(upload_to='images/gallery')
@@ -26,17 +26,14 @@ class Gallery(models.Model):
     def save(self, *args, **kwargs):
         if self.pk:
             old_instance = Gallery.objects.get(pk=self.pk)
-            if not old_instance.image == self.image:
-                if old_instance.image:
-                    if os.path.exists(old_instance.image.path):
-                        os.remove(old_instance.image.path)
+            self.change_image(old_instance, "image")
         super().save(*args, **kwargs)
 
     def __str__(self):
         return self.title or ''
 
 
-class Info(models.Model):
+class Info(ImageMixin, models.Model):
     cafe_title = models.CharField(max_length=25)
     cafe_motto = models.TextField()
     phone = models.CharField(validators=[phoneNumberRegex])
@@ -72,16 +69,8 @@ class Info(models.Model):
     def delete(self, *args, **kwargs):
         pass
 
-    def change_image(self, old_instance, field):
-        target = getattr(old_instance, field)
 
-        if (not target == getattr(self, field) and
-                target and os.path.exists(target.path)):
-            os.remove(target.path)
-
-
-
-class About(models.Model):
+class About(ImageMixin, models.Model):
     title = models.CharField(max_length=30)
     content = models.TextField()
     is_active = models.BooleanField(default=True)
@@ -94,10 +83,7 @@ class About(models.Model):
     def save(self, *args, **kwargs):
         if self.pk:
             old_instance = About.objects.get(pk=self.pk)
-            if not old_instance.image == self.image:
-                if old_instance.image:
-                    if os.path.exists(old_instance.image.path):
-                        os.remove(old_instance.image.path)
+            self.change_image(old_instance, "image")
 
         objects = About.objects.all()
         if objects:
