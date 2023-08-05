@@ -16,13 +16,13 @@ class ProductAdmin(admin.ModelAdmin):
     readonly_fields = ['img_preview']
 
     list_display = [
-        'name', 'category', 'price_per_item', 'order_count', 'is_active',
+        'name', 'category', 'price', 'order_count', 'is_active',
         'truncated_description', 'img_preview'
     ]
-    list_editable = ['category', 'price_per_item', 'is_active',]
-    list_filter = ['name', 'category', 'price_per_item', 'is_active',]
+    list_editable = ['category', 'price', 'is_active']
+    list_filter = ['name', 'category', 'price_per_item', 'is_active']
     search_fields = ['name__istartswith', 'category__istartswith']
-    ordering = ['name', 'category', 'price_per_item', 'active', 'daily_availability']
+    ordering = ['name', 'category', 'price', 'is_active']
     list_per_page = 15
 
     @admin.display(ordering='order_count')
