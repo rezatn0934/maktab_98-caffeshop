@@ -1,9 +1,12 @@
+from django.core.validators import RegexValidator
 from django.utils import timezone
+from dotenv import load_dotenv
 from kavenegar import *
 import pyotp
-from dotenv import load_dotenv
 import os
+
 load_dotenv()
+phoneNumberRegex = RegexValidator(regex=r"^09\d{9}$")
 
 
 def send_otp_code(request, phone):
