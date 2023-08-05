@@ -20,7 +20,7 @@ class ProductAdmin(admin.ModelAdmin):
         'truncated_description', 'img_preview'
     ]
     list_editable = ['category', 'price', 'is_active']
-    list_filter = ['name', 'category', 'price_per_item', 'is_active']
+    list_filter = ['name', 'category', 'price', 'is_active']
     search_fields = ['name__istartswith', 'category__istartswith']
     ordering = ['name', 'category', 'price', 'is_active']
     list_per_page = 15
