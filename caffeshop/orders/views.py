@@ -21,7 +21,7 @@ def cart(request):
             obj = qs.get(id=product_id)
             message, obj = check_availability(obj)
             if obj:
-                tp = obj.price_per_item * int(quantity)
+                tp = obj.price * int(quantity)
                 order_items.append((obj, quantity, tp))
             else:
                 updated_orders.pop(product_id)
@@ -90,12 +90,12 @@ def create_order(request):
             obj = qs.get(id=product_id)
             result = check_availability(obj)
             if result[1]:
-                tp = obj.price_per_item * int(quantity)
+                tp = obj.price * int(quantity)
                 total_order_price += tp
-                available_pro.append([customer_order, obj, int(quantity), obj.price_per_item, tp])
+                available_pro.append([customer_order, obj, int(quantity), obj.price, tp])
                 order_details_list.append([obj.name, int(quantity),
-                                            obj.price_per_item, tp,
-                                            str(customer_order.date)])
+                                            obj.price, tp,
+                                            str(customer_order.order_date)])
 
             else:
                 messages.error(request, result[0])
