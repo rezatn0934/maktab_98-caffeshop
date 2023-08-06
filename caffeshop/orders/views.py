@@ -47,13 +47,6 @@ def cart(request):
                 request.session['pre_order'] = pre_order
                 request.session.modify = True
                 return redirect('orders:create_order')
-        else:
-            if form["phone"].value() and re.match(r"^09\d{9}$", str(form["phone"].value())):
-                phone = form["phone"].value()
-                pre_order = {"phone": phone}
-                request.session['pre_order'] = pre_order
-                request.session.modify = True
-                return redirect('orders:create_order')
             else:
                 messages.error(request, 'Your phone number is not valid!!')
                 return redirect('orders:cart')
