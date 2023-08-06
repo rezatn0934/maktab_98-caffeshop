@@ -29,10 +29,14 @@ class Order(models.Model):
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
+        table = Table.objects.get(id=self.table_number.id)
         if self.payment == "P":
-            table = Table.objects.get(id=self.table_number.id)
             table.occupied = False
             table.save()
+            return
+        table.occupied = True
+        table.save()
+
 
 
 class Order_detail(models.Model):
