@@ -27,6 +27,13 @@ class Order(models.Model):
             order_total_price += item.total_price
         return order_total_price
 
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        if self.payment == "P":
+            table = Table.objects.get(id=self.table_number.id)
+            table.occupied = False
+            table.save()
+
 
 class Order_detail(models.Model):
     order = models.ForeignKey(Order, on_delete=models.PROTECT)
