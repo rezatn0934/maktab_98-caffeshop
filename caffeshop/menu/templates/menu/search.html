@@ -149,7 +149,7 @@
                                             {% csrf_token %}
                                             <input type="hidden" name="product" value="{{ product.id }}">
                                             <span class="co-sm-1 text-center">{{ product.name }}</span>
-                                            <span class="co-sm-1 text-center">{{ product.price_per_item }} <span>$</span></span>
+                                            <span class="co-sm-1 text-center">{{ product.price }} <span>$</span></span>
                                             <!-- <span class="co-sm-1 text-center">Qnt</span> -->
                                             <span><input placeholder="Qnt" class="col-sm-1 my-3 text-center  qnt"
                                                          type="number" min="0" max="{{ product.quantity }}"
