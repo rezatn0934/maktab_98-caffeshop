@@ -1,6 +1,5 @@
 from django.db import models
 from menu.models import Product, Category
-from django.core.validators import MinValueValidator
 from utils import phoneNumberRegex
 
 
@@ -45,5 +44,5 @@ class Order_detail(models.Model):
 
 class Table(models.Model):
     name = models.CharField(max_length=50, unique=True)
-    Table_number = models.IntegerField()
+    Table_number = models.IntegerField(unique=True)
     occupied = models.BooleanField(default=False)
