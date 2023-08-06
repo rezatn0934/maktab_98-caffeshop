@@ -8,7 +8,7 @@ from utils import phoneNumberRegex
 
 
 class Order(models.Model):
-    payment_status = [("U", "unpaid"), ("P", "payed")]
+    payment_status = [("U", "Unpaid"), ("P", "Payed")]
     status_choices = [('P', 'Processing'), ('A', 'Approved'), ('C', 'Canceled')]
     phone_number = models.CharField(validators=[phoneNumberRegex], max_length=11)
     order_date = models.DateTimeField(auto_now_add=True, editable=False)
@@ -18,7 +18,15 @@ class Order(models.Model):
     payment = models.CharField(max_length=1, choices=payment_status, default="U")
 
     def __str__(self):
-        return f"Order{self.id}, order total price: {self.total_price}"
+        return f"Order{self.id}"
+
+    @property
+    def total_price(self):
+        order_detail = Order_detail.objects.filter(order=self.id)
+        order_total_price = 0
+        for item in order_detail:
+            order_total_price += item.total_price
+        return order_total_price
 
 
 class Order_detail(models.Model):
@@ -28,4 +36,8 @@ class Order_detail(models.Model):
     price = models.DecimalField(max_digits=5, decimal_places=2)
 
     def __str__(self):
-        return f"order: {self.order}, order item total price: {self.total_price}"
+        return f"order: {self.order}"
+
+    @property
+    def total_price(self):
+        return self.price * self.quantity
