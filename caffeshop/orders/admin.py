@@ -1,9 +1,8 @@
 from django.contrib import admin
-from .models import Order, Order_detail
+from .models import Order, Order_detail, Table
 from django.db.models import Count
 from django.urls import reverse
 from django.utils.html import format_html, urlencode
-from . import models
 
 
 # Register your models here.
@@ -11,7 +10,7 @@ from . import models
 
 class OrderdetailInline(admin.TabularInline):
     autocomplete_fields = ['product']
-    model = models.Order_detail
+    model = Order_detail
     min_num = 0
     max_num = 10
     extra = 0
@@ -66,3 +65,11 @@ class OrderDetailAdmin(admin.ModelAdmin):
     search_fields = ["product__istartswith"]
     ordering = ["order_id", "product", "quantity", "price", ]
     list_per_page = 15
+
+
+@admin.register(Table)
+class TableAdmin(admin.ModelAdmin):
+    actions = ['delete_selected']
+
+    search_fields = ["title__istartswith"]
+    ordering = ["Table_number", ]
