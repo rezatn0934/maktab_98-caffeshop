@@ -58,6 +58,45 @@
                                     {% endfor %}
                                     </tbody>
                                 </table>
+                                <div class="d-flex justify-content-center">
+                                    <!-- Display pagination links -->
+                                    {% if tasks.has_other_pages %}
+                                        <ul class="pagination">
+                                            {% if tasks.has_previous %}
+                                                <li class="page-item">
+                                                    <a class="page-link"
+                                                       href="?page={{ tasks.previous_page_number }}{% if sort %}&sort={{ sort }}{% endif %}&order={% if order == 'asc' %} {{ 'desc' }} {% elif order == 'desc' %}{{ 'asc' }}{% endif %}">prev</a>
+                                                </li>
+                                            {% else %}
+                                                <li class="page-item disabled">
+                                                    <span class="page-link">prev</span>
+                                                </li>
+                                            {% endif %}
+                                            {% for page in tasks.paginator.page_range %}
+                                                {% if tasks.number == page %}
+                                                    <li class="page-item active">
+                                                        <span class="page-link">{{ page }}</span>
+                                                    </li>
+                                                {% else %}
+                                                    <li class="page-item">
+                                                        <a class="page-link"
+                                                           href="?page={{ page }}{% if sort %}&sort={{ sort }}{% endif %}&order={% if order == 'asc' %} {{ 'desc' }} {% elif order == 'desc' %}{{ 'asc' }}{% endif %}">{{ page }}</a>
+                                                    </li>
+                                                {% endif %}
+                                            {% endfor %}
+                                            {% if tasks.has_next %}
+                                                <li class="page-item">
+                                                    <a class="page-link"
+                                                       href="?page={{ tasks.next_page_number }}{% if sort %}&sort={{ sort }}{% endif %}&order={% if order == 'asc' %} {{ 'desc' }} {% elif order == 'desc' %}{{ 'asc' }}{% endif %}">next</a>
+                                                </li>
+                                            {% else %}
+                                                <li class="page-item disabled">
+                                                    <span class="page-link">next</span>
+                                                </li>
+                                            {% endif %}
+                                        </ul>
+                                    {% endif %}
+                                </div>
                             </div>
                         </div>
                     </div>
