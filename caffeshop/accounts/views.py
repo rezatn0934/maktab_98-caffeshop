@@ -126,9 +126,19 @@ class Orders(View):
 
     @method_decorator(login_required)
     def post(self, request):
-        filter_item = request.POST['fiter_item']
+        filter_item = request.POST.get('filter1')
+        field = request.POST.get('flexRadioDefault')
+        orders = None
 
-        orders = Order.objects.all()
+        if field == 'table_number':
+            orders = Order.objects.filter(table_number__icontains=filter_item)
+        elif field == 'phone_number':
+            orders = Order.objects.filter(phone_number__icontains=filter_item)
+        elif field == 'status':
+            orders = Order.objects.filter(status__icontains=filter_item)
+        elif field == 'payment':
+            orders = Order.objects.filter(payment__icontains=filter_item)
+
         context = {'orders': orders}
         return render(request, 'orders_list.html', context)
 
