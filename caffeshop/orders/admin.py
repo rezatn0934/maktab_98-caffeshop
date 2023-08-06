@@ -71,5 +71,8 @@ class OrderDetailAdmin(admin.ModelAdmin):
 class TableAdmin(admin.ModelAdmin):
     actions = ['delete_selected']
 
-    search_fields = ["title__istartswith"]
-    ordering = ["Table_number", ]
+    list_display = ["name", "Table_number", "occupied"]
+    list_editable = ["occupied"]
+
+    search_fields = ["name__istartswith"]
+    ordering = ["Table_number",]
