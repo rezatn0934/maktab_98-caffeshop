@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+    {% load static %}
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>Dashboard - coffeehouse</title>
+
+    <!-- Bootstrap CSS-->
+    <link rel="stylesheet" href="{% static 'assets/modules/bootstrap-5.1.3/css/bootstrap.css' %}">
+    <!-- Style CSS -->
+    <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
+    <!-- FontAwesome CSS-->
+    <link rel="stylesheet" href="{% static 'assets/modules/fontawesome6.1.1/css/all.css' %}">
+    <!-- Boxicons CSS-->
+    <link rel="stylesheet" href="{% static 'assets/modules/boxicons/css/boxicons.min.css' %}">
+    <!-- Apexcharts  CSS -->
+    <link rel="stylesheet" href="{% static 'assets/modules/apexcharts/apexcharts.css' %}">
+</head>
+<body>
+
+<!--Topbar -->
+<div class="topbar transition">
+    <div class="bars">
+        <button type="button" class="btn transition" id="sidebar-toggle">
+            <i class="fa fa-bars"></i>
+        </button>
+    </div>
+    <div class="menu">
+        <ul>
+            <li class="nav-item dropdown">
+                <a class="nav-link" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+                   aria-expanded="false">
+                    <img src="assets/images/avatar/avatar-1.png" alt="">
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item" href="my-profile.html"><i class="fa fa-user size-icon-1"></i> <span>My Profile</span></a>
+                    <hr class="dropdown-divider">
+                    <a class="dropdown-item" href="#"><i class="fa fa-sign-out-alt  size-icon-1"></i>
+                        <span>Logout</span></a>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<!--Sidebar-->
+<div class="sidebar transition overlay-scrollbars animate__animated  animate__slideInLeft">
+    <div class="sidebar-content">
+        <div id="sidebar">
+
+            <!-- Logo -->
+            <div class="logo">
+                {% if info.logo %}
+                    <a class="navbar-brand" href="{% url 'dashboard' %}">{{ info.logo_preview }}</a>
+                {% else %}
+                    <a class="navbar-brand page-scroll" href="{% url 'dashboard' %}">Touché</a>
+                {% endif %}
+            </div>
+            <ul class="side-menu">
+                <!-- Divider-->
+                <li class="divider" data-text="STARTER">STARTER</li>
+
+                <li>
+                    <a href="{% url 'order_list' %}">
+                        <i class='bx bxs-meh-blank icon'></i>
+                        Orders
+                    </a>
+                </li>
+                <li>
+                    <a href="blank-pages.html">
+                        <i class='bx bxs-meh-blank icon'></i>
+                        Products
+                    </a>
+                </li>
+                <li>
+                    <a href="blank-pages.html">
+                        <i class='bx bxs-meh-blank icon'></i>
+                        Categories
+                    </a>
+                </li>
+                <!-- Divider-->
+                <li class="divider" data-text="Atrana">Atrana</li>
+                <li>
+                    <a href="{% url 'home' %}">
+                        <i class='bx bxs-meh-blank icon'></i>
+                        Home page
+                    </a>
+                </li>
+                <li>
+                    <a href="blank-pages.html">
+                        <i class='bx bxs-meh-blank icon'></i>
+                        Search
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div><!-- End Sidebar-->
+
+
+<div class="sidebar-overlay"></div>
+
+
+<!--Content Start-->
+{% block content %}
+{% endblock %}
+
+
+<!-- Footer -->
+<footer>
+    <div class="footer">
+        <div class="float-start">
+            <p>2022 &copy; Atrana</p>
+        </div>
+        <div class="float-end">
+            <p>Crafted with
+                <span class="text-danger">
+							<i class="fa fa-heart"></i> by 
+							<a href="https://www.facebook.com/andreew.co.id/"
+                               class="author-footer">Andre Tri Ramadana</a>
+						</span>
+            </p>
+        </div>
+    </div>
+</footer>
+
+
+{#<!-- Preloader -->#}
+{#<div class="loader">#}
+{#    <div class="spinner-border text-light" role="status">#}
+{#        <span class="sr-only">Loading...</span>#}
+{#    </div>#}
+{#</div>#}
+{##}
+{#<!-- Loader -->#}
+{#<div class="loader-overlay"></div>#}
+
+<!-- General JS Scripts -->
+<script src="{% static 'assets/js/atrana.js' %}"></script>
+
+<!-- JS Libraies -->
+<script src="{% static 'assets/modules/jquery/jquery.min.js' %}"></script>
+<script src="{% static 'assets/modules/bootstrap-5.1.3/js/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'assets/modules/popper/popper.min.js' %}"></script>
+
+<!-- Chart Js -->
+<script src="{% static 'assets/modules/apexcharts/apexcharts.js' %}"></script>
+<script src="{% static 'assets/js/ui-apexcharts.js' %}"></script>
+
+<!-- Template JS File -->
+<script src="{% static 'assets/js/script.js' %}"></script>
+<script src="{% static 'assets/js/custom.js' %}"></script>
+</body>
+</html>
