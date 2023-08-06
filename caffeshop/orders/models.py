@@ -8,12 +8,12 @@ from utils import phoneNumberRegex
 
 
 class Order(models.Model):
-    payment_status = [("U", "Unpaid"), ("P", "Payed")]
+    payment_status = [("U", "Unpaid"), ("P", "Paid")]
     status_choices = [('P', 'Processing'), ('A', 'Approved'), ('C', 'Canceled')]
     phone_number = models.CharField(validators=[phoneNumberRegex], max_length=11)
     order_date = models.DateTimeField(auto_now_add=True, editable=False)
     last_modify = models.DateTimeField(auto_now=True, editable=False)
-    table_number = models.PositiveIntegerField(validators=[MinValueValidator(0.0)])
+    table_number = models.ForeignKey("Table", on_delete=models.PROTECT)
     status = models.CharField(max_length=1, choices=status_choices, default="P")
     payment = models.CharField(max_length=1, choices=payment_status, default="U")
 
@@ -41,3 +41,9 @@ class Order_detail(models.Model):
     @property
     def total_price(self):
         return self.price * self.quantity
+
+
+class Table(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+    Table_number = models.IntegerField()
+    occupied = models.BooleanField(default=False)
