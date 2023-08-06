@@ -19,8 +19,9 @@ class GalleryAdmin(admin.ModelAdmin):
 
 @admin.register(models.Info)
 class InfoAdmin(admin.ModelAdmin):
-    list_display = ["cafe_title", "phone", "email", "work_hours", "address", "instagram", "facebook", "twitter",
+    list_display = ['id', "cafe_title", "phone", "email", "work_hours", "address", "instagram", "facebook", "twitter",
                     "logo_preview", "background_image_preview"]
+    list_editable = ["cafe_title", "phone", "email", "work_hours", "address", "instagram", "facebook", "twitter"]
 
     def has_delete_permission(self, request, obj=None):
         return False
