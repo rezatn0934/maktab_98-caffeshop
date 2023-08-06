@@ -33,8 +33,11 @@ class StaffLogin(View):
                 return redirect("verify")
             else:
                 message = "Invalid phone number"
-                context = {"message": message, "form": self.form()}
-                return render(request, self.html_temp, context=context)
+        else:
+            message = "wrong input"
+
+        context = {"message": message, "form": self.form()}
+        return render(request, self.html_temp, context=context)
 
 
 class Verify(View):
@@ -76,10 +79,12 @@ class Verify(View):
                     message = "OTP has been expired"
             else:
                 message = "Start from here!"
+        else:
+            message = "wrong input"
 
-            form = self.form()
-            context = {"message": message, "form": form}
-            return render(request, self.html_temp, context=context)
+        form = self.form()
+        context = {"message": message, "form": form}
+        return render(request, self.html_temp, context=context)
 
 
 def dashboard(request):
