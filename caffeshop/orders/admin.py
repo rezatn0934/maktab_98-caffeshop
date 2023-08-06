@@ -20,9 +20,10 @@ class OrderdetailInline(admin.TabularInline):
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
     actions = ['delete_selected']
+    readonly_fields = ["total_price"]
 
     inlines = [OrderdetailInline]
-    list_display = ["id", "phone_number", "customer_count", "table_number", ]
+    list_display = ["id", "phone_number", "customer_count", "table_number", "total_price"]
     list_filter = ["phone_number", "table_number", "order_date", "last_modify", ]
     list_editable = ["table_number", ]
 
@@ -49,12 +50,13 @@ class OrderAdmin(admin.ModelAdmin):
 @admin.register(Order_detail)
 class OrderDetailAdmin(admin.ModelAdmin):
     actions = ['delete_selected']
+    readonly_fields = ["total_price"]
 
     autocomplete_fields = ['order_id', 'product']
-    list_display = ["id", "order_id", "product", "quantity", "price",]
+    list_display = ["id", "order_id", "product", "quantity", "price", "total_price"]
 
-    list_filter = ["product", "quantity", "price",]
-    list_editable = ["quantity", "price",]
+    list_filter = ["product", "quantity", "price"]
+    list_editable = ["product", "quantity", "price"]
 
     list_select_related = ['order']
 
@@ -62,5 +64,5 @@ class OrderDetailAdmin(admin.ModelAdmin):
         return obj.order.id
 
     search_fields = ["product__istartswith"]
-    ordering = ["order_id", "product", "quantity", "price",]
+    ordering = ["order_id", "product", "quantity", "price", ]
     list_per_page = 15
