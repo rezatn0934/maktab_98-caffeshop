@@ -1,12 +1,16 @@
-from django.shortcuts import render, redirect
-from .form import StaffLoginForm, VerifyCodeForm
 from django.contrib.auth import login, logout
-from .authentication import PhoneAuthBackend
-from .models import User
-from utils import send_otp_code
-import datetime
+from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
+from django.shortcuts import render, redirect
+from django.utils.decorators import method_decorator
 from django.utils import timezone
 from django.views import View
+from .form import StaffLoginForm, VerifyCodeForm
+from .authentication import PhoneAuthBackend
+from .models import User
+from orders.models import Order
+from utils import send_otp_code
+import datetime
 
 
 # Create your views here.
@@ -87,8 +91,56 @@ class Verify(View):
         return render(request, self.html_temp, context=context)
 
 
-def dashboard(request):
-    return render(request, "dashboard.html")
+class Dashboard(View):
+
+    @method_decorator(login_required)
+    def get(self, request):
+        return render(request, "dashboard.html")
+
+
+class Orders(View):
+    orders = Order.objects.all()
+
+    @method_decorator(login_required)
+    def get(self, request):
+        sort = request.GET.get('sort', 'title')
+        order = request.GET.get('order', 'asc')
+        if sort == 'id' or sort == 'phone_number' or sort == 'order_date' or sort == 'last_modify' or \
+                sort == 'table_number' or sort == 'status' or sort == 'payment':
+            sort_param = sort if order == 'asc' else '-' + sort
+            orders = Order.objects.order_by(sort_param)
+        else:
+            orders = Order.objects.order_by('order_date')
+
+        paginator = Paginator(orders, 5)
+        page_number = request.GET.get('page', 1)
+        orders = paginator.get_page(page_number)
+
+        context = {
+            'orders': orders,
+            'order': 'desc' if order == 'asc' else 'asc',
+            'sort': sort,
+            'page': page_number
+        }
+        return render(request, 'orders_list.html', context)
+
+    @method_decorator(login_required)
+    def post(self, request):
+        filter_item = request.POST.get('filter1')
+        field = request.POST.get('flexRadioDefault')
+        orders = None
+
+        if field == 'table_number':
+            orders = Order.objects.filter(table_number__icontains=filter_item)
+        elif field == 'phone_number':
+            orders = Order.objects.filter(phone_number__icontains=filter_item)
+        elif field == 'status':
+            orders = Order.objects.filter(status__icontains=filter_item)
+        elif field == 'payment':
+            orders = Order.objects.filter(payment__icontains=filter_item)
+
+        context = {'orders': orders}
+        return render(request, 'orders_list.html', context)
 
 
 def logout_view(request):

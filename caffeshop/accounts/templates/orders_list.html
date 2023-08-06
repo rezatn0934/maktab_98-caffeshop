@@ -1,0 +1,161 @@
+{% extends 'dashbase.html' %}
+
+
+{% block content %}
+    <div class="content-start transition">
+        <div class="container-fluid dashboard">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4>Latest Transaction</h4>
+                        </div>
+                        <div class="card-header">
+                            <form action="{% url 'order_list' %}" method="POST">
+                                {% csrf_token %}
+                                <a class="" data-bs-toggle="collapse" href="#collapseExample"
+                                   role="button" aria-expanded="false" aria-controls="collapseExample"
+                                   style="color: #1a1d20 !important;">
+                                    <h6><i class="bi bi-filter-circle"></i> Filter:</h6>
+                                </a>
+                                <div class="collapse" id="collapseExample">
+                                    <div class="row g-3 mt-2 justify-content-center">
+                                        <div class="col-md-8 justify-content-center d-flex">
+                                            <label class="form-label" for="form2"></label>
+                                            <input type="text" class="form-control" id="form2" name="filter1"
+                                                   placeholder="Select Field">
+                                        </div>
+                                        <div class="col-md-2">
+                                            <button type="submit" class="btn btn-primary">
+                                                <i class="bi bi-search"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="card card-body">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="flexRadioDefault"
+                                                   value="table_number" id="table_number">
+                                            <label class="form-check-label" for="table_number">
+                                                Table Number
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="flexRadioDefault"
+                                                   value="phone_number" id="phone_number">
+                                            <label class="form-check-label" for="phone_number">
+                                                Phone number
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="flexRadioDefault"
+                                                   value="status" id="status">
+                                            <label class="form-check-label" for="status">
+                                                Status
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="flexRadioDefault"
+                                                   value="payment" id="payment">
+                                            <label class="form-check-label" for="payment">
+                                                Payment
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped" style="font-size: .8rem !important;">
+                                    <thead>
+                                    <tr>
+                                        <th scope="col"><a class="text-decoration-none text-dark"
+                                                           href="?{% if page %}page={{ page }}&{% endif %}sort=id&order={{ order|default:'asc' }}">Order
+                                            Id</a></th>
+                                        <th scope="col"><a class="text-decoration-none text-dark"
+                                                           href="?{% if page %}page={{ page }}&{% endif %}sort=phone_number&order={{ order|default:'asc' }}">Phone
+                                            Number</a></th>
+                                        <th scope="col"><a class="text-decoration-none text-dark"
+                                                           href="?{% if page %}page={{ page }}&{% endif %}sort=order_date&order={{ order|default:'asc' }}">Order
+                                            Date</a></th>
+                                        <th scope="col"><a class="text-decoration-none text-dark"
+                                                           href="?{% if page %}page={{ page }}&{% endif %}sort=table_number&order={{ order|default:'asc' }}">Table
+                                            Number</a></th>
+                                        <th scope="col"><a class="text-decoration-none text-dark"
+                                                           href="?{% if page %}page={{ page }}&{% endif %}sort=status&order={{ order|default:'asc' }}">Order
+                                            Status</a></th>
+                                        <th scope="col"><a class="text-decoration-none text-dark"
+                                                           href="?{% if page %}page={{ page }}&{% endif %}sort=last_modify&order={{ order|default:'asc' }}">Last
+                                            Modify</a></th>
+                                        <th scope="col"><a class="text-decoration-none text-dark"
+                                                           href="?{% if page %}page={{ page }}&{% endif %}sort=payment&order={{ order|default:'asc' }}">Payment
+                                            Status</a></th>
+                                        <th scope="col"></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for order in orders %}
+                                        <tr class="justify-content-center">
+                                            <th scope="row">{{ order.id }}</th>
+                                            <td>{{ order.phone_number }}</td>
+                                            <td>{{ order.order_date }}</td>
+                                            <td>{{ order.table_number.Table_number }} {{ order.table_number }}</td>
+                                            <td>{{ order.get_status_display }}</td>
+                                            <td>{{ order.last_modify }}</td>
+                                            <td>{{ order.get_payment_display }}</td>
+                                            <td>
+                                                <a href="">
+                                                    <button class="btn btn-primary">View Details</button>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                                <div class="d-flex justify-content-center">
+                                    <!-- Display pagination links -->
+                                    {% if orders.has_other_pages %}
+                                        <ul class="pagination">
+                                            {% if orders.has_previous %}
+                                                <li class="page-item">
+                                                    <a class="page-link"
+                                                       href="?page= {{ orders.previous_page_number }}{% if sort %}&sort={{ sort }}{% endif %}&order={% if order == 'asc' %} {{ 'desc' }} {% elif order == 'desc' %}{{ 'asc' }}{% endif %}">prev</a>
+                                                </li>
+                                            {% else %}
+                                                <li class="page-item disabled">
+                                                    <span class="page-link">prev</span>
+                                                </li>
+                                            {% endif %}
+                                            {% for page in orders.paginator.page_range %}
+                                                {% if orders.number == page %}
+                                                    <li class="page-item active">
+                                                        <span class="page-link">{{ page }}</span>
+                                                    </li>
+                                                {% else %}
+                                                    <li class="page-item">
+                                                        <a class="page-link"
+                                                           href="?page={ page }}{% if sort %}&sort={{ sort }}{% endif %}&order={% if order == 'asc' %} {{ 'desc' }} {% elif order == 'desc' %}{{ 'asc' }}{% endif %}">{{ page }}</a>
+                                                    </li>
+                                                {% endif %}
+                                            {% endfor %}
+                                            {% if orders.has_next %}
+                                                <li class="page-item">
+                                                    <a class="page-link"
+                                                       href="?page={{ orders.next_page_number }}{% if sort %}&sort={{ sort }}{% endif %}&order={% if order == 'asc' %} {{ 'desc' }} {% elif order == 'desc' %}{{ 'asc' }}{% endif %}">next</a>
+                                                </li>
+                                            {% else %}
+                                                <li class="page-item disabled">
+                                                    <span class="page-link">next</span>
+                                                </li>
+                                            {% endif %}
+                                        </ul>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
