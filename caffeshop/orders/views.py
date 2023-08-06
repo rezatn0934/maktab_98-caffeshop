@@ -43,7 +43,8 @@ def cart(request):
         if request.POST.get('table_number'):
             if form.is_valid():
                 phone = form.cleaned_data["phone_number"]
-                pre_order = {"phone": phone, "table_number": request.POST.get('table_number')}
+                table = form.cleaned_data["table_number"]
+                pre_order = {"phone": phone, "table_number": table.Table_number}
                 request.session['pre_order'] = pre_order
                 request.session.modify = True
                 return redirect('orders:create_order')
