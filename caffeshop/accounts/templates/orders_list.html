@@ -1,0 +1,68 @@
+{% extends 'dashbase.html' %}
+
+
+{% block content %}
+    <div class="content-start transition">
+        <div class="container-fluid dashboard">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4>Latest Transaction</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped" style="font-size: .8rem !important;">
+                                    <thead>
+                                    <tr>
+                                        <th scope="col"><a class="text-decoration-none text-dark"
+                                                           href="?{% if page %}page={{ page }}&{% endif %}sort=id&order={{ order|default:'asc' }}">Order
+                                            Id</a></th>
+                                        <th scope="col"><a class="text-decoration-none text-dark"
+                                                           href="?{% if page %}page={{ page }}&{% endif %}sort=phone_number&order={{ order|default:'asc' }}">Phone
+                                            Number</a></th>
+                                        <th scope="col"><a class="text-decoration-none text-dark"
+                                                           href="?{% if page %}page={{ page }}&{% endif %}sort=order_date&order={{ order|default:'asc' }}">Order
+                                            Date</a></th>
+                                        <th scope="col"><a class="text-decoration-none text-dark"
+                                                           href="?{% if page %}page={{ page }}&{% endif %}sort=table_number&order={{ order|default:'asc' }}">Table
+                                            Number</a></th>
+                                        <th scope="col"><a class="text-decoration-none text-dark"
+                                                           href="?{% if page %}page={{ page }}&{% endif %}sort=status&order={{ order|default:'asc' }}">Order
+                                            Status</a></th>
+                                        <th scope="col"><a class="text-decoration-none text-dark"
+                                                           href="?{% if page %}page={{ page }}&{% endif %}sort=last_modify&order={{ order|default:'asc' }}">Last
+                                            Modify</a></th>
+                                        <th scope="col"><a class="text-decoration-none text-dark"
+                                                           href="?{% if page %}page={{ page }}&{% endif %}sort=payment&order={{ order|default:'asc' }}">Payment
+                                            Status</a></th>
+                                        <th scope="col"></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for order in orders %}
+                                        <tr class="justify-content-center">
+                                            <th scope="row">{{ order.id }}</th>
+                                            <td>{{ order.phone_number }}</td>
+                                            <td>{{ order.order_date }}</td>
+                                            <td>{{ order.table_number.Table_number }} {{ order.table_number }}</td>
+                                            <td>{{ order.get_status_display }}</td>
+                                            <td>{{ order.last_modify }}</td>
+                                            <td>{{ order.get_payment_display }}</td>
+                                            <td>
+                                                <button class="btn btn-primary"><a
+                                                >View
+                                                    Details</a></button>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
