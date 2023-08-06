@@ -1,6 +1,5 @@
 from django.db import models
 from menu.models import Product, Category
-from django.core.validators import MinValueValidator
 from utils import phoneNumberRegex
 
 
@@ -28,6 +27,17 @@ class Order(models.Model):
             order_total_price += item.total_price
         return order_total_price
 
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        table = Table.objects.get(id=self.table_number.id)
+        if self.payment == "P":
+            table.occupied = False
+            table.save()
+            return
+        table.occupied = True
+        table.save()
+
+
 
 class Order_detail(models.Model):
     order = models.ForeignKey(Order, on_delete=models.PROTECT)
@@ -45,5 +55,8 @@ class Order_detail(models.Model):
 
 class Table(models.Model):
     name = models.CharField(max_length=50, unique=True)
-    Table_number = models.IntegerField()
+    Table_number = models.IntegerField(unique=True)
     occupied = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.name}"
