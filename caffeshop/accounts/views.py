@@ -1,12 +1,14 @@
-from django.shortcuts import render, redirect
-from .form import StaffLoginForm, VerifyCodeForm
 from django.contrib.auth import login, logout
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect
+from django.utils.decorators import method_decorator
+from django.utils import timezone
+from django.views import View
+from .form import StaffLoginForm, VerifyCodeForm
 from .authentication import PhoneAuthBackend
 from .models import User
 from utils import send_otp_code
 import datetime
-from django.utils import timezone
-from django.views import View
 
 
 # Create your views here.
@@ -87,8 +89,11 @@ class Verify(View):
         return render(request, self.html_temp, context=context)
 
 
-def dashboard(request):
-    return render(request, "dashboard.html")
+class Dashboard(View):
+
+    @method_decorator(login_required)
+    def get(self, request):
+        return render(request, "dashboard.html")
 
 
 def logout_view(request):
