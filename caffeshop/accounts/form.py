@@ -27,22 +27,8 @@ class CustomUserChangeForm(UserChangeForm):
 
 
 class StaffLoginForm(forms.Form):
-    phone = forms.CharField()
-
-    def clean(self):
-        cleaned_data = super().clean()
-        phone = cleaned_data.get("phone")
-        if not re.match(r"^09\d{9}$", phone):
-            raise forms.ValidationError(" Wrong Input")
-        return cleaned_data
+    phone = forms.RegexField(regex=r"^09\d{9}$")
 
 
 class VerifyCodeForm(forms.Form):
-    code = forms.CharField()
-
-    def clean(self):
-        cleaned_data = super().clean()
-        code = cleaned_data.get("code")
-        if not re.match(r"^\d{6}$", code):
-            raise forms.ValidationError(" Wrong Input")
-        return cleaned_data
+    phone = forms.RegexField(regex=r"^\d{6}$")
