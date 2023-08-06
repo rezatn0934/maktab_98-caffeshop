@@ -1,7 +1,7 @@
 from django.contrib import messages
 from django.shortcuts import render, redirect
 from menu.models import Product
-from .models import Order, Order_detail
+from .models import Order, Order_detail, Table
 from .forms import OrderForm
 from utils import check_availability
 import re
@@ -42,7 +42,7 @@ def cart(request):
         form = OrderForm(request.POST)
         if request.POST.get('table_number'):
             if form.is_valid():
-                phone = form.cleaned_data["phone"]
+                phone = form.cleaned_data["phone_number"]
                 pre_order = {"phone": phone, "table_number": request.POST.get('table_number')}
                 request.session['pre_order'] = pre_order
                 request.session.modify = True
@@ -76,8 +76,9 @@ def update_or_remove(request):
 
 def create_order(request):
     pre_order = request.session['pre_order']
+    table = Table.objects.get(id=pre_order['table_number'])
     customer_order = Order.objects.create(phone_number=pre_order['phone'],
-                                          table_number=int(pre_order['table_number']))
+                                          table_number=table)
 
     orders = request.COOKIES.get('orders', '{}')
     orders = eval(orders)
