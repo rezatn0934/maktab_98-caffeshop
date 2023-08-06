@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect
 from menu.models import Product
 from .models import Order, Order_detail
 from .forms import OrderForm
-from utils import send_otp_code, check_availability
+from utils import check_availability
 import re
 
 
@@ -77,37 +77,16 @@ def update_or_remove(request):
 def create_order(request):
     pre_order = request.session['pre_order']
     customer_order = Order.objects.create(phone_number=pre_order['phone'],
-                                            table_number=int(pre_order['table_number']))
+                                          table_number=int(pre_order['table_number']))
 
     orders = request.COOKIES.get('orders', '{}')
     orders = eval(orders)
-    total_order_price = 0
-    available_pro = []
-    order_details_list = []
     for product_id, quantity in orders.items():
-        qs = Product.objects.filter(id=product_id)
-        if qs.exists():
-            obj = qs.get(id=product_id)
-            result = check_availability(obj)
-            if result[1]:
-                tp = obj.price * int(quantity)
-                total_order_price += tp
-                available_pro.append([customer_order, obj, int(quantity), obj.price, tp])
-                order_details_list.append([obj.name, int(quantity),
-                                            obj.price, tp,
-                                            str(customer_order.order_date)])
+        product = Product.objects.get(id=product_id)
 
-            else:
-                messages.error(request, result[0])
-                customer_order.delete()
-                return redirect("orders:cart")
-        else:
-            messages.error(request, f'Product {obj.name} is not available!!')
-            customer_order.delete()
-            return redirect("orders:cart")
-    [Order_detail.objects.create(order=res[0], product=res[1], quantity=res[2],
-        price=res[3], total_price=res[4]) for res in available_pro]
-    customer_order.total_price = total_order_price
+        Order_detail.objects.create(order=customer_order, product=product, quantity=int(quantity),
+                                    price=product.price)
+
     customer_order.save()
 
     messages.success(request, "Order has been created successfully.")
@@ -115,25 +94,21 @@ def create_order(request):
     res.delete_cookie('orders')
     res.delete_cookie('number_of_order_items')
 
-    if request.session.get('order_history'):
-        request.session['order_history'].append(order_details_list)
-        request.session['order_info'].append([customer_order.id, total_order_price])
-    else:
-        request.session['order_history'] = [order_details_list]
-        info = [customer_order.id, total_order_price]
-        request.session['order_info'] = [info]
+    request.session['order_history'] = customer_order.id
 
-    request.session.modify = True
     del request.session['pre_order']
     return res
 
 
 def order_history(request):
     if request.method == "GET":
-        order_list = request.session['order_history']
-        order_info = request.session['order_info']
-        order_info = order_info[-1]
-        last_order = order_list[-1]
-        pre_order = order_list[:-1]
-        context = {"last_order": last_order, "pre_order": pre_order, 'last_order_info': order_info}
-        return render(request, "orders/order_history.html", context=context)
+        customer_order_id = request.session.get('order_history')
+        if customer_order_id:
+            order = Order.objects.get(id=customer_order_id)
+            order_item = Order_detail.objects.filter(order=order.id)
+
+            context = {"last_order": order, "order_item": order_item}
+            return render(request, "orders/order_history.html", context=context)
+        else:
+            messages.error(request, "You Don't have any order yet.")
+            return redirect("home")

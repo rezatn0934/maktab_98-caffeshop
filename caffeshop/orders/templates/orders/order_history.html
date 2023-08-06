@@ -18,7 +18,7 @@
             <div class="col col-lg-11 col-xl-9">
                 <div class="card rounded-3">
                     <div class="card-body p-4">
-                        <h4 class="text-center my-3 pb-3">Order {{ last_order_info }}</h4>
+                        <h4 class="text-center my-3 pb-3">Order {{ last_order.id }}</h4>
                         <table class="table table-striped table-hover mb-4">
                             <thead>
                             <tr>
@@ -27,23 +27,32 @@
                                 <th scope="col">Price</th>
                                 <th scope="col">Total Price</th>
                                 <th scope="col">Order Date</th>
+
                             </tr>
                             </thead>
                             <tbody>
-                            {% for item in last_order %}
+                            {% for item in order_item %}
                                 <tr>
-                                    {% for info in item %}
-                                        <td>{{ info }}</td>
-                                    {% endfor %}
+
+                                    <td>{{ item.product }}</td>
+                                    <td>{{ item.quantity }}</td>
+                                    <td>{{ item.price }}</td>
+                                    <td>{{ item.total_price }}</td>
+                                    <td>{{ last_order.order_date }}</td>
+
+
                                 </tr>
                             {% endfor %}
                             </tbody>
                         </table>
                     </div>
                 </div>
-            <h3>Total Price: {{ last_order_info }} </h3>
+                <div class="  d-flex justify-content-around align-items-center mt-4">
+                    <h3 >Total Price: {{ last_order.total_price }} </h3>
+
+                    <h3 >Order Status: {{ last_order.get_status_display }} </h3>
+                </div>
             </div>
         </div>
     </div>
 {% endblock %}
-
