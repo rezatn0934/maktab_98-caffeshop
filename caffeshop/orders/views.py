@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.shortcuts import render, redirect
+from django.views import View
 from menu.models import Product
 from .models import Order, Order_detail, Table
 from .forms import OrderForm
@@ -9,36 +10,38 @@ import re
 
 # Create your views here.
 
-def cart(request):
-    orders = request.COOKIES.get('orders', '{}')
-    orders = eval(orders)
-    updated_orders = orders.copy()
-    form = OrderForm()
-    order_items = []
-    for product_id, quantity in orders.items():
-        qs = Product.objects.filter(id=product_id)
-        if qs.exists():
-            obj = qs.get(id=product_id)
-            message, obj = check_availability(obj)
-            if obj:
-                tp = obj.price * int(quantity)
-                order_items.append((obj, quantity, tp))
+class CartView(View):
+
+    def get(self, request):
+        orders = request.COOKIES.get('orders', '{}')
+        orders = eval(orders)
+        updated_orders = orders.copy()
+        form = OrderForm()
+        order_items = []
+        for product_id, quantity in orders.items():
+            qs = Product.objects.filter(id=product_id)
+            if qs.exists():
+                obj = qs.get(id=product_id)
+                message, obj = check_availability(obj)
+                if obj:
+                    tp = obj.price * int(quantity)
+                    order_items.append((obj, quantity, tp))
+                else:
+                    updated_orders.pop(product_id)
+                    messages.error(request, message)
             else:
+                messages.error(request, f'Product {obj.name} is not available!!')
                 updated_orders.pop(product_id)
-                messages.error(request, message)
-        else:
-            messages.error(request, f'Product {obj.name} is not available!!')
-            updated_orders.pop(product_id)
-    order_total_price = sum(map(lambda item: int(item[2]), order_items))
-    context = {'order_items': order_items,
-               'order_total_price': order_total_price,
-               'form': form}
-    request.COOKIES['number_of_order_items'] = sum([int(order_qnt) for order_qnt in updated_orders.values()])
-    response = render(request, 'orders/cart.html', context=context)
-    response.set_cookie('orders', updated_orders)
-    if request.method == 'GET':
+        order_total_price = sum(map(lambda item: int(item[2]), order_items))
+        context = {'order_items': order_items,
+                'order_total_price': order_total_price,
+                'form': form}
+        request.COOKIES['number_of_order_items'] = sum([int(order_qnt) for order_qnt in updated_orders.values()])
+        response = render(request, 'orders/cart.html', context=context)
+        response.set_cookie('orders', updated_orders)
         return response
-    if request.method == 'POST':
+
+    def post(self, request):
         form = OrderForm(request.POST)
         if request.POST.get('table_number'):
             if form.is_valid():
