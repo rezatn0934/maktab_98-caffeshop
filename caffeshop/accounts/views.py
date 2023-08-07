@@ -147,6 +147,7 @@ class Orders(View):
         return render(request, 'orders_list.html', context)
 
 
+@login_required
 def logout_view(request):
     logout(request)
     return redirect("login")
