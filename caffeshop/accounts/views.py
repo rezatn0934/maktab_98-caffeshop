@@ -132,11 +132,19 @@ class Orders(View):
 
         if 'filter' in request.GET:
             first_date = request.GET.get('first_date')
-            second_date = request.GET.get('second_date')
-            orders = orders.filter(order_date__range=(first_date, second_date))
-            context['filter'] = 'filter'
-            context['first_date'] = first_date
-            context['second_date'] = second_date
+            print(first_date)
+            print(type(first_date))
+            print(datetime.datetime.now().date())
+            print(datetime.datetime.now().date().strftime('%Y-%m-%d'))
+            print(type(datetime.datetime.now().date().strftime('%Y-%m-%d')))
+            if first_date:
+                second_date = request.GET.get('second_date')
+                if not second_date:
+                    second_date = (datetime.datetime.now()+datetime.timedelta(days=1)).strftime('%Y-%m-%d')
+                orders = orders.filter(order_date__range=(first_date, second_date))
+                context['filter'] = 'filter'
+                context['first_date'] = first_date
+                context['second_date'] = second_date
 
         paginator = Paginator(orders, 5)
         page_number = request.GET.get('page', 1)
