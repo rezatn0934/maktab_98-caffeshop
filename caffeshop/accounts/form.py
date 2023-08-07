@@ -31,4 +31,4 @@ class StaffLoginForm(forms.Form):
 
 
 class VerifyCodeForm(forms.Form):
-    phone = forms.RegexField(regex=r"^\d{6}$")
+    code = forms.RegexField(regex=r"^\d{6}$")
