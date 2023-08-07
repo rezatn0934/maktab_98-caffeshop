@@ -99,8 +99,6 @@ class Dashboard(View):
 
 
 class Orders(View):
-    orders = Order.objects.all()
-
     @method_decorator(login_required)
     def get(self, request):
         sort = request.GET.get('sort', 'title')
@@ -108,38 +106,44 @@ class Orders(View):
         if sort == 'id' or sort == 'phone_number' or sort == 'order_date' or sort == 'last_modify' or \
                 sort == 'table_number' or sort == 'status' or sort == 'payment':
             sort_param = sort if order == 'asc' else '-' + sort
-            orders = Order.objects.order_by(sort_param)
+            orders = Order.objects.all().order_by(sort_param)
         else:
-            orders = Order.objects.order_by('order_date')
+            orders = Order.objects.all().order_by('order_date')
+
+        context = {
+            'order': 'desc' if order == 'asc' else 'asc',
+            'sort': sort,
+        }
+
+        if 'search' in request.GET:
+            filter_item = request.GET.get('filter1')
+            field = request.GET.get('flexRadioDefault')
+
+            if field == 'table_number':
+                orders = orders.filter(table_number__Table_number__icontains=filter_item)
+                context['flexRadioDefault'] = field
+                context['filter1'] = filter_item
+                context['search'] = 'search'
+            elif field == 'phone_number':
+                orders = orders.filter(phone_number__icontains=filter_item)
+                context['flexRadioDefault'] = field
+                context['filter1'] = filter_item
+                context['search'] = 'search'
+
+        if 'filter' in request.GET:
+            first_date = request.GET.get('first_date')
+            second_date = request.GET.get('second_date')
+            orders = orders.filter(order_date__range=(first_date, second_date))
+            context['filter'] = 'filter'
+            context['first_date'] = first_date
+            context['second_date'] = second_date
 
         paginator = Paginator(orders, 5)
         page_number = request.GET.get('page', 1)
         orders = paginator.get_page(page_number)
-
-        context = {
-            'orders': orders,
-            'order': 'desc' if order == 'asc' else 'asc',
-            'sort': sort,
-            'page': page_number
-        }
-        return render(request, 'orders_list.html', context)
-
-    @method_decorator(login_required)
-    def post(self, request):
-        filter_item = request.POST.get('filter1')
-        field = request.POST.get('flexRadioDefault')
-        orders = None
-
-        if field == 'table_number':
-            orders = Order.objects.filter(table_number__icontains=filter_item)
-        elif field == 'phone_number':
-            orders = Order.objects.filter(phone_number__icontains=filter_item)
-        elif field == 'status':
-            orders = Order.objects.filter(status__icontains=filter_item)
-        elif field == 'payment':
-            orders = Order.objects.filter(payment__icontains=filter_item)
-
-        context = {'orders': orders}
+        context['orders'] = orders
+        context['page'] = page_number
+        print(request.path)
         return render(request, 'orders_list.html', context)
 
 
