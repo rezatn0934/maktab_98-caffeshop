@@ -5,12 +5,10 @@ import re
 
 
 class CustomUserCreationForm(UserCreationForm):
-    password1 = forms.CharField(label='Password', widget=forms.PasswordInput)
-    password2 = forms.CharField(label='Confirm Password', widget=forms.PasswordInput)
 
     class Meta:
         model = User
-        fields = ('phone', 'first_name', 'last_name')
+        fields = ('phone', 'first_name', 'last_name', "password1", "password2")
 
     def save(self, commit=True):
         user = super().save(commit=False)
