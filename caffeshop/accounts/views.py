@@ -5,10 +5,10 @@ from django.shortcuts import render, redirect
 from django.utils.decorators import method_decorator
 from django.utils import timezone
 from django.views import View
-from .form import StaffLoginForm, VerifyCodeForm
 from .authentication import PhoneAuthBackend
+from .form import StaffLoginForm, VerifyCodeForm, OrderDetailUpdateForm
 from .models import User
-from orders.models import Order
+from orders.models import Order, Order_detail
 from utils import send_otp_code
 import datetime
 
@@ -93,13 +93,13 @@ class Verify(View):
 
 class Dashboard(View):
 
-    @method_decorator(login_required)
+    # @method_decorator(login_required)
     def get(self, request):
         return render(request, "dashboard.html")
 
 
 class Orders(View):
-    @method_decorator(login_required)
+    # @method_decorator(login_required)
     def get(self, request):
         sort = request.GET.get('sort', 'title')
         order = request.GET.get('order', 'asc')
@@ -153,6 +153,51 @@ class Orders(View):
         context['page'] = page_number
         print(request.path)
         return render(request, 'orders_list.html', context)
+
+
+class OrderDetailView(View):
+
+    # @method_decorator(login_required)
+    def get(self, request, id):
+
+        order = Order.objects.get(id=id)
+        order_details = Order_detail.objects.filter(order=id)
+        order_details = map(lambda order_detail: (order_detail.id,order_detail.total_price, OrderDetailUpdateForm(instance=order_detail)),
+                            order_details)
+        context = {
+            'order': order,
+            'order_details': order_details,
+        }
+
+        return render(request, 'order_detail.html', context)
+
+    # @method_decorator(login_required)
+    def post(self, request, id):
+        if 'update' in request.POST:
+            order_detail = Order_detail.objects.get(id=id)
+            form = OrderDetailUpdateForm(request.POST, instance=order_detail)
+            if form.is_valid():
+                form.save()
+                return redirect('order_detail', order_detail.order.id)
+            else:
+                return redirect('order_list')
+        elif 'delete' in request.POST:
+            order_detail = Order_detail.objects.get(id=id)
+            order = order_detail.order
+            order_detail.delete()
+            return redirect('order_detail', order.id)
+        elif 'confirm' in request.POST:
+            order_detail = Order_detail.objects.get(id=id)
+            order = order_detail.order
+            order.status = 'A'
+            order.save()
+            return redirect('order_list')
+        elif 'cancel' in request.POST:
+            order_detail = Order_detail.objects.get(id=id)
+            order = order_detail.order
+            order.status = 'C'
+            order.save()
+            return redirect('order_list')
 
 
 @login_required
