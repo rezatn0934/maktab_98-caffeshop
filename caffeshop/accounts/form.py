@@ -1,7 +1,7 @@
+from django import forms
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from .models import User
-from django import forms
-import re
+from orders.models import Order_detail
 
 
 class CustomUserCreationForm(UserCreationForm):
@@ -32,3 +32,9 @@ class StaffLoginForm(forms.Form):
 
 class VerifyCodeForm(forms.Form):
     code = forms.RegexField(regex=r"^\d{6}$")
+
+
+class OrderDetailUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Order_detail
+        fields = ['product', 'quantity']
