@@ -35,7 +35,7 @@
     {% block header %}
     <div id="header" style="backdrop-filter: blur(5px);
     background-color: rgba(255, 255, 255, .15)">
-        <img src="../../media/images/logo/White_logo_-_no_background.png" alt="" style="width: 60px; height: 80px;">
+         {{ info.logo_preview }}
         {% block usertools %}
         {% if has_permission %}
         <div id="branding">
