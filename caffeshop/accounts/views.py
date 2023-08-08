@@ -94,25 +94,25 @@ class Verify(View):
 
 class Dashboard(View):
 
-    # @method_decorator(login_required)
+    @method_decorator(login_required)
     def get(self, request):
         return render(request, "dashboard.html")
 
 
 class Orders(View):
-    # @method_decorator(login_required)
+
+    @method_decorator(login_required)
     def get(self, request):
         sort = request.GET.get('sort', 'title')
-        order = request.GET.get('order', 'asc')
-        if sort == 'id' or sort == 'phone_number' or sort == 'order_date' or sort == 'last_modify' or \
+        orderp = request.GET.get('orderp')
+        if sort == 'id' or sort == 'phone_number' or sort == 'order_date' or \
                 sort == 'table_number' or sort == 'status' or sort == 'payment':
-            sort_param = sort if order == 'asc' else '-' + sort
+            sort_param = sort if orderp == 'asc' else '-' + sort
             orders = Order.objects.all().order_by(sort_param)
         else:
             orders = Order.objects.all().order_by('order_date')
-
         context = {
-            'order': 'desc' if order == 'asc' else 'asc',
+            'orderp': 'desc' if orderp == 'asc' else 'asc',
             'sort': sort,
         }
 
@@ -146,6 +146,13 @@ class Orders(View):
                 context['first_date'] = first_date
                 context['second_date'] = second_date
 
+        if 'paid' in request.GET:
+            paid_order = Order.objects.filter(id=request.GET['paid'])
+
+            if paid_order:
+                order = paid_order.get(id=request.GET['paid'])
+                order.payment = 'P'
+                order.save()
         paginator = Paginator(orders, 5)
         page_number = request.GET.get('page', 1)
         orders = paginator.get_page(page_number)
@@ -157,7 +164,7 @@ class Orders(View):
 
 class OrderDetailView(View):
 
-    # @method_decorator(login_required)
+    @method_decorator(login_required)
     def get(self, request, pk):
         create_order_form = OrderDetailUpdateForm()
         order = Order.objects.get(id=pk)
@@ -173,7 +180,7 @@ class OrderDetailView(View):
 
         return render(request, 'order_detail.html', context)
 
-    # @method_decorator(login_required)
+    @method_decorator(login_required)
     def post(self, request, pk):
         if 'update' in request.POST:
             order_detail = Order_detail.objects.get(id=pk)
@@ -227,6 +234,7 @@ def delete_order_detail(request, pk):
 
 
 class CreateOrder(View):
+    @method_decorator(login_required)
     def post(self, request, pk):
         order = Order.objects.get(id=pk)
         form = OrderDetailUpdateForm(request.POST)
