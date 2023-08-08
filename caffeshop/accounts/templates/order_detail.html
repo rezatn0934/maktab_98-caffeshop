@@ -39,34 +39,35 @@
                                         <th scope="col">Quantity</th>
                                         <th scope="col">Total Price</th>
                                         <th scope="col"></th>
+                                        <th scope="col"></th>
                                     </tr>
                                     </thead>
                                     <tbody>
                                     {% for id, total_price, order_detail in order_details %}
-                                        <tr class="justify-content-center">
-                                            <th scope="row">{{ id }}</th>
-                                            {% for field in order_detail %}
-                                                <td>{{ field }}</td>
-                                            {% endfor %}
-                                            <td>
-                                                ${{ total_price }}
-                                            </td>
-                                            <td>
-                                                <form action="{% url 'order_detail' order.id %}" method="POST">
-                                                    {% csrf_token %}
+                                        <form action="{% url 'order_detail' id %}" method="POST">
+                                            {% csrf_token %}
+                                            <tr class="justify-content-center">
+                                                <th scope="row">{{ id }}</th>
+                                                {% for field in order_detail %}
+                                                    <td>{{ field }}</td>
+                                                {% endfor %}
+                                                <td>
+                                                    ${{ total_price }}
+                                                </td>
+                                                <td>
                                                     <button type="submit" class="btn btn-primary" name="update">
                                                         <i class="bi bi-pencil"></i>
                                                     </button>
-                                                </form>
-                                                <form action="{% url 'order_detail' order.id %}" method="POST">
-                                                    {% csrf_token %}
-                                                    <button type="submit" class="btn btn-danger" name="delete"
-                                                            value="{{ id }}">
-                                                        <i class="bi bi-trash"></i>
-                                                    </button>
-                                                </form>
-                                            </td>
-                                        </tr>
+                                                </td>
+                                                <td>
+                                                    <a href="{% url 'delete_order_item' id %}">
+                                                        <button type="button" class="btn btn-danger" name="delete">
+                                                            <i class="bi bi-trash"></i>
+                                                        </button>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        </form>
                                     {% endfor %}
                                     </tbody>
                                 </table>
@@ -76,20 +77,18 @@
                                     <p>Order Total Price: ${{ order.total_price }}</p>
                                 </div>
                                 <div class="col-md-3 text-end">
-                                    <form action="{% url 'order_detail' order.id %}" method="POST">
-                                        {% csrf_token %}
+                                    <a href="{% url 'confirm_order' order.id %}">
                                         <button type="button" class="btn btn-success btn-sm" name="confirm">
                                             <i class="bi bi-check-circle"></i> Confirm Order
                                         </button>
-                                    </form>
+                                    </a>
                                 </div>
                                 <div class="col-md-3 text-end">
-                                    <form action="{% url 'order_detail' order.id %}" method="POST">
-                                        {% csrf_token %}
+                                    <a href="{% url 'cancel_order' order.id %}">
                                         <button type="button" class="btn btn-danger btn-sm" name="cancel">
                                             <i class="bi bi-x-circle"></i> Cancel Order
                                         </button>
-                                    </form>
+                                    </a>
                                 </div>
                             </div>
                         </div>
