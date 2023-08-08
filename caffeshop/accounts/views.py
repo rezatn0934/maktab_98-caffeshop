@@ -154,14 +154,15 @@ class OrderDetailView(View):
 
     # @method_decorator(login_required)
     def get(self, request, pk):
-
+        create_order_form = OrderDetailUpdateForm()
         order = Order.objects.get(id=pk)
         order_details = Order_detail.objects.filter(order=pk)
-        order_details = map(lambda order_detail: (order_detail.id,order_detail.total_price, OrderDetailUpdateForm(instance=order_detail)),
+        order_details = map(lambda order_detail: (order_detail.id, order_detail.total_price, OrderDetailUpdateForm(instance=order_detail)),
                             order_details)
         context = {
             'order': order,
             'order_details': order_details,
+            'creat_form': create_order_form,
         }
 
         return render(request, 'order_detail.html', context)
@@ -216,6 +217,21 @@ def delete_order_detail(request, pk):
             return redirect('order_detail', order.id)
         else:
             return redirect(request.path)
+
+
+class CreateOrder(View):
+    def post(self, request, pk):
+        order = Order.objects.get(id=pk)
+        form = OrderDetailUpdateForm(request.POST)
+        if form.is_valid():
+            order_detail = form.save(commit=False)
+            order_detail.order = order
+            order_detail.price = order_detail.product.price
+            order_detail.save()
+        else:
+            message ='Invalid input'
+
+        return redirect('order_detail', pk)
 
 
 @login_required
