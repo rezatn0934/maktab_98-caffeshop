@@ -12,7 +12,7 @@ class Order(models.Model):
     phone_number = models.CharField(validators=[phoneNumberRegex], max_length=11)
     order_date = models.DateTimeField(auto_now_add=True, editable=False)
     last_modify = models.DateTimeField(auto_now=True, editable=False)
-    table_number = models.ForeignKey("Table", on_delete=models.PROTECT)
+    table_number = models.ForeignKey("Table", on_delete=models.PROTECT, null=True, blank=True)
     status = models.CharField(max_length=1, choices=status_choices, default="P")
     payment = models.CharField(max_length=1, choices=payment_status, default="U")
 
@@ -29,14 +29,14 @@ class Order(models.Model):
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
-        table = Table.objects.get(id=self.table_number.id)
-        if self.payment == "P":
-            table.occupied = False
+        if self.table_number:
+            table = Table.objects.get(id=self.table_number.id)
+            if self.payment == "P":
+                table.occupied = False
+                table.save()
+                return
+            table.occupied = True
             table.save()
-            return
-        table.occupied = True
-        table.save()
-
 
 
 class Order_detail(models.Model):

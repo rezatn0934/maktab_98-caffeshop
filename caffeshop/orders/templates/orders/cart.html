@@ -158,7 +158,7 @@
                                 </div> -->
                                 <div class="dis-total">
                                     <div class="tot-btn1 ">
-                                        <form action="{% url 'orders:cart' %}" id="table-reserve-form" method="post">
+                                        <form action="{% url 'orders:cart' %}" id="table-reserve-form" method="post" novalidate>
                                             {% csrf_token %}
                                             <div class="row justify-content-between active" id="RadioTarget1" aria-hidden="true">
                                                 <div class="col-sm-5 d-flex align-items-end">
@@ -196,13 +196,3 @@
     
 {% endblock %}
 
-
-{% block footerlink %}
-    setTimeout(function(){
-        if ($('#msg').length > 0) {
-            $('#msg').remove();
-        }
-    }, 5000)
-
-    </script>
-{% endblock %}
