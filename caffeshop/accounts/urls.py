@@ -7,5 +7,6 @@ urlpatterns = [
     path('verify/', views.Verify.as_view(), name="verify"),
     path('logout/', views.logout_view, name="logout"),
     path('orders/', views.Orders.as_view(), name='order_list'),
-    path('orders/<int:id>', views.OrderDetailView.as_view(), name='order_detail'),
+    path('confirm_order/<int:pk>', views.confirm_order, name='confirm_order'),
+    path('delete_order_item/<int:pk>', views.delete_order_detail, name='delete_order_item'),
 ]
