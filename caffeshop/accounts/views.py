@@ -132,11 +132,6 @@ class Orders(View):
 
         if 'filter' in request.GET:
             first_date = request.GET.get('first_date')
-            print(first_date)
-            print(type(first_date))
-            print(datetime.datetime.now().date())
-            print(datetime.datetime.now().date().strftime('%Y-%m-%d'))
-            print(type(datetime.datetime.now().date().strftime('%Y-%m-%d')))
             if first_date:
                 second_date = request.GET.get('second_date')
                 if not second_date:
@@ -158,10 +153,10 @@ class Orders(View):
 class OrderDetailView(View):
 
     # @method_decorator(login_required)
-    def get(self, request, id):
+    def get(self, request, pk):
 
-        order = Order.objects.get(id=id)
-        order_details = Order_detail.objects.filter(order=id)
+        order = Order.objects.get(id=pk)
+        order_details = Order_detail.objects.filter(order=pk)
         order_details = map(lambda order_detail: (order_detail.id,order_detail.total_price, OrderDetailUpdateForm(instance=order_detail)),
                             order_details)
         context = {
@@ -172,32 +167,28 @@ class OrderDetailView(View):
         return render(request, 'order_detail.html', context)
 
     # @method_decorator(login_required)
-    def post(self, request, id):
+    def post(self, request, pk):
         if 'update' in request.POST:
-            order_detail = Order_detail.objects.get(id=id)
+            order_detail = Order_detail.objects.get(id=pk)
             form = OrderDetailUpdateForm(request.POST, instance=order_detail)
             if form.is_valid():
                 form.save()
                 return redirect('order_detail', order_detail.order.id)
             else:
-                return redirect('order_list')
-        elif 'delete' in request.POST:
-            order_detail = Order_detail.objects.get(id=id)
-            order = order_detail.order
-            order_detail.delete()
-            return redirect('order_detail', order.id)
-        elif 'confirm' in request.POST:
-            order_detail = Order_detail.objects.get(id=id)
-            order = order_detail.order
+                return redirect('order_detail', order_detail.order.id)
+
+
+def confirm_order(request, pk):
+    if request.method == 'GET':
+        order = Order.objects.filter(id=pk)
+        if order:
+            order = order.get(id=pk)
             order.status = 'A'
             order.save()
             return redirect('order_list')
-        elif 'cancel' in request.POST:
-            order_detail = Order_detail.objects.get(id=id)
-            order = order_detail.order
-            order.status = 'C'
-            order.save()
-            return redirect('order_list')
+        else:
+            message = 'Order not found'
+            return redirect('order_detail', pk)
 
 
 @login_required
