@@ -5,7 +5,6 @@ from menu.models import Product
 from .models import Order, Order_detail, Table
 from .forms import OrderForm
 from utils import check_availability
-import re
 
 
 # Create your views here.
@@ -34,8 +33,8 @@ class CartView(View):
                 updated_orders.pop(product_id)
         order_total_price = sum(map(lambda item: int(item[2]), order_items))
         context = {'order_items': order_items,
-                'order_total_price': order_total_price,
-                'form': form}
+                   'order_total_price': order_total_price,
+                   'form': form}
         request.COOKIES['number_of_order_items'] = sum([int(order_qnt) for order_qnt in updated_orders.values()])
         response = render(request, 'orders/cart.html', context=context)
         response.set_cookie('orders', updated_orders)
@@ -43,17 +42,19 @@ class CartView(View):
 
     def post(self, request):
         form = OrderForm(request.POST)
-        if request.POST.get('table_number'):
-            if form.is_valid():
-                phone = form.cleaned_data["phone_number"]
-                table = form.cleaned_data["table_number"]
+        if form.is_valid():
+            phone = form.cleaned_data["phone_number"]
+            table = form.cleaned_data["table_number"]
+            if table:
                 pre_order = {"phone": phone, "table_number": table.Table_number}
-                request.session['pre_order'] = pre_order
-                request.session.modify = True
-                return redirect('orders:create_order')
             else:
-                messages.error(request, 'Your phone number is not valid!!')
-                return redirect('orders:cart')
+                pre_order = {"phone": phone, "table_number": None}
+            request.session['pre_order'] = pre_order
+            request.session.modify = True
+            return redirect('orders:create_order')
+        else:
+            messages.error(request, 'Your phone number is not valid!!')
+            return redirect('orders:cart')
 
 
 def update_or_remove(request):
@@ -73,7 +74,10 @@ def update_or_remove(request):
 
 def create_order(request):
     pre_order = request.session['pre_order']
-    table = Table.objects.get(id=pre_order['table_number'])
+    if pre_order['table_number']:
+        table = Table.objects.get(id=pre_order['table_number'])
+    else:
+        table = None
     customer_order = Order.objects.create(phone_number=pre_order['phone'],
                                           table_number=table)
 
