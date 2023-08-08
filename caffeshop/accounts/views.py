@@ -1,6 +1,7 @@
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
+from django.db.models import Q
 from django.shortcuts import render, redirect
 from django.utils.decorators import method_decorator
 from django.utils import timezone
@@ -120,7 +121,11 @@ class Orders(View):
             field = request.GET.get('flexRadioDefault')
 
             if field == 'table_number':
-                orders = orders.filter(table_number__Table_number__icontains=filter_item)
+                if filter_item:
+                    orders = orders.filter(Q(table_number__Table_number__icontains=filter_item) |
+                                           Q(table_number__name__icontains=filter_item))
+                else:
+                    orders = orders.filter(table_number=None)
                 context['flexRadioDefault'] = field
                 context['filter1'] = filter_item
                 context['search'] = 'search'
@@ -135,7 +140,7 @@ class Orders(View):
             if first_date:
                 second_date = request.GET.get('second_date')
                 if not second_date:
-                    second_date = (datetime.datetime.now()+datetime.timedelta(days=1)).strftime('%Y-%m-%d')
+                    second_date = (datetime.datetime.now() + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
                 orders = orders.filter(order_date__range=(first_date, second_date))
                 context['filter'] = 'filter'
                 context['first_date'] = first_date
@@ -157,7 +162,8 @@ class OrderDetailView(View):
         create_order_form = OrderDetailUpdateForm()
         order = Order.objects.get(id=pk)
         order_details = Order_detail.objects.filter(order=pk)
-        order_details = map(lambda order_detail: (order_detail.id, order_detail.total_price, OrderDetailUpdateForm(instance=order_detail)),
+        order_details = map(lambda order_detail: (
+                            order_detail.id, order_detail.total_price, OrderDetailUpdateForm(instance=order_detail)),
                             order_details)
         context = {
             'order': order,
@@ -191,6 +197,7 @@ def confirm_order(request, pk):
         else:
             message = 'Order not found'
             return redirect('order_detail', pk)
+
 
 @login_required
 def cancel_order(request, pk):
@@ -229,7 +236,7 @@ class CreateOrder(View):
             order_detail.price = order_detail.product.price
             order_detail.save()
         else:
-            message ='Invalid input'
+            message = 'Invalid input'
 
         return redirect('order_detail', pk)
 
