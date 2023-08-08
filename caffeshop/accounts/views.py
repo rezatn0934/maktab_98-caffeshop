@@ -178,12 +178,26 @@ class OrderDetailView(View):
                 return redirect('order_detail', order_detail.order.id)
 
 
+@login_required
 def confirm_order(request, pk):
     if request.method == 'GET':
         order = Order.objects.filter(id=pk)
         if order:
             order = order.get(id=pk)
             order.status = 'A'
+            order.save()
+            return redirect('order_list')
+        else:
+            message = 'Order not found'
+            return redirect('order_detail', pk)
+
+@login_required
+def cancel_order(request, pk):
+    if request.method == 'GET':
+        order = Order.objects.filter(id=pk)
+        if order:
+            order = order.get(id=pk)
+            order.status = 'C'
             order.save()
             return redirect('order_list')
         else:
