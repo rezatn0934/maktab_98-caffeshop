@@ -206,6 +206,19 @@ def cancel_order(request, pk):
 
 
 @login_required
+def delete_order_detail(request, pk):
+    if request.method == 'GET':
+        order_detail = Order_detail.objects.filter(id=pk)
+        if order_detail:
+            order_detail = order_detail.get(id=pk)
+            order = order_detail.order
+            order_detail.delete()
+            return redirect('order_detail', order.id)
+        else:
+            return redirect(request.path)
+
+
+@login_required
 def logout_view(request):
     logout(request)
     return redirect("login")
