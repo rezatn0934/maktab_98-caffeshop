@@ -1,0 +1,208 @@
+{% extends 'dashbase.html' %}
+
+
+{% block content %}
+    <div class="content-start transition">
+        <div class="container-fluid dashboard">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4>Latest Transaction</h4>
+                        </div>
+                        <div class="card-header">
+                            <a class="" data-bs-toggle="collapse" href="#collapseExample"
+                               role="button" aria-expanded="false" aria-controls="collapseExample"
+                               style="color: #1a1d20 !important;">
+                                <h6><i class="bi bi-filter-circle"></i> Search:</h6>
+                            </a>
+                            <form action="{% url 'order_list' %}" method="GET">
+                                <input type="hidden" name="search" value="search">
+                                <input type="hidden" name="sort" value="{{ sort }}">
+                                <input type="hidden" name="order" value="
+                                        {% if order == 'asc' %}{{ 'desc' }}{% elif order == 'desc' %}{{ 'asc' }}{% endif %}">
+                                <input type="hidden" name="filter" value="{{ filter }}">
+                                <input type="hidden" name="first_date" value="{{ first_date }}">
+                                <input type="hidden" name="second_date" value="{{ second_date }}">
+                                <input type="hidden" name="page" value="page">
+
+                                <div class="collapse" id="collapseExample">
+                                    <div class="row g-3 mt-2 justify-content-center">
+                                        <div class="col-md-8 justify-content-center d-flex">
+                                            <label class="form-label" for="form2"></label>
+                                            <input type="text" class="form-control" id="form2" name="filter1"
+                                                   placeholder="Select Field">
+                                        </div>
+                                        <div class="col-md-2">
+                                            <button type="submit" class="btn btn-primary">
+                                                <i class="bi bi-search"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="card card-body">
+                                        <div class="row justify-content-center">
+                                            <div class="col-md-4">
+                                                <input class="form-check-input" type="radio" name="flexRadioDefault"
+                                                       value="table_number" id="table_number">
+                                                <label class="form-check-label" for="table_number">
+                                                    Table Number
+                                                </label>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <input class="form-check-input" type="radio" name="flexRadioDefault"
+                                                       value="phone_number" id="phone_number">
+                                                <label class="form-check-label" for="phone_number">
+                                                    Phone number
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                            <a class="" data-bs-toggle="collapse" href="#collapseExample1"
+                               role="button" aria-expanded="false" aria-controls="collapseExample"
+                               style="color: #1a1d20 !important;">
+                                <h6><i class="bi bi-filter-circle"></i>Filter:</h6>
+                            </a>
+                            <form
+                                    action="{% url 'order_list' %}"
+                                    method="GET">
+                                <input type="hidden" name="filter" value="filter">
+                                <input type="hidden" name="search" value="search">
+                                <input type="hidden" name="sort" value="{{ sort }}">
+                                <input type="hidden" name="order" value="
+                                {% if order == 'asc' %}{{ 'desc' }}{% elif order == 'desc' %}{{ 'asc' }}{% endif %}">
+                                <input type="hidden" name="flexRadioDefault" value="{{ flexRadioDefault }}">
+                                <input type="hidden" name="filter1" value="{{ filter1 }}">
+                                <input type="hidden" name="page" value="page">
+
+                                <div class="collapse" id="collapseExample1">
+                                    <div class="card card-body">
+                                        <div class="row justify-content-center align-items-center">
+                                            <div class="col-md-3">
+                                                <span>Base on Order Date:</span>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label class="form-check-label" for="first_date">
+                                                    From:
+                                                </label>
+                                                <input class="date" type="date" name="first_date"
+                                                       id="first_date">
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label class="form-check-label" for="second_date">
+                                                    To:
+                                                </label>
+                                                <input class="date" type="date" name="second_date"
+                                                       id="second_date">
+                                            </div>
+                                            <div class="col-md-2">
+                                                <button type="submit" class="btn btn-primary">
+                                                    <i class="bi bi-search"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped" style="font-size: .8rem !important;">
+                                    <thead>
+                                    <tr>
+                                        <th scope="col"><a class="text-decoration-none text-dark"
+                                                           href="?{% if filter1 %}filter1={{ filter1 }}&{% endif %}{% if search %}search=search&{% endif %}{% if flexRadioDefault %}flexRadioDefault={{ flexRadioDefault }}&{% endif %}{% if filter %}filter=filter&{% endif %}{% if page %}page={{ page }}&{% endif %}sort=id&orderp={{ orderp|default:'asc' }}{% if first_date %}&first_date={{ first_date }}&{% endif %}{% if second_date %}second_date={{ second_date }}&{% endif %}">Order
+                                            Id</a></th>
+                                        flexRadioDefault
+                                        <th scope="col"><a class="text-decoration-none text-dark"
+                                                           href="?{% if filter1 %}filter1={{ filter1 }}&{% endif %}{% if search %}search=search&{% endif %}{% if flexRadioDefault %}flexRadioDefault={{ flexRadioDefault }}&{% endif %}{% if filter %}filter=filter&{% endif %}{% if page %}page={{ page }}&{% endif %}sort=phone_number&orderp={{ orderp|default:'asc' }}{% if first_date %}&first_date={{ first_date }}&{% endif %}{% if second_date %}second_date={{ second_date }}&{% endif %}">Phone
+                                            Number</a></th>
+                                        <th scope="col"><a class="text-decoration-none text-dark"
+                                                           href="?{% if filter1 %}filter1={{ filter1 }}&{% endif %}{% if search %}search=search&{% endif %}{% if flexRadioDefault %}flexRadioDefault={{ flexRadioDefault }}&{% endif %}{% if filter %}filter=filter&{% endif %}{% if page %}page={{ page }}&{% endif %}sort=order_date&orderp={{ orderp|default:'asc' }}{% if first_date %}&first_date={{ first_date }}&{% endif %}{% if second_date %}second_date={{ second_date }}&{% endif %}">Order
+                                            Date</a></th>
+                                        <th scope="col"><a class="text-decoration-none text-dark"
+                                                           href="?{% if filter1 %}filter1={{ filter1 }}&{% endif %}{% if search %}search=search&{% endif %}{% if flexRadioDefault %}flexRadioDefault={{ flexRadioDefault }}&{% endif %}{% if filter %}filter=filter&{% endif %}{% if page %}page={{ page }}&{% endif %}sort=table_number&orderp={{ orderp|default:'asc' }}{% if first_date %}&first_date={{ first_date }}&{% endif %}{% if second_date %}second_date={{ second_date }}&{% endif %}">Table
+                                            Number</a></th>
+                                        <th scope="col"><a class="text-decoration-none text-dark"
+                                                           href="?{% if filter1 %}filter1={{ filter1 }}&{% endif %}{% if search %}search=search&{% endif %}{% if flexRadioDefault %}flexRadioDefault={{ flexRadioDefault }}&{% endif %}{% if filter %}filter=filter&{% endif %}{% if page %}page={{ page }}&{% endif %}sort=status&orderp={{ orderp|default:'asc' }}{% if first_date %}&first_date={{ first_date }}&{% endif %}{% if second_date %}second_date={{ second_date }}&{% endif %}">Order
+                                            Status</a></th>
+                                        <th scope="col"><a class="text-decoration-none text-dark"
+                                                           href="?{% if filter1 %}filter1={{ filter1 }}&{% endif %}{% if search %}search=search&{% endif %}{% if flexRadioDefault %}flexRadioDefault={{ flexRadioDefault }}&{% endif %}{% if filter %}filter=filter&{% endif %}{% if page %}page={{ page }}&{% endif %}sort=payment&orderp={{ orderp|default:'asc' }}{% if first_date %}&first_date={{ first_date }}&{% endif %}{% if second_date %}second_date={{ second_date }}&{% endif %}">Payment
+                                            Status</a></th>
+                                        <th scope="col"></th>
+                                        <th scope="col"></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for order in orders %}
+                                        <tr class="justify-content-center">
+                                            <th scope="row">{{ order.id }}</th>
+                                            <td>{{ order.phone_number }}</td>
+                                            <td>{{ order.order_date }}</td>
+                                            <td>{{ order.table_number.Table_number }} {{ order.table_number }}</td>
+                                            <td>{{ order.get_status_display }}</td>
+                                            <td>{{ order.get_payment_display }}</td>
+                                            <td>
+                                            {% if order.get_status_display == 'Approved' and order.get_payment_display == 'Unpaid' %}
+                                                <a href="?paid={{ order.id }}&{% if page %}page={{ page }}&{% endif %}{% if filter1 %}filter1={{ filter1 }}&{% endif %}{% if first_date %}first_date={{ first_date }}&{% endif %}{% if second_date %}second_date={{ second_date }}&{% endif %}{% if search %}search=search&{% endif %}{% if flexRadioDefault %}flexRadioDefault={{ flexRadioDefault }}&{% endif %}{% if filter %}filter=filter&{% endif %}{% if sort %}sort={{ sort }}&{% endif %}orderp={% if orderp == 'asc' %} {{ 'desc' }} {% elif orderp == 'desc' %}{{ 'asc' }}{% endif %}">
+                                                    <button class="btn btn-primary"><i class="bi bi-credit-card"></i></button>
+                                                </a>
+                                            {% endif %}
+                                            </td>
+                                            <td>
+                                                <a href="{% url 'order_detail' order.id %}">
+                                                    <button class="btn btn-primary">View Details</button>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                                <div class="d-flex justify-content-center">
+                                    <!-- Display pagination links -->
+                                    {% if orders.has_other_pages %}
+                                        <ul class="pagination">
+                                            {% if orders.has_previous %}
+                                                <li class="page-item">
+                                                    <a class="page-link"
+                                                       href="?page={{ orders.previous_page_number }}&{% if filter1 %}filter1={{ filter1 }}&{% endif %}{% if first_date %}first_date={{ first_date }}&{% endif %}{% if second_date %}second_date={{ second_date }}&{% endif %}{% if search %}search=search&{% endif %}{% if flexRadioDefault %}flexRadioDefault={{ flexRadioDefault }}&{% endif %}{% if filter %}filter=filter&{% endif %}{% if sort %}sort={{ sort }}&{% endif %}orderp={% if orderp == 'asc' %}{{ 'desc' }} {% elif orderp == 'desc' %}{{ 'asc' }}{% endif %}">prev</a>
+                                                </li>
+                                            {% else %}
+                                                <li class="page-item disabled">
+                                                    <span class="page-link">prev</span>
+                                                </li>
+                                            {% endif %}
+                                            {% for page in orders.paginator.page_range %}
+                                                {% if orders.number == page %}
+                                                    <li class="page-item active">
+                                                        <span class="page-link">{{ page }}</span>
+                                                    </li>
+                                                {% else %}
+                                                    <li class="page-item">
+                                                        <a class="page-link"
+                                                           href="?page={{ page }}&{% if filter1 %}filter1={{ filter1 }}&{% endif %}{% if first_date %}first_date={{ first_date }}&{% endif %}{% if second_date %}second_date={{ second_date }}&{% endif %}{% if search %}search=search&{% endif %}{% if flexRadioDefault %}flexRadioDefault={{ flexRadioDefault }}&{% endif %}{% if filter %}filter=filter&{% endif %}{% if sort %}sort={{ sort }}&{% endif %}orderp={% if orderp == 'asc' %}{{ 'desc' }} {% elif orderp == 'desc' %}{{ 'asc' }}{% endif %}">{{ page }}</a>
+                                                    </li>
+                                                {% endif %}
+                                            {% endfor %}
+                                            {% if orders.has_next %}
+                                                <li class="page-item">
+                                                    <a class="page-link"
+                                                       href="?page={{ orders.next_page_number }}&{% if filter1 %}filter1={{ filter1 }}&{% endif %}{% if first_date %}first_date={{ first_date }}&{% endif %}{% if second_date %}second_date={{ second_date }}&{% endif %}{% if search %}search=search&{% endif %}{% if flexRadioDefault %}flexRadioDefault={{ flexRadioDefault }}&{% endif %}{% if filter %}filter=filter&{% endif %}{% if sort %}sort={{ sort }}&{% endif %}orderp={% if orderp == 'asc' %}{{ 'desc' }} {% elif orderp == 'desc' %}{{ 'asc' }}{% endif %}">next</a>
+                                                </li>
+                                            {% else %}
+                                                <li class="page-item disabled">
+                                                    <span class="page-link">next</span>
+                                                </li>
+                                            {% endif %}
+                                        </ul>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

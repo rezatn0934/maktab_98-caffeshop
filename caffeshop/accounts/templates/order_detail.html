@@ -1,0 +1,122 @@
+{% extends 'dashbase.html' %}
+
+{% block content %}
+    <div class="content-start transition">
+        <div class="container-fluid dashboard">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4>Order Id: {{ order.id }}</h4>
+                            <p>Tabel: {{ order.table_number.Table_number }} {{ order.table_number }}</p>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <p>Customer Phone Number: {{ order.phone_number }}</p>
+                                </div>
+                                <div class="col-md-4">
+                                </div>
+                                <div class="col-md-4">
+                                    <p>Order Date: {{ order.order_date }}</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <p>Order Status: {{ order.get_status_display }}</p>
+                                </div>
+                                <div class="col-md-4">
+                                    <p>Payment Status: {{ order.get_payment_display }}</p>
+                                </div>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-striped align-items-center"
+                                       style="font-size: .8rem !important;">
+                                    <thead>
+                                    <tr>
+                                        <th scope="col">Order detail Id</th>
+                                        <th scope="col">Product</th>
+                                        <th scope="col">Quantity</th>
+                                        <th scope="col">Total Price</th>
+                                        <th scope="col"></th>
+                                        <th scope="col"></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for id, total_price, order_detail in order_details %}
+                                        <form action="{% url 'order_detail' id %}" method="POST">
+                                            {% csrf_token %}
+                                            <tr class="justify-content-center">
+                                                <th scope="row">{{ id }}</th>
+                                                {% for field in order_detail %}
+                                                    <td>{{ field }}</td>
+                                                {% endfor %}
+                                                <td>
+                                                    ${{ total_price }}
+                                                </td>
+                                                <td>
+                                                    {% if order.get_payment_display == 'Unpaid' and not order.get_status_display == 'Canceled' %}
+                                                        <button type="submit" class="btn btn-primary" name="update">
+                                                            <i class="bi bi-pencil"></i>
+                                                        </button>
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    {% if order.get_payment_display == 'Unpaid' and not order.get_status_display == 'Canceled' %}
+                                                        <a href="{% url 'delete_order_item' id %}">
+                                                            <button type="button" class="btn btn-danger" name="delete">
+                                                                <i class="bi bi-trash"></i>
+                                                            </button>
+                                                        </a>
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                        </form>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="row d-flex justify-content-center">
+                                {% if order.get_payment_display == 'Unpaid' and not order.get_status_display == 'Canceled' %}
+                                    <form action="{% url 'create_order_detail' order.id %}" method="POST"
+                                          class="justify-content-center d-flex align-items-center">
+                                        {% csrf_token %}
+                                        {% for field in creat_form %}
+                                            <div class="col-md-3">
+                                                {{ field }}
+                                            </div>
+                                        {% endfor %}
+                                        <div class="col-md-2">
+                                            <button type="submit" class="btn btn-success" name="update">
+                                                <i class="bi bi-plus-square"></i>
+                                            </button>
+                                        </div>
+                                    </form>
+                                {% endif %}
+                            </div>
+                            <div class="row mt-5 justify-content-between align-items-center">
+                                <div class="col-md-3">
+                                    <p>Order Total Price: ${{ order.total_price }}</p>
+                                </div>
+                                <div class="col-md-6 text-end">
+                                    {% if order.get_payment_display == 'Unpaid' and not order.get_status_display == 'Canceled' %}
+                                        <a href="{% url 'confirm_order' order.id %}">
+                                            <button type="button" class="btn btn-success btn-sm" name="confirm">
+                                                <i class="bi bi-check-circle"></i> Confirm Order
+                                            </button>
+                                        </a>
+                                        <a href="{% url 'cancel_order' order.id %}">
+                                            <button type="button" class="btn btn-danger btn-sm" name="cancel">
+                                                <i class="bi bi-x-circle"></i> Cancel Order
+                                            </button>
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

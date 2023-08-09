@@ -1,0 +1,55 @@
+{% extends 'dashbase.html' %}
+{% load static %}
+
+{% block content %}
+    <div class="content-start transition  ">
+        <div class="container-fluid dashboard">
+            <div class="row">
+                <div class="content-header">
+                    <h1>Sections</h1>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card-group">
+                            <div class="card">
+                                <div class="card-content">
+                                    <img class="card-img-top img-fluid" src="{% static 'img/order.jpg' %}"
+                                         alt="Card image cap">
+                                    <div class="card-body">
+                                        <h4 class="card-title"><a href="{% url 'order_list' %}">Orders</a></h4>
+                                        <p class="card-text"></p>
+                                        <p class="text-muted">Section details</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card">
+                                <div class="card-content">
+                                    <img class="card-img-top img-fluid" src="{% static 'img/items.jpg' %}"
+                                         alt="Card image cap"/>
+                                    <div class="card-body">
+                                        <h4 class="card-title">Products</h4>
+                                        <p class="card-text">
+                                        </p>
+                                        <p class="text-muted"><a href="">Section details</a></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card">
+                                <div class="card-content">
+                                    <img class="card-img-top img-fluid" src="{% static 'img/categories.jpg' %}"
+                                         alt="Card image cap">
+                                    <div class="card-body">
+                                        <h4 class="card-title">Categories</h4>
+                                        <p class="card-text">
+                                        </p>
+                                        <p class="text-muted"><a href="">Section details</a></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

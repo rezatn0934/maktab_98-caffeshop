@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+
+{% block order_number %} {{ request.COOKIES.number_of_order_items }} {% endblock %}
+
+{% block content %}
+    <div id="portfolio">
+        <div class="section-title text-center center">
+            <div class="overlay">
+                <h2>History</h2>
+                <hr>
+                <p>The Best quality what you deserve.</p>
+            </div>
+        </div>
+        <div>
+        {% if message %}
+
+                <div class="row h4 justify-content-center text-bg-danger alert {{ message.tags }}" role="alert" >
+                    {{ message }}
+                </div>
+
+        {% endif %}
+        </div>
+        {% if last_order %}
+        <div class="row d-flex justify-content-center align-items-center h-100">
+            <div class="col col-lg-11 col-xl-9">
+                <div class="card rounded-3">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between mb-3">
+                            <div class="row">
+                                 <h4 >Order ID: {{ last_order.id }}</h4>
+                                 <h6 >Table: {{ last_order.table_number }}</h6>
+                            </div>
+                            <div class="row justify-content-center text-center">
+                                    <small>Order Date:</small>
+                                    <small>{{ last_order.order_date }}</small>
+                            </div>
+                        </div>
+                        <table class="table table-striped table-hover mb-4">
+                            <thead>
+                            <tr>
+                                <th scope="col">Product Name</th>
+                                <th scope="col">Quantity</th>
+                                <th scope="col">Price</th>
+                                <th scope="col">Total Price</th>
+
+
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for item in order_item %}
+                                <tr>
+
+                                    <td>{{ item.product }}</td>
+                                    <td>{{ item.quantity }}</td>
+                                    <td>${{ item.price }}</td>
+                                    <td>${{ item.total_price }}</td>
+
+
+
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="  d-flex justify-content-around align-items-center mt-4">
+                    <h3 >Total Price: ${{ last_order.total_price }} </h3>
+
+                    <h3 >Order Status: {{ last_order.get_status_display }} </h3>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+{% endblock %}

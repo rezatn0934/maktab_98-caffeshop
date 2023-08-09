@@ -1,0 +1,212 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block link %}
+
+
+    <style>
+
+
+        .intro {
+            background-color: rgb(255, 255, 255) !important;
+        }
+
+        .cart {
+            /* width: 80% !important; */
+            max-width: 750px;
+        }
+
+        .product-text {
+            /* padding: 0em 0em 0em 1em; */
+            margin: 5px;
+            height: auto;
+            /* height:0; */
+            width: auto;
+        }
+
+        td.cakes img {
+            /* padding: 1em 0em; */
+            /* background-color: yellow; */
+            background-color: blue;
+            background-size: cover;
+            border-radius: 10px;
+            /* background-size: cover; */
+        }
+
+        #checkout1{
+            {% if request.COOKIES.number_of_order_items == 0 %}
+                pointer-events: none;
+            {% endif %}
+        }
+        ::-webkit-input-placeholder{
+    font-size: 0.7rem !important;
+
+}
+        label {
+        text-align: left;
+
+color: black;
+font-size: 12px;
+  font-weight: bold;
+
+}
+
+    </style>
+
+    <link rel="stylesheet" href="{% static 'flat_cart_widget\web\css\style.css' %}">
+    <script>
+        $(document).ready(function (c) {
+            $('.close').on('click', function (c) {
+                $('.cake-top').fadeOut('slow', function (c) {
+                    $('.cake-top').remove();
+                });
+            });
+        });
+    </script>
+    <script>
+        $(document).ready(function (c) {
+            $('.close-btm').on('click', function (c) {
+                $('.cake-bottom').fadeOut('slow', function (c) {
+                    $('.cake-bottom').remove();
+                });
+            });
+        });
+    </script>
+{% endblock %}
+
+
+{% block order_number %} {{ request.COOKIES.number_of_order_items }} {% endblock %}
+
+{% block content %}
+
+    <header id="header">
+        <div class="intro"
+             style="background-repeat: no-repeat; background-image: url({{ info.background_image.url }});  background-size: cover ; ">
+            <div class="overlay">
+                <div class="container justify-content-center" style="background-color: rgba(255, 255, 255, 0);">
+                    <div style="height: 100px;">
+                    </div>
+                    <div class="logo">
+                        <!-- <h3>Flat Cart Widget</h3> -->
+                    </div>
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div id="msg" class="alert {{ message.tags }}" role="alert">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                    <div class="cart">
+                        <div class="cart-top row text-center justify-content-center">
+                            <div class="cart-experience col-sm-4">
+                                <h4>Shopping Cart</h4>
+                            </div>
+                        </div>
+                        <div class="cart-bottom row">
+                            <div class="table">
+                                <table>
+                                    <tbody class="col-sm-12">
+                                    <!-- <tr  class="main-heading row justify-content-between">
+                                        <th class="col-sm-3" >Images</th>
+                                        <th class="long-txt col-sm-2">Product Name</th>
+                                        <th class="col-sm-2" >Quantity</th>
+                                        <th class="col-sm-1" >Price</th>
+                                        <th class="col-sm-1" >Total</th>
+                                        <th class="col-sm-1" ></th>
+                                    </tr> -->
+                                    {% for product , quantity , total in order_items %}
+                                        <form action="{% url 'orders:update_or_remove' %}" method="post">
+                                            {% csrf_token %}
+                                            <tr class="cake-top row justify-content-between d-flex align-items-center">
+                                                <td class="cakes col-sm-3">
+                                                    <div class="product-img  ">
+                                                        <img src="{{ product.image.url }}">
+                                                    </div>
+                                                </td>
+                                                <td class="cake-text1 col-sm-2">
+                                                    <div class="product-text">
+                                                        <p class="my-5"
+                                                           style="font-size:1.8vw !important;">{{ product.name }}</p>
+                                                    </div>
+                                                </td>
+                                                <td class="quantity col-sm-3 col-md-2">
+                                                    <div class="product-right">
+                                                        <input class="form-control input-small" min="1" type="number"
+                                                               id="quantity" name="quantity" value="{{ quantity }}">
+                                                    </div>
+                                                </td>
+                                                <td class="price col-sm-1 py-2">
+                                                    <span style="font-size:1.8vw !important;"
+                                                          class=" col-sm-110">${{ product.price }}</span>
+                                                </td>
+                                                <td class="price col-sm-1 py-2">
+                                                    <span style="font-size:1.8vw !important;" class="" id="total-count">${{ total }}</span>
+                                                </td>
+                                                <td class="top-remove col-sm-12 col-md-2 text-center mx-1 ">
+                                                    <div class="row px-1 justify-content-around">
+                                                        <input name="product" value="{{ product.id }}" type="hidden">
+                                                        <button name="update" value="True" type="submit"
+                                                                class="col-sm-4 btn btn-outline-warning m-auto  d-flex justify-content-center">
+                                                            <i class="bi bi-arrow-repeat"></i>
+                                                        </button>
+                                                        <button name="remove" value="True" type="submit"
+                                                                class="col-sm-4 mx-1 btn btn-outline-danger d-flex justify-content-center">
+                                                            <i class="bi bi-trash"></i>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </form>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="vocher pt-0">
+                                <!-- <div class="dis-card">
+                                    <h5>Discount Code or Voucher</h2>
+                                    <p>Enter your discount code or voucher to receive a discount on your total order.</p>
+                                    <input type="text" value="">
+                                    <input type="submit"  value="Redeem">
+                                </div> -->
+                                <div class="dis-total">
+                                    <div class="tot-btn1 ">
+                                        <form action="{% url 'orders:cart' %}" id="table-reserve-form" method="post" novalidate>
+                                            {% csrf_token %}
+                                            <div class="row justify-content-between active" id="RadioTarget1" aria-hidden="true">
+                                                <div class="col-sm-5 d-flex align-items-end">
+                                                    <div class="row gy-2">
+<!--                                                        {% for field in form %}-->
+<!--                                                        <div class="py-1" style="color: black;">-->
+<!--                                                            {{ field.errors }}-->
+<!--                                                            <label>{{ field.label_tag }} </label>-->
+<!--                                                            {{ field }}-->
+<!--                                                        </div> -->
+<!--                                                        {% endfor %}-->
+                                                        {{form}}
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-5">
+                                                    <h1 class="mx-1">Total ${{ order_total_price }}</h1>
+                                                    <div class="row justify-content-around">
+                                                        <button class="shop btn btn-dark col-sm-4 p-1 mx-2" href="#">Back to Shop</button>
+                                                        <button class="col-sm-5 check p-1 mx-1 heart2 btn btn-success" id="checkout1" style="color:black !important; background-color: rgb(139, 215, 62);" type="submit" form="table-reserve-form">
+                                                             Continue to Checkout
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                <div class="clear"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    
+{% endblock %}
+
