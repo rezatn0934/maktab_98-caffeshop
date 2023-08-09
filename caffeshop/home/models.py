@@ -11,6 +11,9 @@ class Gallery(ImageMixin, models.Model):
     is_active = models.BooleanField(default=True)
     image = models.ImageField(upload_to='images/gallery')
 
+    class Meta:
+        verbose_name_plural = "Gallery"
+
     def img_preview(self):
         if self.image:
             return mark_safe(f'<img src = "{self.image.url}" width = "150" height="150"/> ')
@@ -44,6 +47,9 @@ class Info(ImageMixin, models.Model):
     background_image = models.ImageField(upload_to='images/HomePageBackground')
     logo = models.ImageField(upload_to='images/logo', null=True, blank=True)
 
+    class Meta:
+        verbose_name_plural = "Info"
+
     def logo_preview(self):
         if self.logo:
             return mark_safe(f'<img src = "{self.logo.url}" width = "50" height="80"/> ')
@@ -75,6 +81,9 @@ class About(ImageMixin, models.Model):
     content = models.TextField()
     is_active = models.BooleanField(default=True)
     image = models.ImageField(upload_to='images/about')
+
+    class Meta:
+        verbose_name_plural = "About"
 
     def img_preview(self):
         if self.image:
