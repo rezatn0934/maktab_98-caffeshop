@@ -1,15 +1,20 @@
-from django.utils.html import mark_safe
-from utils import phoneNumberRegex, ImageMixin
 from django.db import models
+from django.utils.translation import gettext_lazy as _
+from django.utils.html import mark_safe
+
+from utils import phoneNumberRegex, ImageMixin
 
 
 # Create your models here.
 
 
 class Gallery(ImageMixin, models.Model):
-    title = models.CharField(max_length=50)
-    is_active = models.BooleanField(default=True)
-    image = models.ImageField(upload_to='images/gallery')
+    title = models.CharField(verbose_name=_("Image Title"), max_length=50)
+    is_active = models.BooleanField(verbose_name=_("Active"), default=True)
+    image = models.ImageField(verbose_name=_("Image"), upload_to='images/gallery')
+
+    class Meta:
+        verbose_name_plural = "Gallery"
 
     def img_preview(self):
         if self.image:
@@ -32,17 +37,20 @@ class Gallery(ImageMixin, models.Model):
 
 
 class Info(ImageMixin, models.Model):
-    cafe_title = models.CharField(max_length=25)
-    cafe_motto = models.TextField()
-    phone = models.CharField(validators=[phoneNumberRegex])
-    email = models.EmailField()
-    work_hours = models.CharField(max_length=100)
-    address = models.TextField()
-    instagram = models.URLField()
-    facebook = models.URLField()
-    twitter = models.URLField()
-    background_image = models.ImageField(upload_to='images/HomePageBackground')
-    logo = models.ImageField(upload_to='images/logo', null=True, blank=True)
+    cafe_title = models.CharField(verbose_name=_("Cafe Title"), max_length=25)
+    cafe_motto = models.TextField(verbose_name=_("Cafe Motto"), )
+    phone = models.CharField(verbose_name=_("Phone Number"), validators=[phoneNumberRegex])
+    email = models.EmailField(verbose_name=_("Email Address"), )
+    work_hours = models.CharField(verbose_name=_("Working Hours"), max_length=100)
+    address = models.TextField(verbose_name=_("Address"), )
+    instagram = models.URLField(verbose_name=_("Instagram Link"), )
+    facebook = models.URLField(verbose_name=_("Facebook Link"), )
+    twitter = models.URLField(verbose_name=_("Twitter Link"), )
+    background_image = models.ImageField(verbose_name=_("Background Image"), upload_to='images/HomePageBackground')
+    logo = models.ImageField(verbose_name=_("Logo"), upload_to='images/logo', null=True, blank=True)
+
+    class Meta:
+        verbose_name_plural = "Info"
 
     def logo_preview(self):
         if self.logo:
@@ -71,10 +79,13 @@ class Info(ImageMixin, models.Model):
 
 
 class About(ImageMixin, models.Model):
-    title = models.CharField(max_length=30)
-    content = models.TextField()
-    is_active = models.BooleanField(default=True)
-    image = models.ImageField(upload_to='images/about')
+    title = models.CharField(verbose_name=_("About Us Title"), max_length=30)
+    content = models.TextField(verbose_name=_("About Us Content"))
+    is_active = models.BooleanField(verbose_name=_("Active"), default=True)
+    image = models.ImageField(verbose_name=_("About Us Image"), upload_to='images/about')
+
+    class Meta:
+        verbose_name_plural = "About"
 
     def img_preview(self):
         if self.image:
