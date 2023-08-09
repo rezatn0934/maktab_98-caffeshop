@@ -38,6 +38,18 @@
                 pointer-events: none;
             {% endif %}
         }
+        ::-webkit-input-placeholder{
+    font-size: 0.7rem !important;
+
+}
+        label {
+        text-align: left;
+
+color: black;
+font-size: 12px;
+  font-weight: bold;
+
+}
 
     </style>
 
@@ -162,13 +174,15 @@
                                             {% csrf_token %}
                                             <div class="row justify-content-between active" id="RadioTarget1" aria-hidden="true">
                                                 <div class="col-sm-5 d-flex align-items-end">
-                                                    <div class="row">
-                                                        {% for field in form %}
-                                                        <div class="py-1" style="color: black;">
-                                                            {{ field.errors }}
-                                                            {{ field.label_tag }} {{ field }}
-                                                        </div> 
-                                                        {% endfor %}
+                                                    <div class="row gy-2">
+<!--                                                        {% for field in form %}-->
+<!--                                                        <div class="py-1" style="color: black;">-->
+<!--                                                            {{ field.errors }}-->
+<!--                                                            <label>{{ field.label_tag }} </label>-->
+<!--                                                            {{ field }}-->
+<!--                                                        </div> -->
+<!--                                                        {% endfor %}-->
+                                                        {{form}}
                                                     </div>
                                                 </div>
                                                 <div class="col-sm-5">
