@@ -10,7 +10,7 @@ from utils import ImageMixin
 
 class Category(ImageMixin, models.Model):
     name = models.CharField(verbose_name=_("Category Name"), max_length=250, unique=True)
-    image = models.ImageField(upload_to='images/category/')
+    image = models.ImageField(verbose_name=_("Category Image"), upload_to='images/category/')
     parent_category = models.ForeignKey("self", verbose_name=_("Parent Category"), on_delete=models.PROTECT, null=True, blank=True)
 
     class Meta:
