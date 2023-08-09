@@ -4,6 +4,22 @@
 
 
 {% block order_number %} {{ request.COOKIES.number_of_order_items }} {% endblock %}
+{% block link %}
+  <style>
+{% if categories %}
+    {% for category in categories %}
+        {% if not category.parent_category %}
+          .{{ category.name|cut:' ' }}1{
+            display:none;
+          }
+          .{{ category.name|cut:' ' }}1.Active1{
+            display:inline-flex;
+          }
+        {% endif %}
+    {% endfor %}
+{% endif %}
+  </style>
+{% endblock %}
 
 {% block content %}
 <div id="portfolio">
