@@ -29,8 +29,9 @@
                 <div class="card rounded-3">
                     <div class="card-body p-4">
                         <div class="d-flex justify-content-between mb-3">
-                            <div >
+                            <div class="row">
                                  <h4 >Order ID: {{ last_order.id }}</h4>
+                                 <h6 >Table: {{ last_order.table_number }}</h6>
                             </div>
                             <div class="row justify-content-center text-center">
                                     <small>Order Date:</small>
@@ -54,8 +55,8 @@
 
                                     <td>{{ item.product }}</td>
                                     <td>{{ item.quantity }}</td>
-                                    <td>{{ item.price }}</td>
-                                    <td>{{ item.total_price }}</td>
+                                    <td>${{ item.price }}</td>
+                                    <td>${{ item.total_price }}</td>
 
 
 
@@ -66,7 +67,7 @@
                     </div>
                 </div>
                 <div class="  d-flex justify-content-around align-items-center mt-4">
-                    <h3 >Total Price: {{ last_order.total_price }} </h3>
+                    <h3 >Total Price: ${{ last_order.total_price }} </h3>
 
                     <h3 >Order Status: {{ last_order.get_status_display }} </h3>
                 </div>
