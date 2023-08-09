@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 from kavenegar import *
 import pyotp
 import os
+from django.shortcuts import redirect
 
 load_dotenv()
 phoneNumberRegex = RegexValidator(regex=r"^09\d{9}$")
@@ -54,3 +55,8 @@ class ImageMixin:
         target = getattr(self, field)
         if os.path.exists(target.path):
             os.remove(target.path)
+
+
+def check_is_authenticated(request):
+    if request.user.is_authenticated:
+        return redirect("dashboard")
