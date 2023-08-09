@@ -4,10 +4,11 @@ from .models import User
 
 class PhoneAuthBackend(ModelBackend):
 
-    def authenticate(self, request, phone=None, password=None, **kwargs):
+    def authenticate(self, request, phone=None, user_input_otp=None, main_otp=None, **kwargs):
         try:
             user = User.objects.get(phone=phone)
-            return user
+            if user_input_otp and main_otp == user_input_otp:
+                return user
         except User.DoesNotExist:
             return
 

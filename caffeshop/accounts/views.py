@@ -6,15 +6,17 @@ from django.shortcuts import render, redirect
 from django.utils.decorators import method_decorator
 from django.utils import timezone
 from django.views import View
+
 from .authentication import PhoneAuthBackend
 from .form import StaffLoginForm, VerifyCodeForm, OrderDetailUpdateForm
-from .models import User
 from orders.models import Order, Order_detail
-from utils import send_otp_code
+from utils import send_otp_code, check_is_authenticated
+
 import datetime
 
 
 # Create your views here.
+
 
 class StaffLogin(View):
     message = None
@@ -22,24 +24,19 @@ class StaffLogin(View):
     html_temp = "login.html"
 
     def get(self, request):
-        if request.user.is_authenticated:
-            return redirect("dashboard")
+        if response := check_is_authenticated(request):
+            return response
         context = {"message": self.message, "form": self.form()}
         return render(request, self.html_temp, context=context)
 
     def post(self, request):
         form = self.form(request.POST)
         if form.is_valid():
-            cd = form.cleaned_data
-            phone = cd["phone"]
-            user = PhoneAuthBackend().authenticate(request, phone=phone)
-            if user is not None:
-                request.session["phone"] = phone
-                return redirect("verify")
-            else:
-                message = "Invalid phone number"
+            phone = form.cleaned_data["phone"]
+            request.session["phone"] = phone
+            return redirect("verify")
         else:
-            message = "wrong input"
+            message = "Wrong input, Phone number Should Start Like 09123456789"
 
         context = {"message": message, "form": self.form()}
         return render(request, self.html_temp, context=context)
@@ -51,8 +48,8 @@ class Verify(View):
     html_temp = "verify.html"
 
     def get(self, request):
-        if request.user.is_authenticated:
-            return redirect("dashboard")
+        if response := check_is_authenticated(request):
+            return response
         if request.session.get("phone") is None:
             return redirect("login")
 
@@ -65,27 +62,29 @@ class Verify(View):
         form = self.form(request.POST)
         if form.is_valid():
             cd = form.cleaned_data
-            code = cd["code"]
+            user_input_otp = cd["otp_code"]
             phone = request.session["phone"]
-            otp_key = request.session.get("otp_code")
+            main_otp = request.session.get("otp_code")
             otp_valid_date = request.session.get("otp_valid_date")
-            if otp_key is not None and otp_valid_date is not None:
+            if main_otp is not None and otp_valid_date is not None:
                 valid_until = datetime.datetime.fromisoformat(otp_valid_date)
                 if valid_until > timezone.now():
-                    if code == otp_key:
-                        user = User.objects.get(phone=phone)
+                    user = PhoneAuthBackend().authenticate(request, phone=phone,
+                                                           user_input_otp=user_input_otp,
+                                                           main_otp=main_otp)
+                    if user is not None:
                         login(request, user, backend='accounts.authentication.PhoneAuthBackend')
                         del request.session["otp_code"]
                         del request.session["otp_valid_date"]
                         return redirect("dashboard")
                     else:
-                        message = "Invalid OTP"
+                        message = "Invalid Phone Number or OTP"
                 else:
                     message = "OTP has been expired"
             else:
                 message = "Start from here!"
         else:
-            message = "wrong input"
+            message = "Wrong input"
 
         form = self.form()
         context = {"message": message, "form": form}
@@ -170,7 +169,7 @@ class OrderDetailView(View):
         order = Order.objects.get(id=pk)
         order_details = Order_detail.objects.filter(order=pk)
         order_details = map(lambda order_detail: (
-                            order_detail.id, order_detail.total_price, OrderDetailUpdateForm(instance=order_detail)),
+            order_detail.id, order_detail.total_price, OrderDetailUpdateForm(instance=order_detail)),
                             order_details)
         context = {
             'order': order,
@@ -253,3 +252,4 @@ class CreateOrder(View):
 def logout_view(request):
     logout(request)
     return redirect("login")
+
