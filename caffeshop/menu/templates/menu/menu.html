@@ -4,6 +4,22 @@
 
 
 {% block order_number %} {{ request.COOKIES.number_of_order_items }} {% endblock %}
+{% block link %}
+  <style>
+{% if categories %}
+    {% for category in categories %}
+        {% if not category.parent_category %}
+          .{{ category.name|cut:' ' }}1{
+            display:none;
+          }
+          .{{ category.name|cut:' ' }}1.Active1{
+            display:inline-flex;
+          }
+        {% endif %}
+    {% endfor %}
+{% endif %}
+  </style>
+{% endblock %}
 
 {% block content %}
 <div id="portfolio">
@@ -23,9 +39,21 @@
                 <li><a href="#" data-filter="*"  >All</a></li>
                 {% if categories %}
                   {% for category in categories %}
-                      <!-- {% if not category.parent_category %} -->
-                      <li><a href="#" data-filter=".{{ category.name|cut:' ' }}" >{{ category.name }}</a></li>
-                      <!-- {% endif %} -->
+                      {% if not category.parent_category %} 
+                        <li><a href="#" data-filter=".{{ category.name|cut:' ' }}" id="{{ category.name|cut:' ' }}" onclick="reply_click(this.id)" >{{ category.name }}</a></li>
+                      {% endif %}
+                  {% endfor %}
+                {% endif %}
+              </ol>
+            </li>
+            <br>
+            <li>
+              <ol class="type">
+                {% if categories %}
+                  {% for category in categories %}
+                       {% if category.parent_category and not category.parent_category.parent_category %}
+                      <li><a href="#" data-filter=".{{ category.name|cut:' ' }}"  class="cat {{ category.parent_category.name|cut:' ' }}1 {{ category.parent_category.parent_category.name|cut:' ' }}1" >{{ category.name }}</a></li>
+                       {% endif %} 
                   {% endfor %}
                 {% endif %}
               </ol>
@@ -65,7 +93,7 @@
                             <span class="co-sm-1 text-center">{{ product.name }}</span>
                             <span class="co-sm-1 text-center">{{ product.price }} <span>$</span></span>
                             <!-- <span class="co-sm-1 text-center">Qnt</span> -->
-                            <span class="col-sm-8"><input placeholder="Qnt" class="col-sm-11 my-3 text-center  qnt" type="number" min="0"  name="quantity" value="1" style="width: 100%; border-radius: 5px; color: #00014f; font-weight: bold; background-color: rgb(255, 255, 255);" {% if not product.is_active %} disabled {% endif %}></span>
+                            <span class="col-sm-8"><input placeholder="Qnt" class="col-sm-11 my-3 text-center  qnt" type="number" min="1"  name="quantity" value="1" style="width: 100%; border-radius: 5px; color: #00014f; font-weight: bold; background-color: rgb(255, 255, 255);" {% if not product.is_active %} disabled {% endif %}></span>
                             <div class="col-sm-8">
                               <input type="submit" class="btn btn-cart moving-btn1 heart" style="border-radius: 10px; color: rgb(3, 0, 38) !important; background-color: rgba(16, 3, 87, 0.142); width: 100%;" value="Add to cart"> 
                             </div>
@@ -80,5 +108,23 @@
       </div>
     </div>
   </div>
+{% endblock %}
+
+
+{% block footerlink %}
+<script type="text/javascript">
+  function reply_click(clicked_id)
+  {
+      var classNam = clicked_id + "1";
+      const allCats = document.getElementsByClassName("cat");
+      const thisCats = document.getElementsByClassName(classNam);
+      for (item of allCats) {
+        item.classList.remove("Active1");
+      }
+      for (var index=0;index < thisCats.length;index++) {
+        thisCats[index].classList.add("Active1");
+      }
+  }
+</script>
 {% endblock %}
 
