@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
@@ -157,7 +158,6 @@ class Orders(View):
         orders = paginator.get_page(page_number)
         context['orders'] = orders
         context['page'] = page_number
-        print(request.path)
         return render(request, 'orders_list.html', context)
 
 
@@ -166,18 +166,22 @@ class OrderDetailView(View):
     @method_decorator(login_required)
     def get(self, request, pk):
         create_order_form = OrderDetailUpdateForm()
-        order = Order.objects.get(id=pk)
-        order_details = Order_detail.objects.filter(order=pk)
-        order_details = map(lambda order_detail: (
-            order_detail.id, order_detail.total_price, OrderDetailUpdateForm(instance=order_detail)),
-                            order_details)
-        context = {
-            'order': order,
-            'order_details': order_details,
-            'creat_form': create_order_form,
-        }
-
-        return render(request, 'order_detail.html', context)
+        order = Order.objects.filter(id=pk)
+        if order:
+            order = order.get(id=pk)
+            order_details = Order_detail.objects.filter(order=pk)
+            order_details = map(lambda order_detail: (
+                order_detail.id, order_detail.total_price, OrderDetailUpdateForm(instance=order_detail)),
+                                order_details)
+            context = {
+                'order': order,
+                'order_details': order_details,
+                'creat_form': create_order_form,
+            }
+            return render(request, 'order_detail.html', context)
+        else:
+            messages.error(request, f'Order {pk} not found')
+            return redirect('order_list')
 
     @method_decorator(login_required)
     def post(self, request, pk):
@@ -188,6 +192,7 @@ class OrderDetailView(View):
                 form.save()
                 return redirect('order_detail', order_detail.order.id)
             else:
+                messages.error(request, 'Form input is not valid')
                 return redirect('order_detail', order_detail.order.id)
 
 
@@ -201,7 +206,7 @@ def confirm_order(request, pk):
             order.save()
             return redirect('order_list')
         else:
-            message = 'Order not found'
+            messages.error(request, f'Order {pk} not found')
             return redirect('order_detail', pk)
 
 
@@ -215,7 +220,7 @@ def cancel_order(request, pk):
             order.save()
             return redirect('order_list')
         else:
-            message = 'Order not found'
+            messages.error(request, f'Order {pk} not found')
             return redirect('order_detail', pk)
 
 
@@ -229,7 +234,8 @@ def delete_order_detail(request, pk):
             order_detail.delete()
             return redirect('order_detail', order.id)
         else:
-            return redirect(request.path)
+            messages.error(request, f'Order items {pk} not found')
+            return redirect('order_list')
 
 
 class CreateOrder(View):
@@ -243,8 +249,7 @@ class CreateOrder(View):
             order_detail.price = order_detail.product.price
             order_detail.save()
         else:
-            message = 'Invalid input'
-
+            messages.error(request, 'Invalid input!!')
         return redirect('order_detail', pk)
 
 
