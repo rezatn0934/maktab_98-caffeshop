@@ -5,6 +5,13 @@
         <div class="container-fluid dashboard">
             <div class="row">
                 <div class="col-md-12">
+                {% if messages %}
+                        {% for message in messages %}
+                            <div id="msg" class="alert {{ message.tags }}" role="alert">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
                     <div class="card">
                         <div class="card-header">
                             <h4>Order Id: {{ order.id }}</h4>

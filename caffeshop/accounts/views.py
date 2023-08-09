@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
@@ -76,6 +77,7 @@ class Verify(View):
                         login(request, user, backend='accounts.authentication.PhoneAuthBackend')
                         del request.session["otp_code"]
                         del request.session["otp_valid_date"]
+                        messages.success(request, 'You have been logged in successfully')
                         return redirect("dashboard")
                     else:
                         message = "Invalid Phone Number or OTP"
@@ -157,7 +159,6 @@ class Orders(View):
         orders = paginator.get_page(page_number)
         context['orders'] = orders
         context['page'] = page_number
-        print(request.path)
         return render(request, 'orders_list.html', context)
 
 
@@ -166,18 +167,22 @@ class OrderDetailView(View):
     @method_decorator(login_required)
     def get(self, request, pk):
         create_order_form = OrderDetailUpdateForm()
-        order = Order.objects.get(id=pk)
-        order_details = Order_detail.objects.filter(order=pk)
-        order_details = map(lambda order_detail: (
-            order_detail.id, order_detail.total_price, OrderDetailUpdateForm(instance=order_detail)),
-                            order_details)
-        context = {
-            'order': order,
-            'order_details': order_details,
-            'creat_form': create_order_form,
-        }
-
-        return render(request, 'order_detail.html', context)
+        order = Order.objects.filter(id=pk)
+        if order:
+            order = order.get(id=pk)
+            order_details = Order_detail.objects.filter(order=pk)
+            order_details = map(lambda order_detail: (
+                order_detail.id, order_detail.total_price, OrderDetailUpdateForm(instance=order_detail)),
+                                order_details)
+            context = {
+                'order': order,
+                'order_details': order_details,
+                'creat_form': create_order_form,
+            }
+            return render(request, 'order_detail.html', context)
+        else:
+            messages.error(request, f'Order {pk} not found')
+            return redirect('order_list')
 
     @method_decorator(login_required)
     def post(self, request, pk):
@@ -185,9 +190,11 @@ class OrderDetailView(View):
             order_detail = Order_detail.objects.get(id=pk)
             form = OrderDetailUpdateForm(request.POST, instance=order_detail)
             if form.is_valid():
-                form.save()
+                order_detail = form.save()
+                messages.success(request, 'Order item has been successfully updated.')
                 return redirect('order_detail', order_detail.order.id)
             else:
+                messages.error(request, 'Form input is not valid')
                 return redirect('order_detail', order_detail.order.id)
 
 
@@ -199,9 +206,10 @@ def confirm_order(request, pk):
             order = order.get(id=pk)
             order.status = 'A'
             order.save()
+            messages.success(request, f'Order {pk} has been successfully Approved.')
             return redirect('order_list')
         else:
-            message = 'Order not found'
+            messages.error(request, f'Order {pk} not found')
             return redirect('order_detail', pk)
 
 
@@ -213,9 +221,10 @@ def cancel_order(request, pk):
             order = order.get(id=pk)
             order.status = 'C'
             order.save()
+            messages.warning(request, f'Order {pk} has been canceled.')
             return redirect('order_list')
         else:
-            message = 'Order not found'
+            messages.error(request, f'Order {pk} not found')
             return redirect('order_detail', pk)
 
 
@@ -227,12 +236,14 @@ def delete_order_detail(request, pk):
             order_detail = order_detail.get(id=pk)
             order = order_detail.order
             order_detail.delete()
+            messages.warning(request, f'Order item {pk} has been canceled!')
             return redirect('order_detail', order.id)
         else:
-            return redirect(request.path)
+            messages.error(request, f'Order items {pk} not found')
+            return redirect('order_list')
 
 
-class CreateOrder(View):
+class CreateOrderItem(View):
     @method_decorator(login_required)
     def post(self, request, pk):
         order = Order.objects.get(id=pk)
@@ -242,9 +253,9 @@ class CreateOrder(View):
             order_detail.order = order
             order_detail.price = order_detail.product.price
             order_detail.save()
+            messages.success(request, f'Order item {order_detail.id} has benn successfully added to Order {pk}')
         else:
-            message = 'Invalid input'
-
+            messages.error(request, 'Invalid input!!')
         return redirect('order_detail', pk)
 
 
