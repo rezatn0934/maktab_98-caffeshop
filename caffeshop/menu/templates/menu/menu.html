@@ -110,3 +110,21 @@
   </div>
 {% endblock %}
 
+
+{% block footerlink %}
+<script type="text/javascript">
+  function reply_click(clicked_id)
+  {
+      var classNam = clicked_id + "1";
+      const allCats = document.getElementsByClassName("cat");
+      const thisCats = document.getElementsByClassName(classNam);
+      for (item of allCats) {
+        item.classList.remove("Active1");
+      }
+      for (var index=0;index < thisCats.length;index++) {
+        thisCats[index].classList.add("Active1");
+      }
+  }
+</script>
+{% endblock %}
+
