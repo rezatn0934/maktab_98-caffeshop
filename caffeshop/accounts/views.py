@@ -243,7 +243,7 @@ def delete_order_detail(request, pk):
             return redirect('order_list')
 
 
-class CreateOrder(View):
+class CreateOrderItem(View):
     @method_decorator(login_required)
     def post(self, request, pk):
         order = Order.objects.get(id=pk)
