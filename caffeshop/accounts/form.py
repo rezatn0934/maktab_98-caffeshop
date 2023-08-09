@@ -5,7 +5,6 @@ from orders.models import Order_detail
 
 
 class CustomUserCreationForm(UserCreationForm):
-
     class Meta:
         model = User
         fields = ('phone', 'first_name', 'last_name', "password1", "password2")
@@ -25,11 +24,13 @@ class CustomUserChangeForm(UserChangeForm):
 
 
 class StaffLoginForm(forms.Form):
-    phone = forms.RegexField(regex=r"^09\d{9}$")
+    phone = forms.RegexField(regex=r"^09\d{9}$",
+                             widget=forms.TextInput(attrs={
+                                 'placeholder': 'Phone number Should Start with 09'}))
 
 
 class VerifyCodeForm(forms.Form):
-    code = forms.RegexField(regex=r"^\d{6}$")
+    otp_code = forms.RegexField(regex=r"^\d{6}$")
 
 
 class OrderDetailUpdateForm(forms.ModelForm):
