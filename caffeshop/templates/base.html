@@ -98,6 +98,13 @@
                             {% endif %}
                                 href="{% url 'menu:menu' %}">Menu</a></li>
                     <li class="nav-item col-lg-1 "><a
+                            {% if request.path == '/cart/history/' %}
+                                class="nav-link page-scroll active"
+                            {% else %}
+                                class="nav-link page-scroll"
+                            {% endif %}
+                                href="{% url 'orders:order_history' %}">History</a></li>
+                    <li class="nav-item col-lg-1 "><a
                             {% if request.path == '/search/' %}
                                 class="nav-link page-scroll active"
                             {% else %}
