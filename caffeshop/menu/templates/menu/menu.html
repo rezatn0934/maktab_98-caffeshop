@@ -39,9 +39,21 @@
                 <li><a href="#" data-filter="*"  >All</a></li>
                 {% if categories %}
                   {% for category in categories %}
-                      <!-- {% if not category.parent_category %} -->
-                      <li><a href="#" data-filter=".{{ category.name|cut:' ' }}" >{{ category.name }}</a></li>
-                      <!-- {% endif %} -->
+                      {% if not category.parent_category %} 
+                        <li><a href="#" data-filter=".{{ category.name|cut:' ' }}" id="{{ category.name|cut:' ' }}" onclick="reply_click(this.id)" >{{ category.name }}</a></li>
+                      {% endif %}
+                  {% endfor %}
+                {% endif %}
+              </ol>
+            </li>
+            <br>
+            <li>
+              <ol class="type">
+                {% if categories %}
+                  {% for category in categories %}
+                       {% if category.parent_category and not category.parent_category.parent_category %}
+                      <li><a href="#" data-filter=".{{ category.name|cut:' ' }}"  class="cat {{ category.parent_category.name|cut:' ' }}1 {{ category.parent_category.parent_category.name|cut:' ' }}1" >{{ category.name }}</a></li>
+                       {% endif %} 
                   {% endfor %}
                 {% endif %}
               </ol>
