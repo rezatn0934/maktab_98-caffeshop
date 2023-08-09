@@ -1,16 +1,17 @@
-from django.core.validators import MinValueValidator
+from django.utils.translation import gettext_lazy as _
 from django.utils.html import mark_safe
-from utils import ImageMixin
 from django.db import models
+
+from utils import ImageMixin
 
 
 # Create your models here.
 
 
 class Category(ImageMixin, models.Model):
-    name = models.CharField(max_length=250, unique=True)
+    name = models.CharField(verbose_name=_("Category Name"), max_length=250, unique=True)
     image = models.ImageField(upload_to='images/category/')
-    parent_category = models.ForeignKey("self", on_delete=models.PROTECT, null=True, blank=True)
+    parent_category = models.ForeignKey("self", verbose_name=_("Parent Category"), on_delete=models.PROTECT, null=True, blank=True)
 
     class Meta:
         verbose_name_plural = "Categories"
@@ -35,12 +36,12 @@ class Category(ImageMixin, models.Model):
 
 
 class Product(ImageMixin, models.Model):
-    category = models.ForeignKey(Category, on_delete=models.PROTECT)
-    name = models.CharField(max_length=50, unique=True)
-    description = models.TextField()
-    price = models.DecimalField(max_digits=5, decimal_places=2)
-    is_active = models.BooleanField(default=True)
-    image = models.ImageField(upload_to='images/product/')
+    category = models.ForeignKey(Category, verbose_name=_("Category"), on_delete=models.PROTECT)
+    name = models.CharField(verbose_name=_("Product Name"), max_length=50, unique=True)
+    description = models.TextField(verbose_name=_("Product Description"))
+    price = models.DecimalField(verbose_name=_("Product Price"), max_digits=5, decimal_places=2)
+    is_active = models.BooleanField(verbose_name=_("Active"), default=True)
+    image = models.ImageField(verbose_name=_("Product Image"), upload_to='images/product/')
 
     def img_preview(self):
         if self.image:
