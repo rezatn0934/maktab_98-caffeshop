@@ -1,10 +1,14 @@
 from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.views import View
+from django.utils import timezone
+
 from menu.models import Product
 from .models import Order, Order_detail, Table
 from .forms import OrderForm
 from utils import check_availability
+
+import datetime
 
 
 # Create your views here.
@@ -92,7 +96,7 @@ def create_order(request):
     customer_order.save()
 
     messages.success(request, "Order has been created successfully.")
-    res = redirect("home")
+    res = redirect("orders/order_history.html")
     res.delete_cookie('orders')
     res.delete_cookie('number_of_order_items')
 
@@ -104,13 +108,26 @@ def create_order(request):
 
 def order_history(request):
     if request.method == "GET":
+
         customer_order_id = request.session.get('order_history')
         if customer_order_id:
+            last_query_time = request.session.get("last_query_time")
+            if last_query_time:
+                last_query_time = datetime.datetime.fromisoformat(last_query_time)
+                if last_query_time + timezone.timedelta(minutes=1) > timezone.now():
+
+                    message = f"You have to wait {(timezone.timedelta(minutes=1)-(timezone.now()-last_query_time)).seconds} seconds."
+                    return render(request, "orders/order_history.html", context={"message": message})
+
             order = Order.objects.get(id=customer_order_id)
             order_item = Order_detail.objects.filter(order=order.id)
+            request.session["last_query_time"] = str(timezone.now())
 
             context = {"last_order": order, "order_item": order_item}
             return render(request, "orders/order_history.html", context=context)
+
         else:
-            messages.error(request, "You Don't have any order yet.")
-            return redirect("home")
+
+            message = "You Don't have any order yet."
+            return render(request, "orders/order_history.html", context={"message": message})
+
