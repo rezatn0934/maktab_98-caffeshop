@@ -6,11 +6,12 @@ from django.shortcuts import render, redirect
 from django.utils.decorators import method_decorator
 from django.utils import timezone
 from django.views import View
+
 from .authentication import PhoneAuthBackend
 from .form import StaffLoginForm, VerifyCodeForm, OrderDetailUpdateForm
-from .models import User
 from orders.models import Order, Order_detail
 from utils import send_otp_code
+
 import datetime
 
 
