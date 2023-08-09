@@ -77,6 +77,7 @@ class Verify(View):
                         login(request, user, backend='accounts.authentication.PhoneAuthBackend')
                         del request.session["otp_code"]
                         del request.session["otp_valid_date"]
+                        messages.success(request, 'You have been logged in successfully')
                         return redirect("dashboard")
                     else:
                         message = "Invalid Phone Number or OTP"
@@ -189,7 +190,8 @@ class OrderDetailView(View):
             order_detail = Order_detail.objects.get(id=pk)
             form = OrderDetailUpdateForm(request.POST, instance=order_detail)
             if form.is_valid():
-                form.save()
+                order_detail = form.save()
+                messages.success(request, 'Order item has been successfully updated.')
                 return redirect('order_detail', order_detail.order.id)
             else:
                 messages.error(request, 'Form input is not valid')
@@ -204,6 +206,7 @@ def confirm_order(request, pk):
             order = order.get(id=pk)
             order.status = 'A'
             order.save()
+            messages.success(request, f'Order {pk} has been successfully Approved.')
             return redirect('order_list')
         else:
             messages.error(request, f'Order {pk} not found')
@@ -218,6 +221,7 @@ def cancel_order(request, pk):
             order = order.get(id=pk)
             order.status = 'C'
             order.save()
+            messages.warning(request, f'Order {pk} has been canceled.')
             return redirect('order_list')
         else:
             messages.error(request, f'Order {pk} not found')
@@ -232,6 +236,7 @@ def delete_order_detail(request, pk):
             order_detail = order_detail.get(id=pk)
             order = order_detail.order
             order_detail.delete()
+            messages.warning(request, f'Order item {pk} has been canceled!')
             return redirect('order_detail', order.id)
         else:
             messages.error(request, f'Order items {pk} not found')
@@ -248,6 +253,7 @@ class CreateOrder(View):
             order_detail.order = order
             order_detail.price = order_detail.product.price
             order_detail.save()
+            messages.success(request, f'Order item {order_detail.id} has benn successfully added to Order {pk}')
         else:
             messages.error(request, 'Invalid input!!')
         return redirect('order_detail', pk)
