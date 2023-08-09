@@ -9,10 +9,10 @@
 {% if categories %}
     {% for category in categories %}
         {% if not category.parent_category %}
-          .{{ category.name|cut:' ' }}1{
+        li:has(> a.{{ category.name|cut:' ' }}1){
             display:none;
           }
-          .{{ category.name|cut:' ' }}1.Active1{
+        li:has( a.{{ category.name|cut:' ' }}1.Active1){
             display:inline-flex;
           }
         {% endif %}
@@ -33,13 +33,13 @@
     <div class="container">
       <div class="row justify-content-center">
         <div class="categories">
-          <ul class="cat">
+          <ul class="cat justify-content-around">
             <li>
               <ol class="type">
                 <li><a href="#" data-filter="*"  >All</a></li>
                 {% if categories %}
                   {% for category in categories %}
-                      {% if not category.parent_category %} 
+                      {% if not category.parent_category and category.product_set %} 
                         <li><a href="#" data-filter=".{{ category.name|cut:' ' }}" id="{{ category.name|cut:' ' }}" onclick="reply_click(this.id)" >{{ category.name }}</a></li>
                       {% endif %}
                   {% endfor %}
@@ -51,7 +51,7 @@
               <ol class="type">
                 {% if categories %}
                   {% for category in categories %}
-                       {% if category.parent_category and not category.parent_category.parent_category %}
+                       {% if category.parent_category and not category.parent_category.parent_category  and category.product_set %}
                       <li><a href="#" data-filter=".{{ category.name|cut:' ' }}"  class="cat {{ category.parent_category.name|cut:' ' }}1 {{ category.parent_category.parent_category.name|cut:' ' }}1" >{{ category.name }}</a></li>
                        {% endif %} 
                   {% endfor %}
