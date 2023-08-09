@@ -10,12 +10,13 @@ from django.views import View
 from .authentication import PhoneAuthBackend
 from .form import StaffLoginForm, VerifyCodeForm, OrderDetailUpdateForm
 from orders.models import Order, Order_detail
-from utils import send_otp_code
+from utils import send_otp_code, check_is_authenticated
 
 import datetime
 
 
 # Create your views here.
+
 
 class StaffLogin(View):
     message = None
@@ -23,8 +24,8 @@ class StaffLogin(View):
     html_temp = "login.html"
 
     def get(self, request):
-        if request.user.is_authenticated:
-            return redirect("dashboard")
+        if response := check_is_authenticated(request):
+            return response
         context = {"message": self.message, "form": self.form()}
         return render(request, self.html_temp, context=context)
 
@@ -47,8 +48,8 @@ class Verify(View):
     html_temp = "verify.html"
 
     def get(self, request):
-        if request.user.is_authenticated:
-            return redirect("dashboard")
+        if response := check_is_authenticated(request):
+            return response
         if request.session.get("phone") is None:
             return redirect("login")
 
@@ -251,3 +252,4 @@ class CreateOrder(View):
 def logout_view(request):
     logout(request)
     return redirect("login")
+
