@@ -55,16 +55,20 @@
                                                     ${{ total_price }}
                                                 </td>
                                                 <td>
-                                                    <button type="submit" class="btn btn-primary" name="update">
-                                                        <i class="bi bi-pencil"></i>
-                                                    </button>
+                                                    {% if order.get_payment_display == 'Unpaid' and not order.get_status_display == 'Canceled' %}
+                                                        <button type="submit" class="btn btn-primary" name="update">
+                                                            <i class="bi bi-pencil"></i>
+                                                        </button>
+                                                    {% endif %}
                                                 </td>
                                                 <td>
-                                                    <a href="{% url 'delete_order_item' id %}">
-                                                        <button type="button" class="btn btn-danger" name="delete">
-                                                            <i class="bi bi-trash"></i>
-                                                        </button>
-                                                    </a>
+                                                    {% if order.get_payment_display == 'Unpaid' and not order.get_status_display == 'Canceled' %}
+                                                        <a href="{% url 'delete_order_item' id %}">
+                                                            <button type="button" class="btn btn-danger" name="delete">
+                                                                <i class="bi bi-trash"></i>
+                                                            </button>
+                                                        </a>
+                                                    {% endif %}
                                                 </td>
                                             </tr>
                                         </form>
@@ -73,36 +77,40 @@
                                 </table>
                             </div>
                             <div class="row d-flex justify-content-center">
-                                <form action="{% url 'create_order_detail' order.id %}" method="POST"
-                                      class="justify-content-center d-flex align-items-center">
-                                    {% csrf_token %}
-                                    {% for field in creat_form %}
-                                        <div class="col-md-3">
-                                            {{ field }}
+                                {% if order.get_payment_display == 'Unpaid' and not order.get_status_display == 'Canceled' %}
+                                    <form action="{% url 'create_order_detail' order.id %}" method="POST"
+                                          class="justify-content-center d-flex align-items-center">
+                                        {% csrf_token %}
+                                        {% for field in creat_form %}
+                                            <div class="col-md-3">
+                                                {{ field }}
+                                            </div>
+                                        {% endfor %}
+                                        <div class="col-md-2">
+                                            <button type="submit" class="btn btn-success" name="update">
+                                                <i class="bi bi-plus-square"></i>
+                                            </button>
                                         </div>
-                                    {% endfor %}
-                                    <div class="col-md-2">
-                                        <button type="submit" class="btn btn-success" name="update">
-                                            <i class="bi bi-plus-square"></i>
-                                        </button>
-                                    </div>
-                                </form>
+                                    </form>
+                                {% endif %}
                             </div>
                             <div class="row mt-5 justify-content-between align-items-center">
                                 <div class="col-md-3">
                                     <p>Order Total Price: ${{ order.total_price }}</p>
                                 </div>
                                 <div class="col-md-6 text-end">
-                                    <a href="{% url 'confirm_order' order.id %}">
-                                        <button type="button" class="btn btn-success btn-sm" name="confirm">
-                                            <i class="bi bi-check-circle"></i> Confirm Order
-                                        </button>
-                                    </a>
-                                    <a href="{% url 'cancel_order' order.id %}">
-                                        <button type="button" class="btn btn-danger btn-sm" name="cancel">
-                                            <i class="bi bi-x-circle"></i> Cancel Order
-                                        </button>
-                                    </a>
+                                    {% if order.get_payment_display == 'Unpaid' and not order.get_status_display == 'Canceled' %}
+                                        <a href="{% url 'confirm_order' order.id %}">
+                                            <button type="button" class="btn btn-success btn-sm" name="confirm">
+                                                <i class="bi bi-check-circle"></i> Confirm Order
+                                            </button>
+                                        </a>
+                                        <a href="{% url 'cancel_order' order.id %}">
+                                            <button type="button" class="btn btn-danger btn-sm" name="cancel">
+                                                <i class="bi bi-x-circle"></i> Cancel Order
+                                            </button>
+                                        </a>
+                                    {% endif %}
                                 </div>
                             </div>
                         </div>

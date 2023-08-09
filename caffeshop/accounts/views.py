@@ -109,7 +109,7 @@ class Orders(View):
             sort_param = sort if orderp == 'asc' else '-' + sort
             orders = Order.objects.all().order_by(sort_param)
         else:
-            orders = Order.objects.all().order_by('order_date')
+            orders = Order.objects.all().order_by('-order_date')
         context = {
             'orderp': 'desc' if orderp == 'asc' else 'asc',
             'sort': sort,
