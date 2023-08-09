@@ -5,10 +5,10 @@
 /* VARIABLE DEFINITIONS */
 html[data-theme="light"],
 :root {
-    --primary: #79aec8;
+    --primary: #532958;
     --secondary: #417690;
     --accent: #f5dd5d;
-    --primary-fg: #fff;
+    --primary-fg: #ffb800;
 
     --body-fg: #333;
     --body-bg: #fff;
@@ -24,7 +24,7 @@ html[data-theme="light"],
     --breadcrumbs-link-fg: var(--body-bg);
     --breadcrumbs-bg: var(--primary);
 
-    --link-fg: #417893;
+    --link-fg: black;
     --link-hover-color: #036;
     --link-selected-fg: #5b80b2;
 
@@ -37,7 +37,7 @@ html[data-theme="light"],
     --message-warning-bg: #ffc;
     --message-error-bg: #ffefef;
 
-    --darkened-bg: #f8f8f8; /* A bit darker than --body-bg */
+    --darkened-bg: #b9cbff47; /* A bit darker than --body-bg */
     --selected-bg: #e4e4e4; /* E.g. selected table cells */
     --selected-row: #ffc;
 
@@ -559,13 +559,19 @@ input[type=button][disabled].default {
 
 .module {
     border: none;
+    
+    border-radius: 10px;
     margin-bottom: 30px;
-    background: var(--body-bg);
+    background: var(--body-bg) !important;
 }
 
 .module p, .module ul, .module h3, .module h4, .module dl, .module pre {
     padding-left: 10px;
     padding-right: 10px;
+}
+
+.module tr{
+    background-color: var(--body-bg) !important;
 }
 
 .module blockquote {
@@ -586,8 +592,8 @@ input[type=button][disabled].default {
     font-weight: 400;
     font-size: 0.8125rem;
     text-align: left;
-    background: var(--primary);
-    color: var(--header-link-color);
+    background: var(--primary) !important;
+    color: var(--header-link-color) !important;
 }
 
 .module caption,
