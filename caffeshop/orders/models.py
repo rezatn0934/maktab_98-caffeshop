@@ -18,9 +18,6 @@ class Order(models.Model):
     status = models.CharField(verbose_name=_("Order Status"), max_length=1, choices=status_choices, default="P")
     payment = models.CharField(verbose_name=_("Payment Status"), max_length=1, choices=payment_status, default="U")
 
-    def __str__(self):
-        return f"Order{self.id}"
-
     @property
     def total_price(self):
         order_detail = Order_detail.objects.filter(order=self.id)
@@ -39,6 +36,9 @@ class Order(models.Model):
                 return
             table.occupied = True
             table.save()
+
+    def __str__(self):
+        return f"Order{self.id}"
 
 
 class Order_detail(models.Model):
