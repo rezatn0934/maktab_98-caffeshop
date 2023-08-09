@@ -24,6 +24,16 @@
             width: auto;
         }
 
+        .price.span {
+            font-size: min(0.856rem, 1.8vw) !important;
+            /* Next rules are only be have a clearer preview */
+            /* line-height: 1; */
+            text-align: center;
+            /* position: inherit; */
+            /* padding: 0;
+            margin: 0; */
+        }
+
         td.cakes img {
             /* padding: 1em 0em; */
             /* background-color: yellow; */
@@ -38,10 +48,7 @@
                 pointer-events: none;
             {% endif %}
         }
-        ::-webkit-input-placeholder{
-    font-size: 0.7rem !important;
-
-}
+     
         label {
         text-align: left;
 
@@ -106,14 +113,6 @@ font-size: 12px;
                             <div class="table">
                                 <table>
                                     <tbody class="col-sm-12">
-                                    <!-- <tr  class="main-heading row justify-content-between">
-                                        <th class="col-sm-3" >Images</th>
-                                        <th class="long-txt col-sm-2">Product Name</th>
-                                        <th class="col-sm-2" >Quantity</th>
-                                        <th class="col-sm-1" >Price</th>
-                                        <th class="col-sm-1" >Total</th>
-                                        <th class="col-sm-1" ></th>
-                                    </tr> -->
                                     {% for product , quantity , total in order_items %}
                                         <form action="{% url 'orders:update_or_remove' %}" method="post">
                                             {% csrf_token %}
@@ -126,7 +125,7 @@ font-size: 12px;
                                                 <td class="cake-text1 col-sm-2">
                                                     <div class="product-text">
                                                         <p class="my-5"
-                                                           style="font-size:1.8vw !important;">{{ product.name }}</p>
+                                                           style="font-size:1.356rem !important;">{{ product.name }}</p>
                                                     </div>
                                                 </td>
                                                 <td class="quantity col-sm-3 col-md-2">
@@ -135,12 +134,12 @@ font-size: 12px;
                                                                id="quantity" name="quantity" value="{{ quantity }}">
                                                     </div>
                                                 </td>
-                                                <td class="price col-sm-1 py-2">
-                                                    <span style="font-size:1.8vw !important;"
+                                                <td class="price col-md-1 col-sm-2 px-sm-2 py-2">
+                                                    <span 
                                                           class=" col-sm-110">${{ product.price }}</span>
                                                 </td>
-                                                <td class="price col-sm-1 py-2">
-                                                    <span style="font-size:1.8vw !important;" class="" id="total-count">${{ total }}</span>
+                                                <td class="price col-md-1 col-sm-2 px-sm-2 py-2">
+                                                    <span  class="" id="total-count">${{ total }}</span>
                                                 </td>
                                                 <td class="top-remove col-sm-12 col-md-2 text-center mx-1 ">
                                                     <div class="row px-1 justify-content-around">
