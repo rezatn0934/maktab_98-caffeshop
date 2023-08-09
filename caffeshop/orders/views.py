@@ -96,7 +96,7 @@ def create_order(request):
     customer_order.save()
 
     messages.success(request, "Order has been created successfully.")
-    res = redirect("orders/order_history.html")
+    res = redirect("orders:order_history")
     res.delete_cookie('orders')
     res.delete_cookie('number_of_order_items')
 
