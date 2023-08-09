@@ -47,12 +47,15 @@ class Order_detail(models.Model):
     quantity = models.IntegerField()
     price = models.DecimalField(max_digits=5, decimal_places=2)
 
-    def __str__(self):
-        return f"order: {self.order}"
+    class Meta:
+        verbose_name_plural = "Order Details"
 
     @property
     def total_price(self):
         return self.price * self.quantity
+
+    def __str__(self):
+        return f"order: {self.order}"
 
 
 class Table(models.Model):
