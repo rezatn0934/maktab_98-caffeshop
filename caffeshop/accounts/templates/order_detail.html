@@ -36,11 +36,11 @@
                                     <p>Payment Status: {{ order.get_payment_display }}</p>
                                 </div>
                             </div>
-                            <div class="table-responsive">
+                            <div class="table-responsive row d-flex align-items-center" style="overflow: visible !important;">
                                 <table class="table table-striped align-items-center"
                                        style="font-size: .8rem !important;">
                                     <thead>
-                                    <tr>
+                                    <tr class="text-left">
                                         <th scope="col">Order detail Id</th>
                                         <th scope="col">Product</th>
                                         <th scope="col">Quantity</th>
@@ -49,17 +49,45 @@
                                         <th scope="col"></th>
                                     </tr>
                                     </thead>
-                                    <tbody>
-                                    {% for id, total_price, order_detail in order_details %}
-                                        <form action="{% url 'order_detail' id %}" method="POST">
+                                    <tbody class="text-left">
+                                    {% for order_detail in order_details %}
+                                        <form action="{% url 'order_detail' order_detail.id %}" method="POST">
                                             {% csrf_token %}
+                                            <input type="hidden" id="s_product2" name="s_product" value="">
                                             <tr class="justify-content-center">
-                                                <th scope="row">{{ id }}</th>
-                                                {% for field in order_detail %}
-                                                    <td>{{ field }}</td>
-                                                {% endfor %}
+                                                <th scope="row" class="py-4">{{ order_detail.id }}</th>                                                
                                                 <td>
-                                                    ${{ total_price }}
+                                                    <div class="dropdown col-sm-2">
+                                                        <button class="btn btn1 btn-light dropdown-toggle"
+                                                                type="button"
+                                                                id="dropdownMenu2" data-bs-toggle="dropdown"
+                                                                aria-expanded="false">
+                                                            {{ order_detail.product }}
+                                                        </button>
+                                                        <ul class="dropdown-menu first-dr" aria-labelledby="dropdownMenu2">
+                                                            <label for="search"></label>
+                                                            <input class="form-control" id="search" class="form-control ins" type="text"
+                                                                    name="product" placeholder="Search..">
+                                                            {% for product in products %}
+                                                                <li class="dropdown-item">
+                                                                    <span onclick="reply_click2(this.id)" id="{{ product.id }}" style="margin-left:20px">
+                                                                        {{ product.name }}
+                                                                    </span>
+                                                                    <input type="hidden" name="selected_product"
+                                                                            value="{{ product.id }}">
+                                                                </li>
+                                                            {% endfor %}
+                                                        </ul>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="col-md-3 ">
+                                                        <input id="quantity" class="form-control" style=" border-radius: 4px;" type="number" min="1"
+                                                               value="{{ order_detail.quantity }}" name="quantity">
+                                                    </div>
+                                                </td>
+                                                <td class="py-4">
+                                                    ${{ order_detail.total_price }}
                                                 </td>
                                                 <td>
                                                     {% if order.get_payment_display == 'Unpaid' and not order.get_status_display == 'Canceled' %}
@@ -70,7 +98,7 @@
                                                 </td>
                                                 <td>
                                                     {% if order.get_payment_display == 'Unpaid' and not order.get_status_display == 'Canceled' %}
-                                                        <a href="{% url 'delete_order_item' id %}">
+                                                        <a href="{% url 'delete_order_item' order_detail.id %}">
                                                             <button type="button" class="btn btn-danger" name="delete">
                                                                 <i class="bi bi-trash"></i>
                                                             </button>
@@ -83,24 +111,41 @@
                                     </tbody>
                                 </table>
                             </div>
-                            <div class="row d-flex justify-content-center">
                                 {% if order.get_payment_display == 'Unpaid' and not order.get_status_display == 'Canceled' %}
-                                    <form action="{% url 'create_order_detail' order.id %}" method="POST"
-                                          class="justify-content-center d-flex align-items-center">
-                                        {% csrf_token %}
-                                        {% for field in creat_form %}
-                                            <div class="col-md-3">
-                                                {{ field }}
+                                    <form action="{% url 'create_order_detail' order.id %}" method="POST">
+                                          {% csrf_token %}
+                                        <input type="hidden" id="s_product1" name="s_product" value="">
+                                        <div class="container justify-content-center">
+                                            <div class="row py-2 justify-content-center">
+                                                <div class="dropdown col-sm-4">
+                                                    <button class="btn btn2 btn-light dropdown-toggle" type="button"
+                                                            id="dropdownMenu2"
+                                                            data-bs-toggle="dropdown" aria-expanded="false">
+                                                        Products
+                                                    </button>
+                                                    <ul class="dropdown-menu second-dr" aria-labelledby="dropdownMenu2">
+                                                        <label for="search"></label>
+                                                        <input id="search" class="form-control ins" type="text" name="product"
+                                                                placeholder="Search..">
+                                                        {% for product in products %}
+                                                            <li class="dropdown-item" value="{{ product.id }}">
+                                                                <span  onclick="reply_click(this.id)" id="{{ product.id }}" style="margin-left:20px">{{ product.name }}</span>
+                                                            </li>
+                                                        {% endfor %}
+                                                    </ul>
+                                                </div>
+                                                <div class="col-md-3" >
+                                                    <input class="form-control" id="quantity"  style="width:100px; border-radius: 4px;" value="1" type="number" min="1" name="quantity">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <button type="submit" class="btn btn-success" name="update">
+                                                        <i class="bi bi-plus-square"></i>
+                                                    </button>
+                                                </div>
                                             </div>
-                                        {% endfor %}
-                                        <div class="col-md-2">
-                                            <button type="submit" class="btn btn-success" name="update">
-                                                <i class="bi bi-plus-square"></i>
-                                            </button>
                                         </div>
                                     </form>
                                 {% endif %}
-                            </div>
                             <div class="row mt-5 justify-content-between align-items-center">
                                 <div class="col-md-3">
                                     <p>Order Total Price: ${{ order.total_price }}</p>
