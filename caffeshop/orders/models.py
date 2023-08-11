@@ -35,7 +35,7 @@ class Order(models.Model):
         super().save(*args, **kwargs)
         if self.table_number:
             table = Table.objects.get(id=self.table_number.id)
-            if self.payment == "P":
+            if self.payment == "P" or self.status == 'C':
                 table.occupied = False
                 table.save()
                 return
