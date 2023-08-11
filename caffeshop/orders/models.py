@@ -14,13 +14,18 @@ class Order(models.Model):
     phone_number = models.CharField(verbose_name=_("Phone Number"), validators=[phoneNumberRegex], max_length=11)
     order_date = models.DateTimeField(verbose_name=_("Order Date"), auto_now_add=True, editable=False)
     last_modify = models.DateTimeField(verbose_name=_("Last Modify"), auto_now=True, editable=False)
-    table_number = models.ForeignKey("Table", verbose_name=_("Table Name"),  on_delete=models.PROTECT, null=True, blank=True)
+    table_number = models.ForeignKey("Table", verbose_name=_("Table Name"), on_delete=models.PROTECT, null=True, blank=True)
     status = models.CharField(verbose_name=_("Order Status"), max_length=1, choices=status_choices, default="P")
     payment = models.CharField(verbose_name=_("Payment Status"), max_length=1, choices=payment_status, default="U")
 
     @property
+    def get_order_items(self):
+        order_items = Order_detail.objects.filter(order=self.id)
+        return order_items
+
+    @property
     def total_price(self):
-        order_detail = Order_detail.objects.filter(order=self.id)
+        order_detail = self.get_order_items
         order_total_price = 0
         for item in order_detail:
             order_total_price += item.total_price
