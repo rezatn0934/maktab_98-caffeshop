@@ -148,7 +148,7 @@
                                             <th scope="row">{{ order.id }}</th>
                                             <td>{{ order.phone_number }}</td>
                                             <td>{{ order.order_date }}</td>
-                                            <td>{{ order.table_number.Table_number }} {{ order.table_number }}</td>
+                                            <td>{% if order.table_number %}{{ order.table_number.Table_number }} {{ order.table_number }}{% else %}Take away{% endif %}</td>
                                             <td>{{ order.get_status_display }}</td>
                                             <td>{{ order.get_payment_display }}</td>
                                             <td>

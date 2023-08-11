@@ -20,6 +20,8 @@ class CartView(View):
         orders = eval(orders)
         updated_orders = orders.copy()
         form = OrderForm()
+        if user_phone := request.session.get('user_phone'):
+            form = OrderForm(initial={'phone_number': user_phone})
         order_items = []
         for product_id, quantity in orders.items():
             qs = Product.objects.filter(id=product_id)
@@ -35,6 +37,7 @@ class CartView(View):
             else:
                 messages.error(request, f'Product {obj.name} is not available!!')
                 updated_orders.pop(product_id)
+
         order_total_price = sum(map(lambda item: int(item[2]), order_items))
         context = {'order_items': order_items,
                    'order_total_price': order_total_price,
@@ -54,6 +57,7 @@ class CartView(View):
             else:
                 pre_order = {"phone": phone, "table_number": None}
             request.session['pre_order'] = pre_order
+            request.session['user_phone'] = phone
             request.session.modify = True
             return redirect('orders:create_order')
         else:
@@ -121,7 +125,7 @@ def order_history(request):
                     message = f"You have to wait {(timezone.timedelta(minutes=1) - (timezone.now() - last_query_time)).seconds} seconds."
                     return render(request, "orders/order_history.html", context={"message": message})
 
-            orders = Order.objects.filter(id__in=customer_order_id)
+            orders = Order.objects.filter(id__in=customer_order_id).order_by('-order_date')
             request.session["last_query_time"] = str(timezone.now())
 
             context = {"orders": orders}
