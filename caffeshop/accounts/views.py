@@ -66,30 +66,21 @@ class Verify(View):
             cd = form.cleaned_data
             user_input_otp = cd["otp_code"]
             phone = request.session["phone"]
-            main_otp = request.session.get("otp_code")
-            otp_valid_date = request.session.get("otp_valid_date")
-            if main_otp is not None and otp_valid_date is not None:
-                valid_until = datetime.datetime.fromisoformat(otp_valid_date)
-                if valid_until > timezone.now():
-                    user = PhoneAuthBackend().authenticate(request, phone=phone,
-                                                           user_input_otp=user_input_otp,
-                                                           main_otp=main_otp)
-                    if user is not None:
-                        login(request, user, backend='accounts.authentication.PhoneAuthBackend')
-                        del request.session["otp_code"]
-                        del request.session["otp_valid_date"]
-                        messages.success(request, 'You have been logged in successfully')
-                        return redirect("dashboard")
-                    else:
-                        message = "Invalid Phone Number or OTP"
-                else:
-                    message = "OTP has been expired"
-            else:
-                message = "Start from here!"
+            try:
+                user = PhoneAuthBackend().authenticate(request, phone=phone,
+                                                       user_input_otp=user_input_otp)
+                login(request, user, backend='accounts.authentication.PhoneAuthBackend')
+                del request.session["otp_code"]
+                del request.session["otp_valid_date"]
+                messages.success(request, 'You have been logged in successfully')
+                return redirect("dashboard")
+            except Exception as e:
+                message = e
+                if message == "Login First":
+                    return redirect("login")
         else:
-            message = "Wrong input"
+            message = "Wrong Input"
 
-        form = self.form()
         context = {"message": message, "form": form}
         return render(request, self.html_temp, context=context)
 
