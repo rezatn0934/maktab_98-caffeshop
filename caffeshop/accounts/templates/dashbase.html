@@ -172,7 +172,30 @@
         selectedProduct2.value = clicked_id;
     }
 </script>
+<script>
+    $(function(){
 
+        $(".first-dr li span").click(function(){
+
+        $(".btn1:first-child").text($(this).text());
+        $(".btn1:first-child").val($(this).text());
+
+    });
+
+    });
+</script>
+<script>
+    $(function(){
+
+        $(".second-dr li span").click(function(){
+
+        $(".btn2:first-child").text($(this).text());
+        $(".btn2:first-child").val($(this).text());
+
+    });
+
+    });
+</script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
 
 </body>
