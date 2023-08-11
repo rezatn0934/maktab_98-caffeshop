@@ -121,7 +121,7 @@ def order_history(request):
                     message = f"You have to wait {(timezone.timedelta(minutes=1) - (timezone.now() - last_query_time)).seconds} seconds."
                     return render(request, "orders/order_history.html", context={"message": message})
 
-            orders = Order.objects.filter(id__in=customer_order_id)
+            orders = Order.objects.filter(id__in=customer_order_id).order_by('-order_date')
             request.session["last_query_time"] = str(timezone.now())
 
             context = {"orders": orders}
