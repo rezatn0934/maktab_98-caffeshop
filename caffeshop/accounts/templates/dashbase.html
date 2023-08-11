@@ -148,5 +148,18 @@
         }
     }, 5000)
 </script>
+<script>
+    $(document).ready(function(){
+      $(".ins").on("keyup", function() {
+        var value = $(this).val().toLowerCase();
+        $(".dropdown-menu li").filter(function() {
+          $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+        });
+      });
+    });
+</script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+
 </body>
 </html>
