@@ -37,7 +37,7 @@ class StaffLogin(View):
             request.session["phone"] = phone
             return redirect("verify")
         else:
-            message = "Wrong input, Phone number Should Start Like 09123456789"
+            message = "Wrong input, Phone number Should Start 11 digits Like 09*********"
 
         context = {"message": message, "form": self.form()}
         return render(request, self.html_temp, context=context)
