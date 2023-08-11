@@ -100,7 +100,12 @@ def create_order(request):
     res.delete_cookie('orders')
     res.delete_cookie('number_of_order_items')
 
-    request.session['order_history'] = customer_order.id
+    if order_history_session := request.session.get('order_history'):
+        order_history_session.append(customer_order.id)
+    else:
+        request.session['order_history'] = [customer_order.id]
+
+    request.session.modified = True
 
     del request.session['pre_order']
     return res
@@ -109,21 +114,17 @@ def create_order(request):
 def order_history(request):
     if request.method == "GET":
 
-        customer_order_id = request.session.get('order_history')
-        if customer_order_id:
-            last_query_time = request.session.get("last_query_time")
-            if last_query_time:
+        if customer_order_id := request.session.get('order_history'):
+            if last_query_time := request.session.get("last_query_time"):
                 last_query_time = datetime.datetime.fromisoformat(last_query_time)
                 if last_query_time + timezone.timedelta(minutes=1) > timezone.now():
-
-                    message = f"You have to wait {(timezone.timedelta(minutes=1)-(timezone.now()-last_query_time)).seconds} seconds."
+                    message = f"You have to wait {(timezone.timedelta(minutes=1) - (timezone.now() - last_query_time)).seconds} seconds."
                     return render(request, "orders/order_history.html", context={"message": message})
 
-            order = Order.objects.get(id=customer_order_id)
-            order_item = Order_detail.objects.filter(order=order.id)
+            orders = Order.objects.filter(id__in=customer_order_id)
             request.session["last_query_time"] = str(timezone.now())
 
-            context = {"last_order": order, "order_item": order_item}
+            context = {"orders": orders}
             return render(request, "orders/order_history.html", context=context)
 
         else:
@@ -131,3 +132,11 @@ def order_history(request):
             message = "You Don't have any order yet."
             return render(request, "orders/order_history.html", context={"message": message})
 
+
+def cancel_order_by_customer(request, pk):
+    order = Order.objects.filter(id=pk)
+    if order:
+        order = order.get(id=pk)
+        order.status = 'C'
+        order.save()
+        return redirect('orders:order_history')
