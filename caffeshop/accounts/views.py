@@ -244,6 +244,8 @@ def delete_order_detail(request, pk):
 class CreateOrderItem(View):
     @method_decorator(login_required)
     def post(self, request, pk):
+        print('product id', request.POST.get('s_product'))
+        product = Product.objects.filter(id=request.POST.get('s_product'))
         order = Order.objects.get(id=pk)
         form = OrderDetailUpdateForm(request.POST)
         if form.is_valid():
