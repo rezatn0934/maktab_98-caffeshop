@@ -175,16 +175,18 @@ class OrderDetailView(View):
 
     @method_decorator(login_required)
     def post(self, request, pk):
-        if 'update' in request.POST:
-            order_detail = Order_detail.objects.get(id=pk)
-            form = OrderDetailUpdateForm(request.POST, instance=order_detail)
-            if form.is_valid():
-                order_detail = form.save()
-                messages.success(request, 'Order item has been successfully updated.')
-                return redirect('order_detail', order_detail.order.id)
-            else:
-                messages.error(request, 'Form input is not valid')
-                return redirect('order_detail', order_detail.order.id)
+        order_detail = Order_detail.objects.get(id=pk)
+        if request.POST.get('s_product') and request.POST.get('quantity'):
+            product = Product.objects.get(id=request.POST.get('s_product'))
+            order_detail.product = product
+            order_detail.price = product.price
+            order_detail.quantity = request.POST.get('quantity')
+            order_detail.save()
+            messages.success(request, 'Order item has been successfully updated.')
+            return redirect('order_detail', order_detail.order.id)
+        else:
+            messages.error(request, 'Form input is not valid')
+            return redirect('order_detail', order_detail.order.id)
 
 
 @login_required
@@ -235,18 +237,15 @@ def delete_order_detail(request, pk):
 class CreateOrderItem(View):
     @method_decorator(login_required)
     def post(self, request, pk):
-        print('product id', request.POST.get('s_product'))
-        product = Product.objects.filter(id=request.POST.get('s_product'))
-        order = Order.objects.get(id=pk)
-        form = OrderDetailUpdateForm(request.POST)
-        if form.is_valid():
-            order_detail = form.save(commit=False)
-            order_detail.order = order
-            order_detail.price = order_detail.product.price
-            order_detail.save()
+        if request.POST.get('s_product') and request.POST.get('quantity'):
+            product = Product.objects.get(id=request.POST.get('s_product'))
+            quantity = request.POST.get('quantity')
+            order = Order.objects.get(id=pk)
+            order_detail = Order_detail.objects.create(order=order, product=product, quantity=quantity, price=product.price)
             messages.success(request, f'Order item {order_detail.id} has benn successfully added to Order {pk}')
         else:
-            messages.error(request, 'Invalid input!!')
+            messages.error(request, "You didn't provide valid inputs")
+
         return redirect('order_detail', pk)
 
 
