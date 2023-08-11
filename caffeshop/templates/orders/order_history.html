@@ -66,6 +66,9 @@
                     <h3 >Total Price: ${{ order.total_price }} </h3>
 
                     <h3 >Order Status: {{ order.get_status_display }} </h3>
+                    {% if  order.get_status_display == "Processing" %}
+                    <a href="{% url 'orders:cancel_order_by_customer' order.id %}"><button class="btn btn-danger btn-sm" type="button"><i class="bi bi-check-circle"></i>Cancel Order</button></a>
+                    {% endif %}
                 </div>
             </div>
         </div>
