@@ -158,6 +158,20 @@
       });
     });
 </script>
+<script type="text/javascript">
+    let selectedProduct = document.getElementById("s_product1");
+    let selectedProduct2 = document.getElementById("s_product2");
+    function reply_click(clicked_id)
+    {
+        let selectProductO = document.getElementById(clicked_id);
+        selectedProduct.value = clicked_id;
+    }
+    function reply_click2(clicked_id)
+    {
+        let selectProductO = document.getElementById(clicked_id);
+        selectedProduct2.value = clicked_id;
+    }
+</script>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
 
