@@ -12,6 +12,7 @@ from .authentication import PhoneAuthBackend
 from .form import StaffLoginForm, VerifyCodeForm, OrderDetailUpdateForm
 from orders.models import Order, Order_detail
 from utils import send_otp_code, check_is_authenticated
+from menu.models import Product
 
 import datetime
 
@@ -157,18 +158,15 @@ class OrderDetailView(View):
 
     @method_decorator(login_required)
     def get(self, request, pk):
-        create_order_form = OrderDetailUpdateForm()
         order = Order.objects.filter(id=pk)
+        products = Product.objects.filter(is_active=True)
         if order:
             order = order.get(id=pk)
             order_details = Order_detail.objects.filter(order=pk)
-            order_details = map(lambda order_detail: (
-                order_detail.id, order_detail.total_price, OrderDetailUpdateForm(instance=order_detail)),
-                                order_details)
             context = {
                 'order': order,
                 'order_details': order_details,
-                'creat_form': create_order_form,
+                'products': products
             }
             return render(request, 'order_detail.html', context)
         else:
@@ -237,6 +235,8 @@ def delete_order_detail(request, pk):
 class CreateOrderItem(View):
     @method_decorator(login_required)
     def post(self, request, pk):
+        print('product id', request.POST.get('s_product'))
+        product = Product.objects.filter(id=request.POST.get('s_product'))
         order = Order.objects.get(id=pk)
         form = OrderDetailUpdateForm(request.POST)
         if form.is_valid():
