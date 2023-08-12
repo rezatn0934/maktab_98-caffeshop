@@ -37,7 +37,7 @@
                                 </div>
                             </div>
                             <div class="table-responsive container d-flex align-items-center"
-                                 style="overflow: visible !important;">
+                                 style="overflow-y: visible !important;" >
                                 <table class="table table-responsive table-striped align-items-center"
                                        style="font-size: .8rem !important;">
                                     <thead>
@@ -109,15 +109,7 @@
                                                 </td>
                                             </tr>
                                         </form>
-                                    {% endfor %}
-                                    {% endfor %}
-                                    </tbody>
-                                </table>
-                            </div>
                                         {% endfor %}
-                                    </tbody>
-                                </table>
-                            </div>
                                     {% if order.get_payment_display == 'Unpaid' and not order.get_status_display == 'Canceled' %}
                                     <form action="{% url 'create_order_detail' order.id %}" method="POST">
                                         {% csrf_token %}
