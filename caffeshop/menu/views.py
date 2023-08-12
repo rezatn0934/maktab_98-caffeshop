@@ -1,7 +1,6 @@
-from django.shortcuts import render, redirect, HttpResponseRedirect
+from django.shortcuts import render, HttpResponseRedirect
 from django.db.models import Q
 from django.views import View
-from django.contrib import messages
 from .models import Product, Category
 
 
