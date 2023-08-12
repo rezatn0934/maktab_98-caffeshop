@@ -47,7 +47,7 @@
 {% block order_number %} {{ request.COOKIES.number_of_order_items }} {% endblock %}
 
 {% block content %}
-    <div class="pb-5 pt-3 mb-5">
+    <div class="pb-3 pt-3 mb-5">
         <div id="portfolio">
             <div class="section-title text-center center">
                 <div class="overlay">
@@ -166,16 +166,26 @@
                             </div>
                         {% endfor %}
                     {% else %}
-                    {% if message %}
 
-                        <div class="d-flex mt-2 h5 justify-content-center text-bg-danger alert {{ message.tags }}" role="alert" >
-                            {{ message }}
-                        </div>
 
                     {% endif %}
-                    {% endif %}
+
                 </div>
             </div>
         </div>
     </div>
+<div class="container">
+        <div class="row d-flex justify-content-center">
+            <div class="col-md-8">
+
+                {% if message %}
+                    <div class="d-flex h5 mb-3 justify-content-center text-bg-danger alert {{ message.tags }}" role="alert" >
+                        {{ message }}
+                    </div>
+                {% endif %}
+
+            </div>
+        </div>
+</div>
+
 {% endblock %}
