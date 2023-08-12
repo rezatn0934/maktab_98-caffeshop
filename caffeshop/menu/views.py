@@ -1,8 +1,7 @@
-from django.shortcuts import render, redirect, HttpResponseRedirect
+from django.shortcuts import render, HttpResponseRedirect
 from django.db.models import Q
 from django.views import View
 from .models import Product, Category
-import json
 
 
 # Create your views here.
@@ -47,27 +46,17 @@ def product(request, name):
 
 
 def search_product_view(request):
-    search_query = request.GET.get('search')
-    checkbox = request.GET.getlist('checkbox')
     if request.method == 'GET':
+        search_query = request.GET.get('search')
+        search_result = None
+        message = None
         if search_query:
-            query_list = []
+            search_result = Product.objects.filter(Q(name__icontains=search_query) |
+                                                   Q(description__icontains=search_query) |
+                                                   Q(category__name__icontains=search_query)).distinct()
+            if not search_result.exists():
+                message = f"Nothing was found for {search_query}"
 
-            if 'a' in checkbox:
-                query_list.append(Q(name__icontains=search_query))
-            if 'b' in checkbox:
-                query_list.append(Q(description__icontains=search_query))
-            if 'c' in checkbox:
-                query_list.append(Q(category__name__icontains=search_query))
+        context = {'search_result': search_result, "message": message}
+        return render(request, 'menu/search.html', context=context)
 
-            if not query_list:
-                query_list.append(Q(name__icontains=search_query) |
-                                  Q(description__icontains=search_query) |
-                                  Q(category__name__icontains=search_query))
-
-            products = Product.objects.filter(*query_list).distinct()
-        else:
-            products = None
-        return render(request, 'menu/search.html', {'search_query': search_query, 'products': products})
-    else:
-        return redirect(request.path)
