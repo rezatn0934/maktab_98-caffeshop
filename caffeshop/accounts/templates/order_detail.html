@@ -54,31 +54,30 @@
                                     {% for order_detail in order_details %}
                                         <form action="{% url 'order_detail' order_detail.id %}" method="POST">
                                             {% csrf_token %}
-                                            <input type="hidden" id="s_product2" name="s_product" value="{{ order_detail.product.id }}">
+                                            <input type="radio" style="display: none;" name="s_product" value="{{ order_detail.product.id }}" checked>
                                             <tr class="justify-content-center align-items-center" style="width: inherit !important;">
                                                 <th scope="row" class="py-4">{{ order_detail.id }}</th>
                                                 <td>
                                                     <div class="dropdown col-sm-2">
                                                         <button class="btn btn1 btn-light dropdown-toggle"
                                                                 type="button"
-                                                                id="dropdownMenu2" data-bs-toggle="dropdown"
+                                                                id="btn{{forloop.counter}}" data-bs-toggle="dropdown"
                                                                 aria-expanded="false">
                                                             {{ order_detail.product }}
                                                         </button>
                                                         <ul class="dropdown-menu first-dr"
-                                                            aria-labelledby="dropdownMenu2">
+                                                            aria-labelledby="btn{{forloop.counter}}">
                                                             <label for="search"></label>
                                                             <input id="search" class="form-control ins" type="text"
                                                                    name="product" placeholder="Search..">
                                                             {% for product in products %}
                                                                 <li class="dropdown-item">
-                                                                    <span onclick="reply_click2(this.id)"
-                                                                          id="{{ product.id }}"
-                                                                          style="margin-left:20px">
-                                                                        {{ product.name }}
-                                                                    </span>
-                                                                    <input type="hidden" name="selected_product"
-                                                                           value="{{ product.id }}">
+                                                                    <label for="s{{forloop.parentloop.counter}}-{{forloop.counter}}-{{ product.id }}">{{ product.name }}</label>
+                                                                    <input type="radio" onclick="reply_click('btn{{forloop.parentloop.counter}}', '{{product.name}}')"
+                                                                          id="s{{forloop.parentloop.counter}}-{{forloop.counter}}-{{ product.id }}"
+                                                                          value="{{ product.id }}"
+                                                                          style="margin-left:20px" name="s_product">
+
                                                                 </li>
                                                             {% endfor %}
                                                         </ul>
@@ -111,49 +110,62 @@
                                             </tr>
                                         </form>
                                     {% endfor %}
+                                    {% endfor %}
                                     </tbody>
                                 </table>
                             </div>
-                            {% if order.get_payment_display == 'Unpaid' and not order.get_status_display == 'Canceled' %}
-                                <form action="{% url 'create_order_detail' order.id %}" method="POST">
-                                    {% csrf_token %}
-                                    <input type="hidden" id="s_product1" name="s_product" value="">
-                                    <div class="container justify-content-between">
-                                        <div class="row g-2 d-flex py-2 justify-content-md-center">
-                                            <div class="dropdown col-md-3">
-                                                <button class="btn btn2 btn-light dropdown-toggle" type="button"
-                                                        id="dropdownMenu2"
-                                                        data-bs-toggle="dropdown" aria-expanded="false">
-                                                    Products
-                                                </button>
-                                                <ul class="dropdown-menu second-dr" aria-labelledby="dropdownMenu2">
-                                                    <label for="search"></label>
-                                                    <input id="search" class="form-control ins" type="text"
-                                                           name="product"
-                                                           placeholder="Search..">
-                                                    {% for product in products %}
-                                                        <li class="dropdown-item" value="{{ product.id }}">
-                                                            <span onclick="reply_click(this.id)" id="{{ product.id }}"
-                                                                  style="margin-left:20px">{{ product.name }}</span>
-                                                        </li>
-                                                    {% endfor %}
-                                                </ul>
-                                            </div>
-                                            <div class="col-md-3 py-2">
-                                                <label for="quantity"></label>
-                                                <input class="form-control" id="quantity"
-                                                       style="width:100px; border-radius: 4px;" value="1" type="number"
-                                                       min="1" name="quantity">
-                                            </div>
-                                            <div class="col-md-3 text-right">
-                                                <button type="submit" class="btn btn-success" name="create">
-                                                    <i class="bi bi-plus-square"></i>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </form>
-                            {% endif %}
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                                    {% if order.get_payment_display == 'Unpaid' and not order.get_status_display == 'Canceled' %}
+                                    <form action="{% url 'create_order_detail' order.id %}" method="POST">
+                                        {% csrf_token %}
+                                            <tr class="justify-content-center align-items-center" style="width: inherit !important; background-color: #b9ffe9 !important;">
+                                                <th scope="row" class="py-4">Add item</th>
+                                                <td>
+                                                    <div class="dropdown col-md-3">
+                                                        <button class="btn btn2 btn-light dropdown-toggle" type="button"
+                                                                id="btn_new_orderitem"
+                                                                data-bs-toggle="dropdown" aria-expanded="false">
+                                                            Products
+                                                        </button>
+                                                        <ul class="dropdown-menu second-dr" aria-labelledby="btn_new_orderitem">
+                                                            <label for="search"></label>
+                                                            <input id="search" class="form-control ins" type="text"
+                                                                   name="product"
+                                                                   placeholder="Search..">
+                                                            {% for product in products %}
+                                                                <li class="dropdown-item" value="{{ product.id }}">
+                                                                    <label for="s{{forloop.parentloop.counter}}-{{forloop.counter}}-{{ product.id }}">{{ product.name }}</label>
+                                                                    <input type="radio" onclick="reply_click('btn_new_orderitem', '{{product.name}}')"
+                                                                          id="s{{forloop.parentloop.counter}}-{{forloop.counter}}-{{ product.id }}"
+                                                                          value="{{ product.id }}"
+                                                                          style="margin-left:20px" name="s_product">
+                                                                </li>
+                                                                {% endfor %}
+                                                        </ul>
+                                                    </div>
+                                                </td>
+                                                <td class="py-3">
+                                                    <div class="col-md-3 ">
+                                                        <input id="quantity" class="form-control" style=" border-radius: 4px;" type="number" min="1"
+                                                               value=1 name="quantity">
+                                                </td>
+                                                <td class="py-4"></td>
+                                                <td>
+                                                    <button type="submit" class="btn btn-success" name="create">
+                                                        <i class="bi bi-plus-square"></i>
+                                                    </button>
+                                                </div>
+                                                </td>
+                                                <td></td>
+                                            </tr>
+                                        </form>
+                                    {% endif %}
+                                    </tbody>
+                                </table>
+                            </div>
                             <div class="row mt-5 justify-content-between align-items-center">
                                 <div class="col-md-3">
                                     <p>Order Total Price: ${{ order.total_price }}</p>
