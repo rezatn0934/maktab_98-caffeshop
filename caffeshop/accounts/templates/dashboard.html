@@ -4,6 +4,7 @@
 {% block content %}
     <div class="content-start transition  ">
         <div class="container-fluid dashboard">
+            <h2 class="mb-5" style="color: black;"> Hello {% if request.user.first_name %} {{ request.user.first_name }} {% endif %}</h2>
             <div class="row">
                 <div class="content-header">
                     {% if messages %}
