@@ -2,7 +2,9 @@ from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
-from django.db.models import Q
+from django.db.models import Q, F, Sum, Func, Value, CharField, Count
+from django.db.models.functions import TruncMonth, TruncYear, TruncHour
+
 from django.shortcuts import render, redirect
 from django.utils.decorators import method_decorator
 from django.utils import timezone
@@ -15,6 +17,7 @@ from utils import send_otp_code, check_is_authenticated
 from menu.models import Product
 
 import datetime
+import time
 
 
 # Create your views here.
@@ -241,7 +244,8 @@ class CreateOrderItem(View):
             product = Product.objects.get(id=request.POST.get('s_product'))
             quantity = request.POST.get('quantity')
             order = Order.objects.get(id=pk)
-            order_detail = Order_detail.objects.create(order=order, product=product, quantity=quantity, price=product.price)
+            order_detail = Order_detail.objects.create(order=order, product=product, quantity=quantity,
+                                                       price=product.price)
             messages.success(request, f'Order item {order_detail.id} has benn successfully added to Order {pk}')
         else:
             messages.error(request, "You didn't provide valid inputs")
@@ -249,8 +253,14 @@ class CreateOrderItem(View):
         return redirect('order_detail', pk)
 
 
+def most_popular(request):
+    query_set = Product.objects.annotate(
+        total_sales=Count('order_detail')
+    ).order_by('-total_sales')
+    return render(request, 'result.html', {'query_set': query_set})
+
+
 @login_required
 def logout_view(request):
     logout(request)
     return redirect("login")
-
