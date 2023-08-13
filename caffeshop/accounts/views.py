@@ -2,7 +2,9 @@ from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
-from django.db.models import Q
+from django.db.models import Q, F, Sum, Func, Value, CharField, Count
+from django.db.models.functions import TruncMonth, TruncYear, TruncHour
+
 from django.shortcuts import render, redirect
 from django.utils.decorators import method_decorator
 from django.utils import timezone
@@ -15,6 +17,7 @@ from utils import send_otp_code, check_is_authenticated
 from menu.models import Product
 
 import datetime
+import time
 
 
 # Create your views here.
@@ -241,7 +244,8 @@ class CreateOrderItem(View):
             product = Product.objects.get(id=request.POST.get('s_product'))
             quantity = request.POST.get('quantity')
             order = Order.objects.get(id=pk)
-            order_detail = Order_detail.objects.create(order=order, product=product, quantity=quantity, price=product.price)
+            order_detail = Order_detail.objects.create(order=order, product=product, quantity=quantity,
+                                                       price=product.price)
             messages.success(request, f'Order item {order_detail.id} has benn successfully added to Order {pk}')
         else:
             messages.error(request, "You didn't provide valid inputs")
@@ -249,8 +253,131 @@ class CreateOrderItem(View):
         return redirect('order_detail', pk)
 
 
+def most_popular(request):
+    query_set = Product.objects.annotate(
+        total_sales=Count('order_detail')
+    ).order_by('-total_sales')
+    return render(request, 'result.html', {'query_set': query_set})
+
+
+def total_sales(request):
+    total_sale = Order.objects.aggregate(
+        total_sale=Sum(
+            F('order_detail__quantity') *
+            F('order_detail__price')
+        )
+    )
+    return render(request, 'result.html', {'query_set': total_sale})
+
+
+def top_selling(request):
+    query_set = Product.objects.annotate(
+        pquantity=Sum('order_detail__quantity'), pprice=F('order_detail__price'),
+        total=F('pquantity') * F('pprice')).\
+        order_by(F('total').desc(nulls_last=True))
+    return render(request, 'result.html', {'query_set': query_set})
+
+
+def hourly_sales(request):
+    if 'filter' in request.GET:
+        first_date = request.GET.get('first_date').strptime('%Y-%m-%d')
+        second_date = first_date.date + datetime.timedelta(days=1)
+    else:
+        first_date = datetime.datetime.now().date()
+        second_date = datetime.a
+        print('1'*20)
+        print(first_date)
+        print(second_date)
+    query_set = Order.objects.filter(order_date__range=[first_date, second_date]) \
+        .annotate(
+        hour=TruncHour('order_date')).values('hour') \
+        .annotate(
+        total_sale=Sum(
+            F('order_detail__quantity') *
+            F('order_detail__price'))).order_by('-hour')
+    return render(request, 'result.html', {'query_set': query_set})
+
+
+def daily_sales(request):
+
+    if 'filter' in request.GET:
+        first_date = request.GET.get('first_date')
+        second_date = request.GET.get('second_date')
+    else:
+        first_date = datetime.datetime.now() - datetime.timedelta(days=7)
+        second_date = datetime.datetime.now()
+
+    query_set = Order.objects.filter(order_date__range=[first_date, second_date]) \
+        .values('order_date__date') \
+        .annotate(
+        total_sale=Sum(
+            F('order_detail__quantity') *
+            F('order_detail__price')
+        )
+    )
+
+    return render(request, 'result.html', {'query_set': query_set})
+
+
+def monthly_sales(request):
+    first_date = datetime.datetime.now() - datetime.timedelta(days=365)
+    second_date = datetime.datetime.now()
+
+    query_set = Order.objects.filter(order_date__range=[first_date, second_date]) \
+        .annotate(
+        month=TruncMonth('order_date'),
+    ) \
+        .values('month') \
+        .annotate(
+        total_sale=Sum(
+            F('order_detail__quantity') *
+            F('order_detail__price')
+        )
+    ) \
+        .order_by('-month')
+
+    return render(request, 'result.html', {'query_set': query_set})
+
+
+def yearly_sales(request):
+    query_set = Order.objects.all().annotate(
+        year=TruncYear('order_date'),
+    ) \
+        .values('year') \
+        .annotate(
+        total_sale=Sum(
+            F('order_detail__quantity') *
+            F('order_detail__price')
+        )
+    ).order_by('-year')
+
+    return render(request, 'result.html', {'query_set': query_set})
+
+
+def customer_sales(request):
+    query_set = Order.objects.all().values('phone_number').annotate(
+        total_sale=Sum(
+            F('order_detail__quantity') *
+            F('order_detail__price')
+        )
+    ).order_by('-total_sale')
+    return render(request, 'result.html', {'query_set': query_set})
+
+
+def category_sales(request):
+    query_set = Order.objects.all().annotate(
+        category=F('order_detail__product__category__name'),
+    ) \
+        .values('category').annotate(
+        total_sale=Sum(
+            F('order_detail__quantity') *
+            F('order_detail__price')
+        )
+    ).order_by('-total_sale')
+    return render(request, 'result.html', {'query_set': query_set})
+
+
 @login_required
 def logout_view(request):
     logout(request)
     return redirect("login")
-
