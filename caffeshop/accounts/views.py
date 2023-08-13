@@ -270,6 +270,14 @@ def total_sales(request):
     return render(request, 'result.html', {'query_set': total_sale})
 
 
+def top_selling(request):
+    query_set = Product.objects.annotate(
+        pquantity=Sum('order_detail__quantity'), pprice=F('order_detail__price'),
+        total=F('pquantity') * F('pprice')).\
+        order_by(F('total').desc(nulls_last=True))
+    return render(request, 'result.html', {'query_set': query_set})
+
+
 @login_required
 def logout_view(request):
     logout(request)
