@@ -319,6 +319,51 @@ def daily_sales(request):
     return render(request, 'result.html', {'query_set': query_set})
 
 
+def monthly_sales(request):
+    first_date = datetime.datetime.now() - datetime.timedelta(days=365)
+    second_date = datetime.datetime.now()
+
+    query_set = Order.objects.filter(order_date__range=[first_date, second_date]) \
+        .annotate(
+        month=TruncMonth('order_date'),
+    ) \
+        .values('month') \
+        .annotate(
+        total_sale=Sum(
+            F('order_detail__quantity') *
+            F('order_detail__price')
+        )
+    ) \
+        .order_by('-month')
+
+    return render(request, 'result.html', {'query_set': query_set})
+
+
+def yearly_sales(request):
+    query_set = Order.objects.all().annotate(
+        year=TruncYear('order_date'),
+    ) \
+        .values('year') \
+        .annotate(
+        total_sale=Sum(
+            F('order_detail__quantity') *
+            F('order_detail__price')
+        )
+    ).order_by('-year')
+
+    return render(request, 'result.html', {'query_set': query_set})
+
+
+def customer_sales(request):
+    query_set = Order.objects.all().values('phone_number').annotate(
+        total_sale=Sum(
+            F('order_detail__quantity') *
+            F('order_detail__price')
+        )
+    ).order_by('-total_sale')
+    return render(request, 'result.html', {'query_set': query_set})
+
+
 @login_required
 def logout_view(request):
     logout(request)
