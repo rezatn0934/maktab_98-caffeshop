@@ -11,10 +11,11 @@ class Menu(View):
     def get(self, request):
         categories = Category.objects.all()
         products = Product.objects.all()
-        orders = eval(request.COOKIES.get('orders', '{}'))
+        print(request.COOKIES.get('orders', '{}'))
+        # orders = eval(request.COOKIES.get('orders', '{}'))
         context = {'categories': categories, 'products': products}
         response = render(request, 'menu/menu.html', context)
-        response.set_cookie('number_of_order_items', sum([int(order_qnt) for order_qnt in orders.values()]))
+        # response.set_cookie('number_of_order_items', sum([int(order_qnt) for order_qnt in orders.values()]))
         return response
 
     def post(self, request):

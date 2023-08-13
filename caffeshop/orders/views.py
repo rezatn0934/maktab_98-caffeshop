@@ -9,6 +9,7 @@ from .forms import OrderForm
 from utils import check_availability
 
 import datetime
+import json
 
 
 # Create your views here.
@@ -17,7 +18,8 @@ class CartView(View):
 
     def get(self, request):
         orders = request.COOKIES.get('orders', '{}')
-        orders = eval(orders)
+        orders = str(orders.replace('\'','\"')).decode('utf-8')
+        orders = json.loads(orders)
         updated_orders = orders.copy()
         form = OrderForm()
         if user_phone := request.session.get('user_phone'):
@@ -44,7 +46,7 @@ class CartView(View):
                    'form': form}
         request.COOKIES['number_of_order_items'] = sum([int(order_qnt) for order_qnt in updated_orders.values()])
         response = render(request, 'orders/cart.html', context=context)
-        response.set_cookie('orders', updated_orders)
+        response.set_cookie('orders', updated_orders )
         return response
 
     def post(self, request):
