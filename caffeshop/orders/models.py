@@ -3,6 +3,7 @@ from django.utils.translation import gettext_lazy as _
 
 from menu.models import Product, Category
 from utils import phoneNumberRegex
+from accounts.models import User
 
 
 # Create your models here.
@@ -18,6 +19,7 @@ class Order(models.Model):
                                      blank=True)
     status = models.CharField(verbose_name=_("Order Status"), max_length=1, choices=status_choices, default="P")
     payment = models.CharField(verbose_name=_("Payment Status"), max_length=1, choices=payment_status, default="U")
+    staff = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
 
     @property
     def get_order_items(self):
