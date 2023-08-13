@@ -364,6 +364,19 @@ def customer_sales(request):
     return render(request, 'result.html', {'query_set': query_set})
 
 
+def category_sales(request):
+    query_set = Order.objects.all().annotate(
+        category=F('order_detail__product__category__name'),
+    ) \
+        .values('category').annotate(
+        total_sale=Sum(
+            F('order_detail__quantity') *
+            F('order_detail__price')
+        )
+    ).order_by('-total_sale')
+    return render(request, 'result.html', {'query_set': query_set})
+
+
 @login_required
 def logout_view(request):
     logout(request)
