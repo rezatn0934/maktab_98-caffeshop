@@ -55,7 +55,7 @@ class OrderDetailAdmin(admin.ModelAdmin):
     list_display = ["id", "order_id", "product", "quantity", "price", "total_price"]
 
     list_filter = ["product", "quantity", "price"]
-    list_editable = ["product", "quantity", "price"]
+    list_editable = ["product", "quantity"]
 
     list_select_related = ['order']
 
