@@ -14,7 +14,8 @@ class Order(models.Model):
     phone_number = models.CharField(verbose_name=_("Phone Number"), validators=[phoneNumberRegex], max_length=11)
     order_date = models.DateTimeField(verbose_name=_("Order Date"), auto_now_add=True, editable=False)
     last_modify = models.DateTimeField(verbose_name=_("Last Modify"), auto_now=True, editable=False)
-    table_number = models.ForeignKey("Table", verbose_name=_("Table Name"), on_delete=models.PROTECT, null=True, blank=True)
+    table_number = models.ForeignKey("Table", verbose_name=_("Table Name"), on_delete=models.PROTECT, null=True,
+                                     blank=True)
     status = models.CharField(verbose_name=_("Order Status"), max_length=1, choices=status_choices, default="P")
     payment = models.CharField(verbose_name=_("Payment Status"), max_length=1, choices=payment_status, default="U")
 
@@ -50,14 +51,23 @@ class Order_detail(models.Model):
     order = models.ForeignKey(Order, verbose_name=_("Order"), on_delete=models.PROTECT)
     product = models.ForeignKey(Product, verbose_name=_("Product Name"), on_delete=models.PROTECT)
     quantity = models.IntegerField()
-    price = models.DecimalField(max_digits=5, decimal_places=2)
+    price = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True, editable=False)
 
     class Meta:
         verbose_name_plural = "Order Details"
 
     @property
     def total_price(self):
-        return self.price * self.quantity
+        if self.price and self.quantity:
+            return self.price * self.quantity
+        else:
+            return 0
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        if self.price is None:
+            self.price = self.product.price
+            self.save()
 
     def __str__(self):
         return f"order: {self.order}"
