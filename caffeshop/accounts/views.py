@@ -270,6 +270,20 @@ def total_sales(request):
     return render(request, 'result.html', {'query_set': total_sale})
 
 
+def peak_business_hour(request):
+    if 'filter' in request.GET:
+        first_date = request.GET.get('first_date').strptime('%Y-%m-%d')
+        number_days = request.GET.get('number_days')
+        second_date = first_date.date + timezone.timedelta(days=number_days)
+    else:
+        first_date = timezone.now().date()
+        second_date = timezone.now()
+    query_set = Order.objects.filter(order_date__range=[first_date, second_date]).annotate(
+        hour=TruncHour('order_date')).values('hour').annotate(order_count=Count('id')).order_by('-hour')
+
+    return render(request, 'result.html', {'query_set': query_set})
+
+
 def top_selling(request):
     query_set = Product.objects.annotate(
         pquantity=Sum('order_detail__quantity'), pprice=F('order_detail__price'),
