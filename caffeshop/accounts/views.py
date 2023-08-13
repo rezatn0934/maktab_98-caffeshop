@@ -278,6 +278,26 @@ def top_selling(request):
     return render(request, 'result.html', {'query_set': query_set})
 
 
+def hourly_sales(request):
+    if 'filter' in request.GET:
+        first_date = request.GET.get('first_date').strptime('%Y-%m-%d')
+        second_date = first_date.date + datetime.timedelta(days=1)
+    else:
+        first_date = datetime.datetime.now().date()
+        second_date = datetime.a
+        print('1'*20)
+        print(first_date)
+        print(second_date)
+    query_set = Order.objects.filter(order_date__range=[first_date, second_date]) \
+        .annotate(
+        hour=TruncHour('order_date')).values('hour') \
+        .annotate(
+        total_sale=Sum(
+            F('order_detail__quantity') *
+            F('order_detail__price'))).order_by('-hour')
+    return render(request, 'result.html', {'query_set': query_set})
+
+
 @login_required
 def logout_view(request):
     logout(request)
