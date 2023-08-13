@@ -260,6 +260,16 @@ def most_popular(request):
     return render(request, 'result.html', {'query_set': query_set})
 
 
+def total_sales(request):
+    total_sale = Order.objects.aggregate(
+        total_sale=Sum(
+            F('order_detail__quantity') *
+            F('order_detail__price')
+        )
+    )
+    return render(request, 'result.html', {'query_set': total_sale})
+
+
 @login_required
 def logout_view(request):
     logout(request)
