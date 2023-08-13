@@ -298,6 +298,27 @@ def hourly_sales(request):
     return render(request, 'result.html', {'query_set': query_set})
 
 
+def daily_sales(request):
+
+    if 'filter' in request.GET:
+        first_date = request.GET.get('first_date')
+        second_date = request.GET.get('second_date')
+    else:
+        first_date = datetime.datetime.now() - datetime.timedelta(days=7)
+        second_date = datetime.datetime.now()
+
+    query_set = Order.objects.filter(order_date__range=[first_date, second_date]) \
+        .values('order_date__date') \
+        .annotate(
+        total_sale=Sum(
+            F('order_detail__quantity') *
+            F('order_detail__price')
+        )
+    )
+
+    return render(request, 'result.html', {'query_set': query_set})
+
+
 @login_required
 def logout_view(request):
     logout(request)
