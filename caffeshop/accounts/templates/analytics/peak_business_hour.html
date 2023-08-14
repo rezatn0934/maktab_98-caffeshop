@@ -57,5 +57,41 @@
             </div>
         </div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+    <script>
+        const ctx = document.getElementById('myChart');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [{%for data in query_set %}{{data.hour}}, {%endfor%}],
+                datasets: [{
+                    label: 'Peak Business Hour',
+                    data: [{%for data in query_set %}{{data.order_count}}, {%endfor%}],
+                    borderWidth: 1
+                }]
+            },
+            options:
+                {
+                    responsive: true,
+                    maintainAspectRatio: true,
+
+                    layout:
+                        {
+                            padding: 100
+                        },
+                    scales: {
+                        x: {
+                            type: "linear",
+
+                            beginAtZero: true
+                        },
+                        y: {
+                            type: "linear",
+                            beginAtZero: true
+                        }
+                    }
+                }
+        });
+    </script>
 {% endblock %}
