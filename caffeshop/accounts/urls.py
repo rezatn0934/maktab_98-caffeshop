@@ -5,6 +5,7 @@ urlpatterns = [
     path('login/', views.StaffLogin.as_view(), name='login'),
     path('dashboard/', views.Dashboard.as_view(), name="dashboard"),
     path('result/', views.most_popular, name="result"),
+    path('most_popular/', views.most_popular, name='most_popular'),
     path('verify/', views.Verify.as_view(), name="verify"),
     path('logout/', views.logout_view, name="logout"),
     path('orders/', views.Orders.as_view(), name='order_list'),
