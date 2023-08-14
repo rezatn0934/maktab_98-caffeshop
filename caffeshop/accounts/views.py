@@ -258,17 +258,28 @@ def most_popular(request):
         first_date = request.GET.get('first_date')
         second_date = request.GET.get('second_date')
         limit = int(request.GET.get('quantity'))
-        query_set = Order_detail.objects.all().annotate(date=F('order__order_date')).filter(
+        query_set1 = Order_detail.objects.all().annotate(date=F('order__order_date')).filter(
             date__range=[first_date, second_date]).values('product').annotate(order_count=Count('id')).annotate(
             name=F('product__name')).order_by(
             '-order_count')[:limit]
+        query_set2 = Order_detail.objects.filter(date__range=[first_date, second_date])
+
     else:
         limit = 5
-        query_set = Product.objects.all().annotate(
+        query_set1 = Product.objects.all().annotate(
             order_count=Count('order_detail')
         ).order_by('-order_count')[:limit]
+        query_set2 = Order_detail.objects.all()
 
-    return render(request, 'analytics/most_popular.html', {'query_set': query_set})
+    query_set2 = query_set2.annotate(category=F('product__category__name')).values('category').annotate(
+        total_sale=Sum(
+            F('quantity') *
+            F('price')
+        )).order_by('-total_sale')
+
+    context = {'query_set1':query_set1, 'query_set2':query_set2}
+
+    return render(request, 'analytics/most_popular.html', context=context)
 
 
 def total_sales(request):
@@ -408,19 +419,6 @@ def yearly_sales(request):
 
 def customer_sales(request):
     query_set = Order.objects.all().values('phone_number').annotate(
-        total_sale=Sum(
-            F('order_detail__quantity') *
-            F('order_detail__price')
-        )
-    ).order_by('-total_sale')
-    return render(request, 'result.html', {'query_set': query_set})
-
-
-def category_sales(request):
-    query_set = Order.objects.all().annotate(
-        category=F('order_detail__product__category__name'),
-    ) \
-        .values('category').annotate(
         total_sale=Sum(
             F('order_detail__quantity') *
             F('order_detail__price')
