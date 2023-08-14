@@ -316,12 +316,22 @@ def peak_business_hour(request):
 
 
 def top_selling(request):
-    query_set = Product.objects.annotate(
-        total=Sum(
-            F('order_detail__quantity') *
-            F('order_detail__price')
-        )).filter(Q(total__isnull=False)).order_by('-total')
-    return render(request, 'result.html', {'query_set': query_set})
+    if 'filter' in request.GET:
+        first_date = request.GET.get('first_date')
+        second_date = request.GET.get('second_date')
+        query_set = Order_detail.objects.all().annotate(date=F('order__order_date')).filter(
+            date__range=[first_date, second_date]).values("product").annotate(
+            total_sale=Sum(F('quantity') * F('price'))).annotate(
+            product_name=F('product__name')).order_by('-total_sale')[:5]
+    else:
+
+        query_set = Product.objects.annotate(
+            total_sale=Sum(
+                F('order_detail__quantity') *
+                F('order_detail__price')
+            )).filter(Q(total_sale__isnull=False)).order_by('-total_sale')[:5]
+
+    return render(request, 'analytics/top_selling.html', {'query_set': query_set})
 
 
 def hourly_sales(request):
