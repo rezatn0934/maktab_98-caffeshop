@@ -6,7 +6,10 @@
 
     <style>
 
-
+        /* .product-img{
+            padding-top: 100% !important;
+            width: 100% !important;
+        } */
         .intro {
             background-color: rgb(255, 255, 255) !important;
         }
@@ -117,10 +120,10 @@
                                             <tr id="box-{{forloop.counter}}" class="cake-top row justify-content-between d-flex align-items-center">
                                                 <td class="cakes col-sm-3">
                                                     <div class="product-img  ">
-                                                        <img src="{{ product.image.url }}">
+                                                        <img class="p-img" src="{{ product.image.url }}">
                                                     </div>
                                                 </td>
-                                                <td class="cake-text1 col-sm-2">
+                                                <td class="product-text col-sm-2">
                                                     <div class="product-text">
                                                         <p class="my-5" >{{ product.name }}</p>
                                                     </div>
@@ -142,12 +145,12 @@
                                                         <input name="product" value="{{ product.id }}" type="hidden">
                                                         <button name="update" value="True" type="button" onclick="return orderUpdate(this.form,  'box-{{forloop.counter}}')"
                                                             form="cart-item-form-{{forloop.counter}}"   
-                                                            class="col-sm-4 btn btn-outline-warning m-auto  d-flex justify-content-center">
+                                                            class="col-sm-4 btn btn-f btn-outline-warning m-auto  d-flex justify-content-center">
                                                             <i class="bi bi-arrow-repeat"></i>
                                                         </button>
                                                         <button name="remove" value="True" type="button" id="bttn-{{forloop.counter}}" onclick="return deleteOrderItem(this.form, 'box-{{forloop.counter}}')"
                                                                 form="cart-item-form-{{forloop.counter}}" 
-                                                                class="col-sm-4 mx-1 btn btn-outline-danger d-flex justify-content-center">
+                                                                class="col-sm-4 mx-1 btn btn-f btn-outline-danger d-flex justify-content-center">
                                                             <i class="bi bi-trash"></i>
                                                         </button>
                                                     </div>
@@ -236,4 +239,52 @@
         return false;
     }
     </script>
+    <script>
+        
+        function myFunction(phone, tablet) {
+            let priceEl = document.querySelectorAll('td.price, button.btn-f');
+            let productTextEl = document.querySelectorAll('td.product-text p');
+            let quantityEl = document.querySelectorAll('td.quantity');
+            let qElInput = document.querySelectorAll('td.quantity input');
+            let btnF = document.querySelectorAll('button.btn-f');
+            let trEl = document.querySelectorAll('tr, td.top-remove div');
+          if (phone.matches) { // If media query matches
+
+            priceEl.forEach((Item) => {
+                             Item.style.setProperty("width", "5em", "important");
+            });
+            btnF.forEach((Item) => {
+                             Item.style.setProperty("width", "5em", "important")
+                             Item.classList.add('mx-1');
+            });
+            productTextEl.forEach((Item) => {
+                             Item.classList.add('text-center');
+                             Item.classList.remove('my-5');
+            });
+            quantityEl.forEach((Item) => {
+                             Item.style.setProperty("width", "14em", "important");
+            });
+            qElInput.forEach((Item) => {
+                             Item.style.setProperty("text-align", "center", "important");
+            });
+            trEl.forEach((Item) => {
+                             Item.classList.remove('justify-content-between');
+                             Item.classList.remove('justify-content-around');
+                             Item.classList.add('justify-content-center');
+            });
+            alert('phone-size')
+          }
+           else if (tablet.matches) {
+            // alert('tablet-size')
+        }
+          else {
+            // alert('pc-size')
+          }
+        }
+        
+        var phone = window.matchMedia("(max-width: 416px)");
+        var tablet = window.matchMedia("(max-width: 416px)");
+        myFunction(phone, tablet) // Call listener function at run time
+        x.addListener(myFunction) // Attach listener function on state changes
+        </script>
   {% endblock %}
