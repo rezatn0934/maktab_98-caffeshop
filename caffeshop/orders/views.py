@@ -18,7 +18,7 @@ class CartView(View):
 
     def get(self, request):
         orders = request.COOKIES.get('orders', '{}')
-        orders = str(orders.replace('\'','\"')).decode('utf-8')
+        orders = str(orders.replace('\'','\"'))
         orders = json.loads(orders)
         updated_orders = orders.copy()
         form = OrderForm()
