@@ -22,7 +22,7 @@ class OrderAdmin(admin.ModelAdmin):
     readonly_fields = ["total_price"]
 
     inlines = [OrderdetailInline]
-    list_display = ["id", "phone_number", "customer_count", "table_number", "total_price"]
+    list_display = ["id", "phone_number", "customer_count", "table_number", "total_price", "staff"]
     list_filter = ["phone_number", "table_number", "order_date", "last_modify", ]
     list_editable = ["table_number", ]
 
