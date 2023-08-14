@@ -26,9 +26,7 @@
                             <form action="{% url 'order_list' %}" method="GET">
                                 <input type="hidden" name="search" value="search">
                                 <input type="hidden" name="sort" value="{{ sort }}">
-                                <input type="hidden" name="order" value="
-
-                                        {% if order == 'asc' %}{{ 'desc' }}{% elif order == 'desc' %}{{ 'asc' }}{% endif %}">
+                                <input type="hidden" name="order" value="{% if order == 'asc' %}'desc'{% elif order == 'desc' %}'asc'{% endif %}">
                                 <input type="hidden" name="filter" value="{{ filter }}">
                                 <input type="hidden" name="first_date" value="{{ first_date }}">
                                 <input type="hidden" name="second_date" value="{{ second_date }}">
@@ -78,8 +76,7 @@
                                 <input type="hidden" name="filter" value="filter">
                                 <input type="hidden" name="search" value="search">
                                 <input type="hidden" name="sort" value="{{ sort }}">
-                                <input type="hidden" name="order" value="
-                                {% if order == 'asc' %}{{ 'desc' }}{% elif order == 'desc' %}{{ 'asc' }}{% endif %}">
+                                <input type="hidden" name="order" value="{% if order == 'asc' %}'desc'{% elif order == 'desc' %}'asc'{% endif %}">
                                 <input type="hidden" name="flexRadioDefault" value="{{ flexRadioDefault }}">
                                 <input type="hidden" name="filter1" value="{{ filter1 }}">
                                 <input type="hidden" name="page" value="page">
