@@ -4,6 +4,15 @@
     <div class="content-start transition">
         <div class="container-fluid dashboard">
             <div class="row justify-content-center d-flex align-items-center text-black">
+                {% if messages %}
+                    <div class="col-md-12">
+                        {% for message in messages %}
+                            <div id="msg" class="alert {{ message.tags }}" role="alert">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
             </div>
             <form class="form-control" action="{% url 'most_popular' %}" method="GET">
                 <input type="hidden" name="filter">
