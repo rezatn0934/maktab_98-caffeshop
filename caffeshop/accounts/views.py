@@ -257,13 +257,16 @@ def most_popular(request):
     if 'filter' in request.GET:
         first_date = request.GET.get('first_date')
         second_date = request.GET.get('second_date')
-        query_set = Product.objects.filter(order_date__range=[first_date, second_date])
+        limit = int(request.GET.get('quantity'))
+        query_set = Order_detail.objects.all().annotate(date=F('order__order_date')).filter(
+            date__range=[first_date, second_date]).values('product').annotate(order_count=Count('id')).annotate(
+            name=F('product__name')).order_by(
+            '-order_count')[:limit]
     else:
-        query_set = Product.objects.all()
-
-    query_set = query_set.annotate(
+        limit = 5
+        query_set = Product.objects.all().annotate(
             order_count=Count('order_detail')
-        ).order_by('-order_count')[:5]
+        ).order_by('-order_count')[:limit]
 
     return render(request, 'analytics/most_popular.html', {'query_set': query_set})
 
@@ -295,8 +298,7 @@ def peak_business_hour(request):
 def top_selling(request):
     query_set = Product.objects.annotate(
         pquantity=Sum('order_detail__quantity'), pprice=F('order_detail__price'),
-        total=F('pquantity') * F('pprice')).\
-        order_by(F('total').desc(nulls_last=True))
+        total=F('pquantity') * F('pprice')).order_by(F('total').desc(nulls_last=True))
     return render(request, 'result.html', {'query_set': query_set})
 
 
@@ -307,9 +309,6 @@ def hourly_sales(request):
     else:
         first_date = datetime.datetime.now().date()
         second_date = datetime.datetime.now()
-        print('1'*20)
-        print(first_date)
-        print(second_date)
     query_set = Order.objects.filter(order_date__range=[first_date, second_date]) \
         .annotate(
         hour=TruncHour('order_date')).values('hour') \
@@ -321,7 +320,6 @@ def hourly_sales(request):
 
 
 def daily_sales(request):
-
     if 'filter' in request.GET:
         first_date = request.GET.get('first_date')
         second_date = request.GET.get('second_date')
