@@ -9,6 +9,7 @@ local_settings.py
 db.sqlite3
 db.sqlite3-journal
 
+
 .env
 media
 
@@ -180,3 +181,4 @@ cython_debug/
 
 
 **/migrations/
+**/media/
