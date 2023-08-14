@@ -1,0 +1,68 @@
+{% extends 'dashbase.html' %}
+{% load static %}
+{% block content %}
+    <div class="content-start transition">
+        <div class="container-fluid dashboard">
+            <div class="row">
+                <div class="col-md-12">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div id="msg" class="alert {{ message.tags }}" role="alert">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                    <div class="col-md-12 ">
+                        <canvas id="myChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const ctx = document.getElementById('myChart');
+        new Chart(ctx, {
+            type: 'bar',
+            title: 'Peak Business Hour',
+            data: {
+                labels: [{%for data in query_set %}'{{ data.name }}', {%endfor%}],
+                datasets: [{
+                    data: [{%for data in query_set %}{{ data.order_count }}, {%endfor%}],
+                    backgroundColor:[
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 02)',
+                    'rgba(75, 192, 19, 0.2)',
+                    'rgba(153, 102, 64, 0.2)',
+                ],
+                    borderWidth: 1
+                }]
+            },
+            options:
+                {
+                    responsive: true,
+                    maintainAspectRatio: true,
+
+                    layout:
+                        {
+                            padding: 100
+                        },
+                    scales: {
+                        y: {
+                            grid:{
+                                display: false
+                            },
+                            beginAtZero: true
+                        },
+                        x: {
+                            grid:{
+                                display: false
+                            },
+                            beginAtZero: true
+                        }
+                    }
+                }
+        });
+    </script>
+{% endblock %}

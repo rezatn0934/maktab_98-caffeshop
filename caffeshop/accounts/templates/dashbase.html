@@ -19,6 +19,12 @@
     <link rel="stylesheet" href="{% static 'assets/modules/boxicons/css/boxicons.min.css' %}">
     <!-- Apexcharts  CSS -->
     <link rel="stylesheet" href="{% static 'assets/modules/apexcharts/apexcharts.css' %}">
+    <!--Chart js-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"
+            integrity="sha256-Uv9BNBucvCPipKQ2NS9wYpJmi8DTOEfTA/nH2aoJALw=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.css"
+          integrity="sha256-aa0xaJgmK/X74WM224KMQeNQC2xYKwlAt08oZqjeF0E=" crossorigin="anonymous"/>
+
 </head>
 <body>
 
@@ -54,8 +60,7 @@
             </div>
             <ul class="side-menu">
                 <!-- Divider-->
-                <li class="divider" data-text="STARTER">STARTER</li>
-
+                <li class="divider" data-text="STARTER">Staff Section</li>
                 <li>
                     <a href="{% url 'order_list' %}">
                         <i class='bi bi-basket2'></i>
@@ -75,7 +80,7 @@
                     </a>
                 </li>
                 <!-- Divider-->
-                <li class="divider" data-text="Atrana">Atrana</li>
+                <li class="divider" data-text="Atrana">Manger Section</li>
                 <li>
                     <a href="{% url 'home' %}">
                         <i class='bi bi-house'></i>
@@ -83,10 +88,13 @@
                     </a>
                 </li>
                 <li>
-                    <a href="blank-pages.html">
-                        <i class='bi bi-search'></i>
-                        Search
+                    <a href="#">
+                        <i class='bi bi-graph-up-arrow'></i>
+                        Analytics
                     </a>
+                    <ul class="side-dropdown">
+                        <li><a href="{% url 'most_popular' %}"><i  class="bi bi-bar-chart">Most Popular Product</i></a></li>
+                    </ul>
                 </li>
             </ul>
         </div>
@@ -135,7 +143,6 @@
 <script src="{% static 'assets/modules/popper/popper.min.js' %}"></script>
 
 <!-- Chart Js -->
-<script src="{% static 'assets/modules/apexcharts/apexcharts.js' %}"></script>
 <script src="{% static 'assets/js/ui-apexcharts.js' %}"></script>
 
 <!-- Template JS File -->

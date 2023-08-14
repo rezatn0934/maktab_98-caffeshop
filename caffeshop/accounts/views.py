@@ -15,7 +15,6 @@ from .form import StaffLoginForm, VerifyCodeForm, OrderDetailUpdateForm
 from orders.models import Order, Order_detail
 from utils import send_otp_code, check_is_authenticated
 from menu.models import Product
-from .models import User
 
 import datetime
 import time
@@ -200,7 +199,6 @@ def confirm_order(request, pk):
         if order:
             order = order.get(id=pk)
             order.status = 'A'
-            order.staff = request.user
             order.save()
             messages.success(request, f'Order {pk} has been successfully Approved.')
             return redirect('order_list')
@@ -216,7 +214,6 @@ def cancel_order(request, pk):
         if order:
             order = order.get(id=pk)
             order.status = 'C'
-            order.staff = request.user
             order.save()
             messages.warning(request, f'Order {pk} has been canceled.')
             return redirect('order_list')
@@ -257,10 +254,18 @@ class CreateOrderItem(View):
 
 
 def most_popular(request):
-    query_set = Product.objects.annotate(
-        total_sales=Count('order_detail')
-    ).order_by('-total_sales')
-    return render(request, 'result.html', {'query_set': query_set})
+    if 'filter' in request.GET:
+        first_date = request.GET.get('first_date')
+        second_date = request.GET.get('second_date')
+        query_set = Product.objects.filter(order_date__range=[first_date, second_date])
+    else:
+        query_set = Product.objects.all()
+
+    query_set = query_set.annotate(
+            order_count=Count('order_detail')
+        ).order_by('-order_count')[:5]
+
+    return render(request, 'analytics/most_popular.html', {'query_set': query_set})
 
 
 def total_sales(request):
@@ -301,7 +306,7 @@ def hourly_sales(request):
         second_date = first_date.date + datetime.timedelta(days=1)
     else:
         first_date = datetime.datetime.now().date()
-        second_date = datetime.a
+        second_date = datetime.datetime.now()
         print('1'*20)
         print(first_date)
         print(second_date)
