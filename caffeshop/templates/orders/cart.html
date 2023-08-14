@@ -6,25 +6,18 @@
 
     <style>
 
-        /* .product-img{
-            padding-top: 100% !important;
-            width: 100% !important;
-        } */
         .intro {
             background-color: rgb(255, 255, 255) !important;
         }
 
         .cart {
-            /* width: 80% !important; */
             max-width: 750px;
         }
 
         .product-text {
-            /* padding: 0em 0em 0em 1em; */
             font-size: min(1.1rem, 1.8vw) !important;
             margin: 5px;
             height: auto;
-            /* height:0; */
             width: auto;
         }
 
@@ -34,12 +27,9 @@
         }
 
         td.cakes img {
-            /* padding: 1em 0em; */
-            /* background-color: yellow; */
             background-color: blue;
             background-size: cover;
             border-radius: 10px;
-            /* background-size: cover; */
         }
 
         #checkout1{
@@ -63,24 +53,6 @@
     </style>
 
     <link rel="stylesheet" href="{% static 'flat_cart_widget\web\css\style.css' %}">
-    <!-- <script>
-        $(document).ready(function (c) {
-            $('.close').on('click', function (c) {
-                $('.cake-top').fadeOut('slow', function (c) {
-                    $('.cake-top').remove();
-                });
-            });
-        });
-    </script>
-    <script>
-        $(document).ready(function (c) {
-            $('.close-btm').on('click', function (c) {
-                $('.cake-bottom').fadeOut('slow', function (c) {
-                    $('.cake-bottom').remove();
-                });
-            });
-        });
-    </script> -->
 {% endblock %}
 
 
@@ -96,7 +68,6 @@
                     <div style="height: 100px;">
                     </div>
                     <div class="logo">
-                        <!-- <h3>Flat Cart Widget</h3> -->
                     </div>
                     {% if messages %}
                         {% for message in messages %}
@@ -162,12 +133,6 @@
                                 </table>
                             </div>
                             <div class="vocher pt-0">
-                                <!-- <div class="dis-card">
-                                    <h5>Discount Code or Voucher</h2>
-                                    <p>Enter your discount code or voucher to receive a discount on your total order.</p>
-                                    <input type="text" value="">
-                                    <input type="submit"  value="Redeem">
-                                </div> -->
                                 <div class="dis-total">
                                     <div class="tot-btn1 ">
                                         <form action="{% url 'orders:cart' %}" id="table-reserve-form" method="post" novalidate>
@@ -175,13 +140,6 @@
                                             <div class="row justify-content-between active" id="RadioTarget1" aria-hidden="true">
                                                 <div class="col-sm-5 d-flex align-items-end">
                                                     <div class="row gy-2">
-<!--                                                        {% for field in form %}-->
-<!--                                                        <div class="py-1" style="color: black;">-->
-<!--                                                            {{ field.errors }}-->
-<!--                                                            <label>{{ field.label_tag }} </label>-->
-<!--                                                            {{ field }}-->
-<!--                                                        </div> -->
-<!--                                                        {% endfor %}-->
                                                         {{form}}
                                                     </div>
                                                 </div>
@@ -272,7 +230,7 @@
                              Item.classList.remove('justify-content-around');
                              Item.classList.add('justify-content-center');
             });
-            alert('phone-size')
+            // alert('phone-size')
           }
            else if (tablet.matches) {
             // alert('tablet-size')
