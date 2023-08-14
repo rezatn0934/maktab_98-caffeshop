@@ -3,7 +3,7 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db.models import Q, F, Sum, Func, Value, CharField, Count
-from django.db.models.functions import TruncMonth, TruncYear, TruncHour
+from django.db.models.functions import TruncMonth, TruncYear, TruncHour, ExtractHour
 
 from django.shortcuts import render, redirect
 from django.utils.decorators import method_decorator
@@ -278,9 +278,9 @@ def peak_business_hour(request):
     else:
         first_date = timezone.now().date()
         second_date = timezone.now()
-    query_set = Order.objects.filter(order_date__range=[first_date, second_date]).annotate(
-        hour=TruncHour('order_date')).values('hour').annotate(order_count=Count('id')).order_by('-hour')
 
+    query_set = Order.objects.filter(order_date__range=[first_date, second_date]).annotate(
+        hour=ExtractHour('order_date')).values('hour').annotate(order_count=Count('id')).order_by('hour')
     return render(request, 'result.html', {'query_set': query_set})
 
 
