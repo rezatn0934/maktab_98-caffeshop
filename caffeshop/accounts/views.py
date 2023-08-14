@@ -282,17 +282,36 @@ def total_sales(request):
 
 
 def peak_business_hour(request):
+    lst2 = None
+    lst1 = [0 for _ in range(24)]
     if 'filter' in request.GET:
-        first_date = request.GET.get('first_date').strptime('%Y-%m-%d')
-        number_days = request.GET.get('number_days')
-        second_date = first_date.date + timezone.timedelta(days=number_days)
-    else:
-        first_date = timezone.now().date()
-        second_date = timezone.now()
+        first_date1 = request.GET.get('first_date')
+        second_date1 = (datetime.datetime.strptime(first_date1, '%Y-%m-%d') + timezone.timedelta(
+            days=1)).strftime('%Y-%m-%d')
 
-    query_set = Order.objects.filter(order_date__range=[first_date, second_date]).annotate(
+        if first_date2 := request.GET.get('second_date'):
+
+            lst2 = [0 for _ in range(24)]
+            second_date2 = (datetime.datetime.strptime(first_date2, '%Y-%m-%d') + timezone.timedelta(
+                days=1)).strftime('%Y-%m-%d')
+            query_set2 = Order.objects.filter(order_date__range=[first_date2, second_date2]).annotate(
+                hour=ExtractHour('order_date')).values('hour').annotate(order_count=Count('id')).order_by('hour')
+            for query in query_set2:
+                index = int(query['hour'])
+                lst2[index] = query['order_count']
+
+    else:
+        first_date1 = timezone.now().date()
+        second_date1 = timezone.now()
+
+    query_set1 = Order.objects.filter(order_date__range=[first_date1, second_date1]).annotate(
         hour=ExtractHour('order_date')).values('hour').annotate(order_count=Count('id')).order_by('hour')
-    return render(request, 'result.html', {'query_set': query_set})
+    for query in query_set1:
+        index = int(query['hour'])
+        lst1[index] = query['order_count']
+
+    context = {'lst1': lst1, 'lst2': lst2}
+    return render(request, 'analytics/peak_business_hour.html', context=context)
 
 
 def top_selling(request):
