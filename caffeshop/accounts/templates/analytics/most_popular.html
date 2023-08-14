@@ -61,7 +61,7 @@
     <script>
         const ctx = document.getElementById('myChart');
         new Chart(ctx, {
-            type: 'bar',
+            type: 'pie',
             data: {
                 labels: [{%for data in query_set %}'{{ data.name }}', {%endfor%}],
                 datasets: [{
