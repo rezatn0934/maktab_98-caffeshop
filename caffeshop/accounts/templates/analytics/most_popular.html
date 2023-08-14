@@ -62,7 +62,6 @@
         const ctx = document.getElementById('myChart');
         new Chart(ctx, {
             type: 'bar',
-            title: 'Peak Business Hour',
             data: {
                 labels: [{%for data in query_set %}'{{ data.name }}', {%endfor%}],
                 datasets: [{
@@ -81,6 +80,12 @@
                 {
                     responsive: true,
                     maintainAspectRatio: true,
+
+                    {
+                plugins: {title: {
+                display: true,
+                text: "Most popular Products"
+                },
 
                     layout:
                         {

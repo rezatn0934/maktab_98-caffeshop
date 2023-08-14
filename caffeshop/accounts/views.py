@@ -283,6 +283,7 @@ def total_sales(request):
 
 def peak_business_hour(request):
     lst2 = None
+    first_date2 = None
     lst1 = [0 for _ in range(24)]
     if 'filter' in request.GET:
         first_date1 = request.GET.get('first_date')
@@ -310,15 +311,27 @@ def peak_business_hour(request):
         index = int(query['hour'])
         lst1[index] = query['order_count']
 
-    context = {'lst1': lst1, 'lst2': lst2}
+    context = {'lst1': lst1, 'lst2': lst2, "first_date1": first_date1, "first_date2": first_date2}
     return render(request, 'analytics/peak_business_hour.html', context=context)
 
 
 def top_selling(request):
-    query_set = Product.objects.annotate(
-        pquantity=Sum('order_detail__quantity'), pprice=F('order_detail__price'),
-        total=F('pquantity') * F('pprice')).order_by(F('total').desc(nulls_last=True))
-    return render(request, 'result.html', {'query_set': query_set})
+    if 'filter' in request.GET:
+        first_date = request.GET.get('first_date')
+        second_date = request.GET.get('second_date')
+        query_set = Order_detail.objects.all().annotate(date=F('order__order_date')).filter(
+            date__range=[first_date, second_date]).values("product").annotate(
+            total_sale=Sum(F('quantity') * F('price'))).annotate(
+            product_name=F('product__name')).order_by('-total_sale')[:5]
+    else:
+
+        query_set = Product.objects.annotate(
+            total_sale=Sum(
+                F('order_detail__quantity') *
+                F('order_detail__price')
+            )).filter(Q(total_sale__isnull=False)).order_by('-total_sale')[:5]
+
+    return render(request, 'analytics/top_selling.html', {'query_set': query_set})
 
 
 def hourly_sales(request):

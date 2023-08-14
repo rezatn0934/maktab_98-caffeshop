@@ -14,7 +14,7 @@
                     </div>
                 {% endif %}
             </div>
-            <form class="form-control" action="{% url 'peak_business_hour' %}" method="GET">
+            <form class="form-control" action="{% url 'top_selling' %}" method="GET">
                 <input type="hidden" name="filter">
                 <div class="card card-body">
                     <div class="col-md-3 mb-2">
@@ -23,18 +23,19 @@
                     <div class="row d-flex g-4 column-gap-1 justify-content-between align-items-flex-end">
                         <div class="col-md-3">
                             <label class="form-check-label" for="first_date">
-                                Choose a date:
+                                From:
                             </label>
                             <input class="form-control date" type="date" name="first_date"
                                    id="first_date" required>
                         </div>
                         <div class="col-md-3">
-                            <label class="form-check-label" for="quantity">
-                                Compare with (optional):
+                            <label class="form-check-label" for="second_date">
+                                To:
                             </label>
                             <input class="form-control date" type="date" name="second_date"
-                                   id="first_date">
+                                   id="second_date" required>
                         </div>
+
                         <div class="col-md-2 mt-4 pt-4">
                             <button type="submit" class="btn btn-primary m-0">
                                 <i class="bi bi-search"></i>
@@ -51,62 +52,42 @@
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
     <script>
         const ctx = document.getElementById('myChart');
         new Chart(ctx, {
-            type: 'line',
-
+            type: 'bar',
             data: {
-                labels: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'],
+                labels: [{%for data in query_set %}'{{ data.product_name }}', {%endfor%}],
                 datasets: [{
-                    label: '{{first_date1}}',
-                    data: {{ lst1 }},
-                    borderWidth: 2,
-                    borderColor: 'rgba(0, 255, 0, .5)'
-                },
-                    {% if lst2 %}
-                        {
-                            label: '{{first_date2}}',
-                            data: {{ lst2 }},
-                            borderWidth: 1,
-                            borderColor: 'rgba(255, 0, 0, .5)'
-                        }
-                    {% endif %}
-                ]
+
+                    data: [{%for data in query_set %}{{ data.total_sale }}, {%endfor%}],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.9)',
+<!--                        'rgba(54, 162, 235, 0.9)',-->
+<!--                        'rgba(255, 206, 86, 02)',-->
+<!--                        'rgba(75, 192, 19, 0.2)',-->
+<!--                        'rgba(153, 102, 64, 0.2)',-->
+                    ],
+                    borderWidth: 1
+                }]
             },
             options:
-
                 {
-                plugins: {title: {
-                display: true,
-                text: "Peak Business Hour"
-                }
-                 },
                     responsive: true,
                     maintainAspectRatio: true,
-                    legend: {
-                        display: false
-                    },
-                    elements: {
-                            line:{
-                                tension: 0.3
-                              }
-                      },
+
+
+                plugins: {title: {
+                display: true,
+                text: "Top Selling Product",
+
+                }, legend: {display:false}},
+
                     layout:
                         {
                             padding: 100
                         },
-                    scales: {
-                        x: {
-                            type: "linear",
-                            beginAtZero: true
-                        },
-                        y: {
-                            type: "linear",
-                            beginAtZero: true,
-                        }
-                    }
+
                 }
         });
     </script>
