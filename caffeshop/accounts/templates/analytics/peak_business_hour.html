@@ -14,7 +14,7 @@
                     </div>
                 {% endif %}
             </div>
-            <form class="form-control" action="{% url 'most_popular' %}" method="GET">
+            <form class="form-control" action="{% url 'peak_business_hour' %}" method="GET">
                 <input type="hidden" name="filter">
                 <div class="card card-body">
                     <div class="col-md-3 mb-2">
@@ -30,10 +30,10 @@
                         </div>
                         <div class="col-md-3">
                             <label class="form-check-label" for="quantity">
-                                Number Of Products:
+                                Compare with (optional):
                             </label>
-                            <input class="form-control" type="number" name="quantity"
-                                   id="quantity" required>
+                            <input class="form-control date" type="date" name="second_date"
+                                   id="first_date">
                         </div>
                         <div class="col-md-2 mt-4 pt-4">
                             <button type="submit" class="btn btn-primary m-0">
@@ -57,18 +57,30 @@
         new Chart(ctx, {
             type: 'line',
             data: {
-                labels: [{%for data in query_set %}{{data.hour}}, {%endfor%}],
+                labels: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'],
                 datasets: [{
                     label: 'Peak Business Hour',
-                    data: [{%for data in query_set %}{{data.order_count}}, {%endfor%}],
-                    borderWidth: 1
-                }]
+                    data: {{ lst1 }},
+                    borderWidth: 2,
+                    borderColor: 'rgba(0, 255, 0, .5)'
+                },
+                    {% if lst2 %}
+                        {
+                            label: 'Peak Business Hour',
+                            data: {{ lst2 }},
+                            borderWidth: 1,
+                            borderColor: 'rgba(255, 0, 0, .5)'
+                        }
+                    {% endif %}
+                ]
             },
             options:
                 {
                     responsive: true,
                     maintainAspectRatio: true,
-
+                    legend: {
+                        display: false
+                    },
                     layout:
                         {
                             padding: 100
@@ -76,12 +88,11 @@
                     scales: {
                         x: {
                             type: "linear",
-
                             beginAtZero: true
                         },
                         y: {
                             type: "linear",
-                            beginAtZero: true
+                            beginAtZero: true,
                         }
                     }
                 }
