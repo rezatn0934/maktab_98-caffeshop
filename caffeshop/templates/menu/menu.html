@@ -133,48 +133,26 @@
     event.preventDefault();
     let formElement = document.getElementById(form_id);
     let formData = new FormData(formElement);
-    // alert('product id' + formData.get('product'));
-    let stringOrder = getCookie('orders')
-    if (!stringOrder){
-      stringOrder = JSON.stringify({})
-      // alert('empty orders')
-    }
-    let orders = JSON.parse(stringOrder);
-    // alert('last orders: ' + stringOrder)
+    let orders = getCookieObject('orders'); // gets oder object from cookie
     let message = getCookie('message');
     let product = formData.get('product');
     let number_of_product = +formData.get('quantity');
-      if (stringOrder === '{}' ){
-          // alert('has entered to add level for non exist of last order')
-          orders[product] = number_of_product
+      if (JSON.stringify(orders) == '{}' ){
+          orders[product] = number_of_product // alert('has entered to add level for non exist of last order')
           message = "you created a shopping cart"
         }
       else {
         if (orders[product]){
-              // alert('has entered to update level for exist of last order')
-              orders[product] = +orders[product] + number_of_product;
+              orders[product] = +orders[product] + number_of_product; // alert('has entered to update level for exist of last order')
               message = "Order updated";
              }
           else {
-              // alert('has entered to add level for exist of last order')
-              orders[product] = number_of_product;
+              orders[product] = number_of_product; // alert('has entered to add level for exist of last order')
               message = "Order added";
          }}
       setCookie('orders', JSON.stringify(orders), 60);
       setCookie('message', message, 60);
-      // alert('orders values:' + Object.values(orders))
-      let number_of_order_items = 0;
-      let ordersQuantities = Object.values(orders);
-      for (const quantity of ordersQuantities){
-        number_of_order_items += +quantity;
-      }
-      
-      // alert(number_of_order_items);
-      // alert('number_of_order_items' + number_of_order_items);
-      
-      setCookie('number_of_order_items', number_of_order_items, 60);
-      document.getElementById("cart-nav-btn-num").innerText = number_of_order_items
-      // alert('finish');
+      setOrderItemsNumber(orders); // set number of order items in  cookie and cart button 
     
   }
   </script>
