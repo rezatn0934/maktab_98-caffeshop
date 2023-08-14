@@ -317,8 +317,10 @@ def peak_business_hour(request):
 
 def top_selling(request):
     query_set = Product.objects.annotate(
-        pquantity=Sum('order_detail__quantity'), pprice=F('order_detail__price'),
-        total=F('pquantity') * F('pprice')).order_by(F('total').desc(nulls_last=True))
+        total=Sum(
+            F('order_detail__quantity') *
+            F('order_detail__price')
+        )).filter(Q(total__isnull=False)).order_by('-total')
     return render(request, 'result.html', {'query_set': query_set})
 
 
