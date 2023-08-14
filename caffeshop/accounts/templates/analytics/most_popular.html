@@ -76,36 +76,28 @@
                     borderWidth: 1
                 }]
             },
-            options:
-                {
-                    responsive: true,
-                    maintainAspectRatio: true,
-
-                    {
-                plugins: {title: {
-                display: true,
-                text: "Most popular Products"
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    title: {
+                        display: true, text: "Most popular Products"
+                    }
                 },
-
-                    layout:
-                        {
-                            padding: 100
-                        },
-                    scales: {
-                        y: {
-                            grid: {
-                                display: false
-                            },
-                            beginAtZero: true
-                        },
-                        x: {
-                            grid: {
-                                display: false
-                            },
+                layout: {padding: 100},
+                scales: {
+                    y: {
+                        grid: {display: false},
+                        beginAtZero: true
+                    },
+                    x: {
+                        grid: {
+                            display: false,
                             beginAtZero: true
                         }
                     }
                 }
+            }
         });
     </script>
 {% endblock %}
