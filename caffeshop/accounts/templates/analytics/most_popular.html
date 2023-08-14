@@ -65,14 +65,7 @@
             data: {
                 labels: [{%for data in query_set %}'{{ data.name }}', {%endfor%}],
                 datasets: [{
-                    data: [{%for data in query_set %}{{ data.order_count }}, {%endfor%}],
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.2)',
-                        'rgba(54, 162, 235, 0.2)',
-                        'rgba(255, 206, 86, 02)',
-                        'rgba(75, 192, 19, 0.2)',
-                        'rgba(153, 102, 64, 0.2)',
-                    ],
+                    data: [{%for data in query_set1 %}{{ data.order_count }}, {%endfor%}],
                     borderWidth: 1
                 }]
             },
