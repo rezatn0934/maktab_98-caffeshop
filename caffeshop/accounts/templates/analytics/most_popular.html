@@ -39,7 +39,30 @@
                     borderWidth: 1
                 }]
             },
+            options:
+                {
+                    responsive: true,
+                    maintainAspectRatio: true,
 
+                    layout:
+                        {
+                            padding: 100
+                        },
+                    scales: {
+                        y: {
+                            grid:{
+                                display: false
+                            },
+                            beginAtZero: true
+                        },
+                        x: {
+                            grid:{
+                                display: false
+                            },
+                            beginAtZero: true
+                        }
+                    }
+                }
         });
     </script>
 {% endblock %}
