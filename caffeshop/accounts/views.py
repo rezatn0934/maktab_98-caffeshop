@@ -283,6 +283,7 @@ def total_sales(request):
 
 def peak_business_hour(request):
     lst2 = None
+    first_date2 = None
     lst1 = [0 for _ in range(24)]
     if 'filter' in request.GET:
         first_date1 = request.GET.get('first_date')
@@ -310,7 +311,7 @@ def peak_business_hour(request):
         index = int(query['hour'])
         lst1[index] = query['order_count']
 
-    context = {'lst1': lst1, 'lst2': lst2}
+    context = {'lst1': lst1, 'lst2': lst2, "first_date1": first_date1, "first_date2": first_date2}
     return render(request, 'analytics/peak_business_hour.html', context=context)
 
 
