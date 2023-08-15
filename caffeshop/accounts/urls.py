@@ -26,3 +26,4 @@ urlpatterns = [
     path('confirm_order/<int:pk>', views.confirm_order, name='confirm_order'),
     path('cancel_order/<int:pk>', views.cancel_order, name='cancel_order'),
 ]
+
