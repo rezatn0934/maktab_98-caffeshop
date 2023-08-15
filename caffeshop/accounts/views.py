@@ -92,7 +92,13 @@ class Dashboard(View):
 
     @method_decorator(login_required)
     def get(self, request):
-        return render(request, "dashboard.html")
+        total_sale = Order.objects.aggregate(
+            total_sale=Sum(
+                F('order_detail__quantity') *
+                F('order_detail__price')
+            )
+        )
+        return render(request, "dashboard.html", {"total_sale": total_sale})
 
 
 class Orders(View):
@@ -282,16 +288,6 @@ def most_popular(request):
     context = {'query_set1': query_set1, 'query_set2': query_set2}
 
     return render(request, 'analytics/most_popular.html', context=context)
-
-
-def total_sales(request):
-    total_sale = Order.objects.aggregate(
-        total_sale=Sum(
-            F('order_detail__quantity') *
-            F('order_detail__price')
-        )
-    )
-    return render(request, 'result.html', {'query_set': total_sale})
 
 
 def peak_business_hour(request):
