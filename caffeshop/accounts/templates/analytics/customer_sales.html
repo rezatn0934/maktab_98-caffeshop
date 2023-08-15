@@ -14,7 +14,7 @@
                     </div>
                 {% endif %}
             </div>
-            <form class="form-control" action="{% url 'top_selling' %}" method="GET">
+            <form class="form-control" action="{% url 'customer_sales' %}" method="GET">
                 <input type="hidden" name="filter">
                 <div class="card card-body">
                     <div class="col-md-3 mb-2">
@@ -35,7 +35,13 @@
                             <input class="form-control date" type="date" name="second_date"
                                    id="second_date" required>
                         </div>
-
+                        <div class="col-md-3">
+                            <label class="form-check-label" for="quantity">
+                                Number Of Customer:
+                            </label>
+                            <input class="form-control" type="number" name="quantity"
+                                   id="quantity">
+                        </div>
                         <div class="col-md-2 mt-4 pt-4">
                             <button type="submit" class="btn btn-primary m-0">
                                 <i class="bi bi-search"></i>
@@ -45,51 +51,44 @@
                 </div>
             </form>
         </div>
-        <div class="row">
-            <div class="col-md-12 ">
-                <canvas id="myChart"></canvas>
+        <div class="row d-flex g-f py-4 my-4 align-items-center justify-content-center">
+            <div class="col-md-6 ">
+                <canvas id="myChart1" style="width: 100%; height: 600px;"></canvas>
             </div>
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        const ctx = document.getElementById('myChart');
+        const ctx = document.getElementById('myChart1');
         new Chart(ctx, {
-            type: 'bar',
+            type: 'doughnut',
             data: {
-                labels: [{%for data in query_set %}'{{ data.product_name }}', {%endfor%}],
+                labels: [{%for data in query_set %}'{{ data.phone_number }}', {%endfor%}],
                 datasets: [{
-
                     data: [{%for data in query_set %}{{ data.total_sale }}, {%endfor%}],
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.9)',
-<!--                        'rgba(54, 162, 235, 0.9)',-->
-<!--                        'rgba(255, 206, 86, 02)',-->
-<!--                        'rgba(75, 192, 19, 0.2)',-->
-<!--                        'rgba(153, 102, 64, 0.2)',-->
-                    ],
                     borderWidth: 1
                 }]
             },
-            options:
-                {
-                    responsive: true,
-                    maintainAspectRatio: true,
-
-
-                plugins: {title: {
-                display: true,
-                text: "Top Selling Product",
-
-                }, legend: {display:false}},
-
-                    layout:
-                        {
-                            padding: 100
-                        },
-
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true, text: "Customer Sales"
+                    }
+                },
+                layout: {},
+                scales: {
+                    y: {
+                        display: false
+                    },
+                    x: {
+                        display: false
+                    }
                 }
+            }
 
         });
+
     </script>
 {% endblock %}
