@@ -424,13 +424,22 @@ def yearly_sales(request):
 
 
 def customer_sales(request):
-    query_set = Order.objects.all().values('phone_number').annotate(
+    limit = 5
+    if 'filter' in request.GET:
+        first_date = request.GET.get('first_date')
+        second_date = request.GET.get('second_date') or timezone.now()
+        limit = int(request.GET.get('quantity') or limit)
+        query_set = Order.objects.filter(order_date__range=[first_date, second_date])
+    else:
+        query_set = Order.objects.all()
+
+    query_set = query_set.values('phone_number').annotate(
         total_sale=Sum(
             F('order_detail__quantity') *
             F('order_detail__price')
         )
-    ).order_by('-total_sale')
-    return render(request, 'result.html', {'query_set': query_set})
+    ).order_by('-total_sale')[:limit]
+    return render(request, 'analytics/customer_sales.html', {'query_set': query_set})
 
 
 @login_required
