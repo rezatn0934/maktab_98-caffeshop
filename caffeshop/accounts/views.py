@@ -443,12 +443,7 @@ def customer_sales(request):
 
 
 def customer_demographic(request):
-    # if 'filter' in request.GET:
-    #     first_date = request.GET.get('first_date')
-    #     second_date = request.GET.get('second_date') or timezone.now()
-    #     query_set = Order.objects.filter(order_date__range=[first_date, second_date])
-    # else:
-    #     query_set = Order.objects.all()
+
     phone_number = "09117200513"
     query_set = Order.objects.filter(phone_number=phone_number).annotate(
         product=F("order_detail__product__name")).annotate(quantity=F("order_detail__quantity")).annotate(
@@ -460,10 +455,6 @@ def customer_demographic(request):
         hour=ExtractHour("order_date")).values(
         "hour").annotate(count=Count('id')).order_by('hour')
 
-    print(query_set)
-    print(total_spent)
-    print("1" * 100)
-    print(query_set2)
     context = {'query_set': query_set, "total_spent": total_spent, "query_set2": query_set2}
     return render(request, 'result.html', context=context)
 
