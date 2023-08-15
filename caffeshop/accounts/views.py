@@ -2,8 +2,8 @@ from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
-from django.db.models import Q, F, Sum, Count, DateField, DateTimeField, CharField
-from django.db.models.functions import TruncMonth, TruncYear, TruncDay, TruncHour, ExtractHour, Substr,Cast
+from django.db.models import Q, F, Sum, Count, DateField, DateTimeField, CharField, TimeField
+from django.db.models.functions import TruncMonth, TruncYear, TruncDay, TruncHour, ExtractHour, Substr, Cast
 
 from django.shortcuts import render, redirect
 from django.utils.decorators import method_decorator
@@ -279,7 +279,7 @@ def most_popular(request):
             F('price')
         )).order_by('-total_sale')
 
-    context = {'query_set1':query_set1, 'query_set2':query_set2}
+    context = {'query_set1': query_set1, 'query_set2': query_set2}
 
     return render(request, 'analytics/most_popular.html', context=context)
 
@@ -400,8 +400,8 @@ def monthly_sales(request):
         second_date = timezone.now()
 
     query_set = Order.objects.filter(order_date__range=[first_date, second_date]).values(month=Substr(
-            Cast(TruncMonth('order_date', output_field=DateField()),
-                 output_field=CharField()), 1, 7)).annotate(
+        Cast(TruncMonth('order_date', output_field=DateField()),
+             output_field=CharField()), 1, 7)).annotate(
         total_sale=Sum(F('order_detail__quantity') * F('order_detail__price'))).order_by('month')
 
     return render(request, 'analytics/monthly_sales.html', {'query_set': query_set})
@@ -440,6 +440,32 @@ def customer_sales(request):
         )
     ).order_by('-total_sale')[:limit]
     return render(request, 'analytics/customer_sales.html', {'query_set': query_set})
+
+
+def customer_demographic(request):
+    # if 'filter' in request.GET:
+    #     first_date = request.GET.get('first_date')
+    #     second_date = request.GET.get('second_date') or timezone.now()
+    #     query_set = Order.objects.filter(order_date__range=[first_date, second_date])
+    # else:
+    #     query_set = Order.objects.all()
+    phone_number = "09117200513"
+    query_set = Order.objects.filter(phone_number=phone_number).annotate(
+        product=F("order_detail__product__name")).annotate(quantity=F("order_detail__quantity")).annotate(
+        price=F("order_detail__price")).values("product").annotate(spent=Sum(F('quantity') * F('price'))).annotate(
+        total=Sum('quantity')).order_by("-spent")
+
+    total_spent = query_set.aggregate(total_spent=Sum("spent"))
+    query_set2 = Order.objects.filter(phone_number=phone_number).annotate(
+        hour=ExtractHour("order_date")).values(
+        "hour").annotate(count=Count('id')).order_by('hour')
+
+    print(query_set)
+    print(total_spent)
+    print("1" * 100)
+    print(query_set2)
+    context = {'query_set': query_set, "total_spent": total_spent, "query_set2": query_set2}
+    return render(request, 'result.html', context=context)
 
 
 @login_required
