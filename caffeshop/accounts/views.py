@@ -408,18 +408,19 @@ def monthly_sales(request):
 
 
 def yearly_sales(request):
-    query_set = Order.objects.all().annotate(
-        year=TruncYear('order_date'),
-    ) \
-        .values('year') \
-        .annotate(
-        total_sale=Sum(
-            F('order_detail__quantity') *
-            F('order_detail__price')
-        )
-    ).order_by('-year')
+    if 'filter' in request.GET:
+        first_date = request.GET.get('first_date')
+        second_date = request.GET.get('second_date') or timezone.now()
+        query_set = Order.objects.filter(order_date__range=[first_date, second_date])
+    else:
+        query_set = Order.objects.all()
 
-    return render(request, 'result.html', {'query_set': query_set})
+    query_set = query_set.values(year=Substr(
+        Cast(TruncMonth('order_date', output_field=DateField()),
+             output_field=CharField()), 1, 4)).annotate(
+        total_sale=Sum(F('order_detail__quantity') * F('order_detail__price'))).order_by('year')
+
+    return render(request, 'analytics/yearly_sales.html', {'query_set': query_set})
 
 
 def customer_sales(request):
