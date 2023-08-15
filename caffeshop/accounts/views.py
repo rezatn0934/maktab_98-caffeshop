@@ -2,8 +2,8 @@ from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
-from django.db.models import Q, F, Sum, Count, DateField, DateTimeField
-from django.db.models.functions import TruncMonth, TruncYear, TruncDay, TruncHour, ExtractHour
+from django.db.models import Q, F, Sum, Count, DateField, DateTimeField, CharField
+from django.db.models.functions import TruncMonth, TruncYear, TruncDay, TruncHour, ExtractHour, Substr,Cast
 
 from django.shortcuts import render, redirect
 from django.utils.decorators import method_decorator
@@ -390,23 +390,21 @@ def daily_sales(request):
 
 
 def monthly_sales(request):
-    first_date = datetime.datetime.now() - datetime.timedelta(days=365)
-    second_date = datetime.datetime.now()
+    if 'filter' in request.GET:
+        first_date = request.GET.get('first_date')
+        second_date = request.GET.get('second_date')
+        if not second_date:
+            second_date = timezone.now()
+    else:
+        first_date = datetime.date(timezone.now().date().year, 1, 1)
+        second_date = timezone.now()
 
-    query_set = Order.objects.filter(order_date__range=[first_date, second_date]) \
-        .annotate(
-        month=TruncMonth('order_date'),
-    ) \
-        .values('month') \
-        .annotate(
-        total_sale=Sum(
-            F('order_detail__quantity') *
-            F('order_detail__price')
-        )
-    ) \
-        .order_by('-month')
+    query_set = Order.objects.filter(order_date__range=[first_date, second_date]).values(month=Substr(
+            Cast(TruncMonth('order_date', output_field=DateField()),
+                 output_field=CharField()), 1, 7)).annotate(
+        total_sale=Sum(F('order_detail__quantity') * F('order_detail__price'))).order_by('month')
 
-    return render(request, 'result.html', {'query_set': query_set})
+    return render(request, 'analytics/monthly_sales.html', {'query_set': query_set})
 
 
 def yearly_sales(request):
