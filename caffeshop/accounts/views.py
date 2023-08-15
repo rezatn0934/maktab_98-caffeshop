@@ -199,6 +199,7 @@ def confirm_order(request, pk):
         if order:
             order = order.get(id=pk)
             order.status = 'A'
+            order.staff = request.user
             order.save()
             messages.success(request, f'Order {pk} has been successfully Approved.')
             return redirect('order_list')
@@ -214,6 +215,7 @@ def cancel_order(request, pk):
         if order:
             order = order.get(id=pk)
             order.status = 'C'
+            order.staff = request.user
             order.save()
             messages.warning(request, f'Order {pk} has been canceled.')
             return redirect('order_list')
