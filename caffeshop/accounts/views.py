@@ -2,8 +2,8 @@ from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
-from django.db.models import Q, F, Sum, Func, Value, CharField, Count
-from django.db.models.functions import TruncMonth, TruncYear, TruncHour, ExtractHour
+from django.db.models import Q, F, Sum, Count, DateField, DateTimeField
+from django.db.models.functions import TruncMonth, TruncYear, TruncDay, TruncHour, ExtractHour
 
 from django.shortcuts import render, redirect
 from django.utils.decorators import method_decorator
@@ -349,18 +349,19 @@ def top_selling(request):
 
 def hourly_sales(request):
     if 'filter' in request.GET:
-        first_date = request.GET.get('first_date').strptime('%Y-%m-%d')
-        second_date = first_date.date + datetime.timedelta(days=1)
+        first_date = request.GET.get('first_date')
+        second_date = request.GET.get('second_date')
     else:
-        first_date = datetime.datetime.now().date()
-        second_date = datetime.datetime.now()
+        first_date = timezone.now().date()
+        second_date = timezone.now()
+
     query_set = Order.objects.filter(order_date__range=[first_date, second_date]) \
         .annotate(
-        hour=TruncHour('order_date')).values('hour') \
+        hour=TruncHour('order_date', output_field=DateTimeField())).values('hour') \
         .annotate(
         total_sale=Sum(
             F('order_detail__quantity') *
-            F('order_detail__price'))).order_by('-hour')
+            F('order_detail__price'))).order_by('hour')
     return render(request, 'result.html', {'query_set': query_set})
 
 
