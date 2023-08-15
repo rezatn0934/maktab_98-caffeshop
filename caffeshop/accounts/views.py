@@ -351,6 +351,9 @@ def hourly_sales(request):
     if 'filter' in request.GET:
         first_date = request.GET.get('first_date')
         second_date = request.GET.get('second_date')
+        if not second_date:
+            second_date = timezone.now()
+
     else:
         first_date = timezone.now().date()
         second_date = timezone.now()
@@ -362,7 +365,7 @@ def hourly_sales(request):
         total_sale=Sum(
             F('order_detail__quantity') *
             F('order_detail__price'))).order_by('hour')
-    return render(request, 'result.html', {'query_set': query_set})
+    return render(request, 'analytics/hourly_sales.html', {'query_set': query_set})
 
 
 def daily_sales(request):
