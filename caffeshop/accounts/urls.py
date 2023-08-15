@@ -14,6 +14,7 @@ urlpatterns = [
     path('top_selling/', views.top_selling, name='top_selling'),
     path('hourly_sales/', views.hourly_sales, name='hourly_sales'),
     path('daily_sales/', views.daily_sales, name='daily_sales'),
+    path('monthly_sales/', views.monthly_sales, name='monthly_sales'),
 
 
     path('orders/', views.Orders.as_view(), name='order_list'),
