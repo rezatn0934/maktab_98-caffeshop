@@ -372,20 +372,21 @@ def daily_sales(request):
     if 'filter' in request.GET:
         first_date = request.GET.get('first_date')
         second_date = request.GET.get('second_date')
+        if not second_date:
+            second_date = timezone.now()
     else:
-        first_date = datetime.datetime.now() - datetime.timedelta(days=7)
-        second_date = datetime.datetime.now()
+        first_date = datetime.date(timezone.now().date().year, timezone.now().date().month, 1)
+        second_date = timezone.now()
 
     query_set = Order.objects.filter(order_date__range=[first_date, second_date]) \
-        .values('order_date__date') \
+        .annotate(
+        day=TruncDay('order_date', output_field=DateField())).values('day') \
         .annotate(
         total_sale=Sum(
             F('order_detail__quantity') *
-            F('order_detail__price')
-        )
-    )
+            F('order_detail__price'))).order_by('day')
 
-    return render(request, 'result.html', {'query_set': query_set})
+    return render(request, 'analytics/daily_sales.html', {'query_set': query_set})
 
 
 def monthly_sales(request):
