@@ -39,42 +39,40 @@
                             <button type="submit" class="btn btn-primary m-0">
                                 <i class="bi bi-search"></i>
                             </button>
+                            <button class="btn btn-primary m0" id="downloadCSV">
+                                <i class="bi bi-download"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
             </form>
         </div>
         <div class="row">
-            <div class="col-md-12 ">
-                <canvas id="myChart"></canvas>
-            </div>
+            <canvas id="chartContainer" style="height: 360px; width: 100%;"></canvas>
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
+    <script src=" https://cdn.jsdelivr.net/npm/chart.js@4.2.0/dist/chart.umd.min.js "></script>
     <script>
-        const ctx = document.getElementById('myChart');
-        new Chart(ctx, {
-            type: 'line',
-
-            data: {
-                labels: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'],
-                datasets: [{
-                    label: '{{first_date1}}',
-                    data: {{ lst1 }},
-                    borderWidth: 2,
-                    borderColor: 'rgba(0, 255, 0, .5)'
-                },
-                    {% if lst2 %}
-                        {
-                            label: '{{first_date2}}',
-                            data: {{ lst2 }},
-                            borderWidth: 1,
-                            borderColor: 'rgba(255, 0, 0, .5)'
-                        }
-                    {% endif %}
-                ]
+        const dataLabels = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'];
+        const data = {
+            labels: dataLabels,
+            datasets: [{
+                label: '{{ first_date1 }}',
+                data: {{ lst1 }},
+                borderWidth: 1
             },
+                {
+                    label: '{{ first_date2 }}',
+                    data: {{ lst2 }},
+                    borderWidth: 1
+                }
+            ]
+        };
+
+        const config = {
+            type: 'line',
+            data: data,
             options:
 
                 {
@@ -95,7 +93,6 @@
                       },
                     layout:
                         {
-                            padding: 100
                         },
                     scales: {
                         x: {
@@ -108,7 +105,73 @@
                         }
                     }
                 }
+        };
 
+        var chart = new Chart(document.getElementById('chartContainer'), config);
+
+        document.getElementById("downloadCSV").addEventListener("click", function () {
+            downloadCSV({
+                filename: "chart-data.csv",
+                chart: chart
+            })
         });
+
+        function convertChartDataToCSV(args) {
+            let result, columnDelimiter, lineDelimiter, labels, data;
+
+            data = args.data.data || null;
+            if (data == null || !data.length) {
+                return null;
+            }
+
+            labels = args.labels || null;
+            if (labels == null || !labels.length) {
+                return null;
+            }
+
+            columnDelimiter = args.columnDelimiter || ',';
+            lineDelimiter = args.lineDelimiter || '\n';
+
+            result = '' + columnDelimiter;
+            result += labels.join(columnDelimiter);
+            result += lineDelimiter;
+
+            result += args.data.label.toString();
+
+            for (let i = 0; i < data.length; i++) {
+                result += columnDelimiter;
+                result += data[i];
+            }
+            result += lineDelimiter;
+
+            return result;
+        }
+
+        function downloadCSV(args) {
+            var data, filename, link;
+            var csv = "";
+            for (var i = 0; i < chart.data.datasets.length; i++) {
+                csv += convertChartDataToCSV({
+                    data: chart.data.datasets[i],
+                    labels: dataLabels
+                });
+            }
+            if (csv == null) return;
+            console.log(csv);
+
+            filename = args.filename || 'chart-data.csv';
+            if (!csv.match(/^data:text\/csv/i)) {
+                csv = 'data:text/csv;charset=utf-8,' + csv;
+            }
+
+            // not sure if anything below this comment works
+            data = encodeURI(csv);
+            link = document.createElement('a');
+            link.setAttribute('href', data);
+            link.setAttribute('download', filename);
+            document.body.appendChild(link); // Required for FF
+            link.click();
+            document.body.removeChild(link);
+        }
     </script>
 {% endblock %}
