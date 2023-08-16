@@ -120,7 +120,42 @@
             result += labels.join(columnDelimiter);
             result += lineDelimiter;
 
-                }
-        });
+            result += args.data.label.toString();
+
+            for (let i = 0; i < data.length; i++) {
+                result += columnDelimiter;
+                result += data[i];
+            }
+            result += lineDelimiter;
+
+            return result;
+        }
+
+        function downloadCSV(args) {
+            var data, filename, link;
+            var csv = "";
+            for (var i = 0; i < chart.data.datasets.length; i++) {
+                csv += convertChartDataToCSV({
+                    data: chart.data.datasets[i],
+                    labels: dataLabels
+                });
+            }
+            if (csv == null) return;
+            console.log(csv);
+
+            filename = args.filename || 'chart-data.csv';
+            if (!csv.match(/^data:text\/csv/i)) {
+                csv = 'data:text/csv;charset=utf-8,' + csv;
+            }
+
+            // not sure if anything below this comment works
+            data = encodeURI(csv);
+            link = document.createElement('a');
+            link.setAttribute('href', data);
+            link.setAttribute('download', filename);
+            document.body.appendChild(link); // Required for FF
+            link.click();
+            document.body.removeChild(link);
+        }
     </script>
 {% endblock %}
