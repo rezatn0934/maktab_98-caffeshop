@@ -266,8 +266,8 @@ def most_popular(request):
         first_date = request.GET.get('first_date')
         second_date = request.GET.get('second_date')
         limit = int(request.GET.get('quantity'))
-        query_set = Order_detail.objects.all().annotate(date=F('order__order_date')).filter(
-            date__range=[first_date, second_date]).values('product').annotate(order_count=Count('id')).annotate(
+        query_set = Order_detail.objects.filter(
+            order__order_date__range=[first_date, second_date]).values('product').annotate(order_count=Count('id')).annotate(
             name=F('product__name')).order_by(
             '-order_count')[:limit]
 
