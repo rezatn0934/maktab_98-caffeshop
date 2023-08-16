@@ -49,9 +49,6 @@
                             <button class="btn btn-primary mb-0" id="downloadCSV">
                                 <i class="bi bi-download"></i>
                             </button>
-                            <button class="btn btn-primary mb-0" id="downloadCSV1">
-                                <i class="bi bi-download"></i>
-                            </button>
                         </div>
                     </div>
                 </div>
@@ -61,22 +58,19 @@
             <div class="col-md-6 ">
                 <canvas id="chartContainer" style="width: 100%; height: 600px;"></canvas>
             </div>
-            <div class="col-md-6 ">
-                <canvas id="chartContainer1" style="width: 100%; height: 600px;"></canvas>
-            </div>
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src=" https://cdn.jsdelivr.net/npm/chart.js@4.2.0/dist/chart.umd.min.js "></script>
     <script>
-        const dataLabels = [{%for data in query_set1 %}'{{ data.name }}', {%endfor%}];
+        const dataLabels = [{%for data in query_set %}'{{ data.name }}', {%endfor%}];
         const data = {
 
             labels: dataLabels,
             datasets: [{
             label: 'Number of orders',
 
-                data: [{%for data in query_set1 %}{{ data.order_count }}, {%endfor%}],
+                data: [{%for data in query_set %}{{ data.order_count }}, {%endfor%}],
                 borderWidth: 1
             }
             ]
@@ -167,113 +161,6 @@
             data = encodeURI(csv);
             link = document.createElement('a');
             link.setAttribute('href', data);
-            link.setAttribute('download', filename);
-            document.body.appendChild(link); // Required for FF
-            link.click();
-            document.body.removeChild(link);
-        }
-
-    </script>
-
-<script>
-        const dataLabels1 = [{%for data in query_set2 %}'{{ data.category }}', {%endfor%}];
-        const data1 = {
-
-            labels: dataLabels1,
-            datasets: [{
-            label: 'Sale',
-
-                data: [{%for data in query_set2 %}{{ data.total_sale }}, {%endfor%}],
-                borderWidth: 1
-            }
-            ]
-        };
-
-        const config1 = {
-            type: 'pie',
-            data: data1,
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    title: {
-                        display: true, text: "Most popular Category"
-                    }
-                },
-                layout: {},
-                scales: {
-                    y: {
-                        display: false
-                    },
-                    x: {
-                        display: false
-                    }
-                }
-
-            }
-        };
-
-        let chart1 = new Chart(document.getElementById('chartContainer1'), config1);
-
-        document.getElementById("downloadCSV1").addEventListener("click", function () {
-            downloadCSV1({
-                filename: "chart-data.csv",
-                chart: chart1
-            })
-        });
-
-        function convertChartDataToCSV(args) {
-            let result, columnDelimiter, lineDelimiter, labels, data;
-
-            data = args.data.data || null;
-            if (data == null || !data.length) {
-                return null;
-            }
-
-            labels = args.labels || null;
-            if (labels == null || !labels.length) {
-                return null;
-            }
-
-            columnDelimiter = args.columnDelimiter || ',';
-            lineDelimiter = args.lineDelimiter || '\n';
-
-            result = '' + columnDelimiter;
-            result += labels.join(columnDelimiter);
-            result += lineDelimiter;
-
-            result += args.data.label.toString();
-
-            for (let i = 0; i < data.length; i++) {
-                result += columnDelimiter;
-                result += data[i];
-            }
-            result += lineDelimiter;
-
-            return result;
-        }
-
-        function downloadCSV1(args) {
-            var data1, filename, link;
-            var csv = "";
-            for (var i = 0; i < chart1.data.datasets.length; i++) {
-                csv += convertChartDataToCSV({
-                    data: chart1.data.datasets[i],
-                    labels: dataLabels1
-                });
-            }
-            if (csv == null) return;
-            console.log(csv);
-
-            filename = args.filename || 'chart-data.csv';
-            if (!csv.match(/^data:text\/csv/i)) {
-                csv = 'data:text/csv;charset=utf-8,' + csv;
-            }
-
-            // not sure if anything below this comment works
-            data1 = encodeURI(csv);
-            link = document.createElement('a');
-            link.setAttribute('href', data1);
             link.setAttribute('download', filename);
             document.body.appendChild(link); // Required for FF
             link.click();

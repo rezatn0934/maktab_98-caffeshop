@@ -35,10 +35,12 @@
                             <input class="form-control date" type="date" name="second_date"
                                    id="second_date">
                         </div>
-
-                        <div class="col-md-2 mt-4 pt-4">
-                            <button type="submit" class="btn btn-primary m-0">
+                        <div class="col-md-2 mt-4 pt-3">
+                            <button type="submit" class="btn btn-primary">
                                 <i class="bi bi-search"></i>
+                            </button>
+                            <button class="btn btn-primary" id="downloadCSV">
+                                <i class="bi bi-download"></i>
                             </button>
                         </div>
                     </div>
@@ -47,46 +49,116 @@
         </div>
         <div class="row">
             <div class="col-md-12 ">
-                <canvas id="myChart" style="width:100px, height:100%"></canvas>
+                <canvas id="chartContainer" style="width: 100%; height: 600px;"></canvas>
             </div>
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src=" https://cdn.jsdelivr.net/npm/chart.js@4.2.0/dist/chart.umd.min.js "></script>
     <script>
-        const ctx = document.getElementById('myChart');
-        new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: [{%for data in query_set %}'{{ data.hour }}', {%endfor%}],
-                datasets: [{
+        const dataLabels = [{%for data in query_set %}'{{ data.hour }}', {%endfor%}]
+        const data = {
+            labels: dataLabels,
+            datasets: [{
+                label: 'Customer Sale',
+                data: [{%for data in query_set %}{{ data.total_sale }}, {%endfor%}],
+                borderWidth: 1,
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.9)',
 
-                    data: [{%for data in query_set %}{{ data.total_sale }}, {%endfor%}],
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.9)',
-
-                    ],
-                    borderWidth: 1
-                }]
+                ],
             },
-            options:
-                {
-                    responsive: true,
-                    maintainAspectRatio: true,
+            ]
+        };
 
+        const config = {
+            type: 'bar',
+            data: data,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: "Hourly Sales"
+                    },
+                    legend: {
+                        display: false
+                    }
+                },
 
-                plugins: {title: {
-                display: true,
-                text: "Hourly Sales",
+                layout:
+                    {
+                        padding: 100
+                    },
+            }
+        };
 
-                }, legend: {display:false}},
+        let chart = new Chart(document.getElementById('chartContainer'), config);
 
-                    layout:
-                        {
-                            padding: 100
-                        },
-
-
-                }
+        document.getElementById("downloadCSV").addEventListener("click", function () {
+            downloadCSV({
+                filename: "chart-data.csv",
+                chart: chart
+            })
         });
+
+        function convertChartDataToCSV(args) {
+            let result, columnDelimiter, lineDelimiter, labels, data;
+
+            data = args.data.data || null;
+            if (data == null || !data.length) {
+                return null;
+            }
+
+            labels = args.labels || null;
+            if (labels == null || !labels.length) {
+                return null;
+            }
+
+            columnDelimiter = args.columnDelimiter || ',';
+            lineDelimiter = args.lineDelimiter || '\n';
+
+            result = '' + columnDelimiter;
+            result += labels.join(columnDelimiter);
+            result += lineDelimiter;
+
+            result += args.data.label.toString();
+
+            for (let i = 0; i < data.length; i++) {
+                result += columnDelimiter;
+                result += data[i];
+            }
+            result += lineDelimiter;
+
+            return result;
+        }
+
+        function downloadCSV(args) {
+            var data, filename, link;
+            var csv = "";
+            for (var i = 0; i < chart.data.datasets.length; i++) {
+                csv += convertChartDataToCSV({
+                    data: chart.data.datasets[i],
+                    labels: dataLabels
+                });
+            }
+            if (csv == null) return;
+            console.log(csv);
+
+            filename = args.filename || 'chart-data.csv';
+            if (!csv.match(/^data:text\/csv/i)) {
+                csv = 'data:text/csv;charset=utf-8,' + csv;
+            }
+
+            // not sure if anything below this comment works
+            data = encodeURI(csv);
+            link = document.createElement('a');
+            link.setAttribute('href', data);
+            link.setAttribute('download', filename);
+            document.body.appendChild(link); // Required for FF
+            link.click();
+            document.body.removeChild(link);
+        }
     </script>
 {% endblock %}
