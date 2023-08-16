@@ -347,9 +347,9 @@ def hourly_sales(request):
         second_date = timezone.now()
 
     query_set = Order.objects.filter(order_date__range=[first_date, second_date]) \
-        .annotate(
-        hour=TruncHour('order_date', output_field=DateTimeField())).values('hour') \
-        .annotate(
+        .values(
+        hour=Substr(Cast(TruncHour('order_date', output_field=DateTimeField()),
+                        output_field=CharField()), 1, 19)).annotate(
         total_sale=Sum(
             F('order_detail__quantity') *
             F('order_detail__price'))).order_by('hour')
