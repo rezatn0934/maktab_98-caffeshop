@@ -1,0 +1,242 @@
+{% extends 'dashbase.html' %}
+{% block link %}
+    <style>
+        @media print {
+            .noPrint { display: none !important; }
+        }
+    </style>
+{% endblock %}
+
+{% load static %}
+{% block content %}
+    <div class="content-start transition">
+        <div class="container-fluid noPrint dashboard">
+            <div class="row justify-content-center d-flex align-items-center text-black">
+                {% if messages %}
+                    <div class="col-md-12">
+                        {% for message in messages %}
+                            <div id="msg" class="alert {{ message.tags }}" role="alert">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            <form class="form-control" action="{% url 'customer_demographic' %}" method="GET">
+                <input type="hidden" name="filter">
+                <div class="card card-body">
+                    <div class="row d-flex g-4 column-gap-1 justify-content-center align-items-flex-end">
+                        <div class="col-md-3">
+                            <label class="form-check-label" for="first_date">
+                                Customer Phone Number:
+                            </label>
+                            <input class="form-control" type="number" name="phone_number" value="{{ request.GET.phone_number }}"
+                                   id="first_date" required>
+                        </div>
+
+                        <div class="col-md-2 mt-4 pt-4">
+                            <button type="submit" class="btn btn-primary m-0">
+                                <i class="bi bi-search"></i>
+                            </button>
+                            <button onclick="window.print()" class="btn btn-primary m-0">
+                                <i class="bi bi-printer"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="row d-flex g-4 mt-4 column-gap-1 align-items-center">
+            <div class="col-md-6">
+                <h1>
+                    Customer total spent: ${{ total_spent.total_spent }}
+                </h1>
+            </div>
+        </div>
+        <div class="row d-flex g-4 column-gap-1 align-items-center">
+            {% if rank %}
+                <div class="col-md-6">
+                    <h2>
+                        Spent Rank: {{ rank }}
+                    </h2>
+                </div>
+            {% endif %}
+        </div>
+        <div class="row d-flex g-4 mt-4 column-gap-1 justify-content-center align-items-center">
+
+            <div class="col-md-6 justify-content-center">
+                <div class="d-flex noPrint justify-content-center">
+                    <button class="btn btn-primary m-0" id="downloadCSV1">
+                        <i class="bi bi-download"></i>
+                    </button>
+                </div>
+                <div>
+                    <canvas id="chartContainer" style="width: 100%; height: 600px;"></canvas>
+                </div>
+            </div>
+            <div class="col-md-6 justify-content-center">
+                <div class="d-flex noPrint justify-content-center m-0">
+                    <button class="btn btn-primary" id="downloadCSV2">
+                        <i class="bi bi-download"></i>
+                    </button>
+                </div>
+                <div>
+                    <canvas id="chartContainer1" style="width: 100%; height: 600px;"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src=" https://cdn.jsdelivr.net/npm/chart.js@4.2.0/dist/chart.umd.min.js "></script>
+
+    <script>
+        const dataLabels = [{%for data in query_set %}'{{data.product}}',{%endfor%}]
+        const data = {
+            labels: dataLabels,
+            datasets: [{
+                label: 'Number of orders',
+                data: [{%for data in query_set %}{{data.total}}, {%endfor%}],
+                borderWidth: 1
+            }]
+        };
+
+        const config = {
+            type: 'doughnut',
+            data: data,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true, text: "Customer Frequently Ordered Products"
+                    }
+                },
+                layout: {
+                    padding: 100
+                },
+            }
+        };
+
+        let chart = new Chart(document.getElementById('chartContainer'), config);
+
+        document.getElementById("downloadCSV1").addEventListener("click", function () {
+            downloadCSV({
+                filename: "chart-data1.csv",
+                chart: chart
+            });
+        });
+    </script>
+
+    <script>
+        {
+            const dataLabels = [{%for data in query_set2 %}'{{data.hour}}',{%endfor%}]
+            const data = {
+                labels: dataLabels,
+                datasets: [{
+                    label: 'Number of orders',
+                    data: [{%for data in query_set2 %}{{data.count}}, {%endfor%}],
+                    borderWidth: 1
+                }]
+            };
+
+            const config = {
+                type: 'bar',
+                data: data,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true, text: "Customer Frequently Ordered Hour"
+                        }
+                    },
+                    layout: {
+                        padding: 100
+                    },
+                    scales: {
+                        x: {
+                            title: {
+
+                                display: true,
+                                text: 'Hour'
+                            }
+                        },
+                        y: {
+                            type: "linear",
+                            beginAtZero: true
+                        }
+                    }
+                }
+            };
+
+            let chart = new Chart(document.getElementById('chartContainer1'), config);
+
+            document.getElementById("downloadCSV2").addEventListener("click", function () {
+                downloadCSV({
+                    filename: "chart-data2.csv",
+                    chart: chart
+                });
+            });
+        }
+    </script>
+
+    <script>
+        function convertChartDataToCSV(args) {
+            let result, columnDelimiter, lineDelimiter, labels, data;
+
+            data = args.data.data || null;
+            if (data == null || !data.length) {
+                return null;
+            }
+
+            labels = args.labels || null;
+            if (labels == null || !labels.length) {
+                return null;
+            }
+
+            columnDelimiter = args.columnDelimiter || ',';
+            lineDelimiter = args.lineDelimiter || '\n';
+
+            result = '' + columnDelimiter;
+            result += labels.join(columnDelimiter);
+            result += lineDelimiter;
+
+            result += args.data.label.toString();
+
+            for (let i = 0; i < data.length; i++) {
+                result += columnDelimiter;
+                result += data[i];
+            }
+            result += lineDelimiter;
+
+            return result;
+        }
+
+        function downloadCSV(args) {
+            var data, filename, link;
+            var csv = "";
+            for (var i = 0; i < args.chart.data.datasets.length; i++) {
+                csv += convertChartDataToCSV({
+                    data: args.chart.data.datasets[i],
+                    labels: args.chart.data.labels
+                });
+            }
+            if (csv == null) return;
+            console.log(csv);
+
+            filename = args.filename || 'chart-data.csv';
+            if (!csv.match(/^data:text\/csv/i)) {
+                csv = 'data:text/csv;charset=utf-8,' + csv;
+            }
+
+            // not sure if anything below this comment works
+            data = encodeURI(csv);
+            link = document.createElement('a');
+            link.setAttribute('href', data);
+            link.setAttribute('download', filename);
+            document.body.appendChild(link); // Required for FF
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
+{% endblock %}
