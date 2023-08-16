@@ -62,11 +62,12 @@
                 data: {{ lst1 }},
                 borderWidth: 1
             },
-                {
+                {% if lst2 %}{
                     label: '{{ first_date2 }}',
                     data: {{ lst2 }},
                     borderWidth: 1
                 }
+                {% endif %}
             ]
         };
 
@@ -107,7 +108,7 @@
                 }
         };
 
-        var chart = new Chart(document.getElementById('chartContainer'), config);
+        let chart = new Chart(document.getElementById('chartContainer'), config);
 
         document.getElementById("downloadCSV").addEventListener("click", function () {
             downloadCSV({
