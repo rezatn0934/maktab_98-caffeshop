@@ -322,8 +322,8 @@ def top_selling(request):
     if 'filter' in request.GET:
         first_date = request.GET.get('first_date')
         second_date = request.GET.get('second_date')
-        query_set = Order_detail.objects.all().annotate(date=F('order__order_date')).filter(
-            date__range=[first_date, second_date]).values("product").annotate(
+        query_set = Order_detail.objects.filter(
+            order__order_date__range=[first_date, second_date]).values("product").annotate(
             total_sale=Sum(F('quantity') * F('price'))).annotate(
             name=F('product__name')).order_by('-total_sale')[:5]
     else:
