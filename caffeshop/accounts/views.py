@@ -267,7 +267,8 @@ def most_popular(request):
         second_date = request.GET.get('second_date')
         limit = int(request.GET.get('quantity'))
         query_set = Order_detail.objects.filter(
-            order__order_date__range=[first_date, second_date]).values('product').annotate(order_count=Count('id')).annotate(
+            order__order_date__range=[first_date, second_date]).values('product').annotate(
+            order_count=Count('id')).annotate(
             name=F('product__name')).order_by(
             '-order_count')[:limit]
 
@@ -322,13 +323,13 @@ def top_selling(request):
     if 'filter' in request.GET:
         first_date = request.GET.get('first_date')
         second_date = request.GET.get('second_date')
-        query_set = Order_detail.objects.filter(
-            order__order_date__range=[first_date, second_date]).values("product").annotate(
-            total_sale=Sum(F('quantity') * F('price'))).annotate(
-            name=F('product__name')).order_by('-total_sale')[:5]
+        query_set = Order_detail.objects.filter(order__payment='P',
+                                                order__order_date__range=[first_date, second_date]).values(
+            "product").annotate(total_sale=Sum(F('quantity') * F('price'))).annotate(name=F('product__name')).order_by(
+            '-total_sale')[:5]
     else:
 
-        query_set = Product.objects.annotate(
+        query_set = Product.objects.filter(order_detail__order__payment='P').annotate(
             total_sale=Sum(
                 F('order_detail__quantity') *
                 F('order_detail__price')
@@ -349,13 +350,10 @@ def hourly_sales(request):
         first_date = timezone.now().date()
         second_date = timezone.now()
 
-    query_set = Order.objects.filter(order_date__range=[first_date, second_date]) \
-        .values(
-        hour=Substr(Cast(TruncHour('order_date', output_field=DateTimeField()),
-                         output_field=CharField()), 1, 19)).annotate(
-        total_sale=Sum(
-            F('order_detail__quantity') *
-            F('order_detail__price'))).order_by('hour')
+    query_set = Order.objects.filter(payment='P', order_date__range=[first_date, second_date]).values(
+        hour=Substr(Cast(TruncHour('order_date', output_field=DateTimeField()), output_field=CharField()), 1,
+                    19)).annotate(total_sale=Sum(F('order_detail__quantity') * F('order_detail__price'))).order_by(
+        'hour')
     return render(request, 'analytics/hourly_sales.html', {'query_set': query_set})
 
 
@@ -370,7 +368,7 @@ def daily_sales(request):
         first_date = datetime.date(timezone.now().date().year, timezone.now().date().month, 1)
         second_date = timezone.now()
 
-    query_set = Order.objects.filter(order_date__range=[first_date, second_date]).values(
+    query_set = Order.objects.filter(payment='P', order_date__range=[first_date, second_date]).values(
         day=Substr(Cast(TruncDay('order_date', output_field=DateField()),
                         output_field=CharField()), 1, 10)).annotate(
         total_sale=Sum(F('order_detail__quantity') * F('order_detail__price'))).order_by('day')
@@ -389,7 +387,7 @@ def monthly_sales(request):
         first_date = datetime.date(timezone.now().date().year, 1, 1)
         second_date = timezone.now()
 
-    query_set = Order.objects.filter(order_date__range=[first_date, second_date]).values(month=Substr(
+    query_set = Order.objects.filter(payment='P', order_date__range=[first_date, second_date]).values(month=Substr(
         Cast(TruncMonth('order_date', output_field=DateField()),
              output_field=CharField()), 1, 7)).annotate(
         total_sale=Sum(F('order_detail__quantity') * F('order_detail__price'))).order_by('month')
@@ -402,9 +400,9 @@ def yearly_sales(request):
     if 'filter' in request.GET:
         first_date = request.GET.get('first_date')
         second_date = request.GET.get('second_date') or timezone.now()
-        query_set = Order.objects.filter(order_date__range=[first_date, second_date])
+        query_set = Order.objects.filter(payment='P', order_date__range=[first_date, second_date])
     else:
-        query_set = Order.objects.all()
+        query_set = Order.objects.filter(payment='P', )
 
     query_set = query_set.values(year=Substr(
         Cast(TruncMonth('order_date', output_field=DateField()),
@@ -421,9 +419,9 @@ def customer_sales(request):
         first_date = request.GET.get('first_date')
         second_date = request.GET.get('second_date') or timezone.now()
         limit = int(request.GET.get('quantity') or limit)
-        query_set = Order.objects.filter(order_date__range=[first_date, second_date])
+        query_set = Order.objects.filter(payment='P', order_date__range=[first_date, second_date])
     else:
-        query_set = Order.objects.all()
+        query_set = Order.objects.filter(payment='P')
 
     query_set = query_set.values('phone_number').annotate(
         total_sale=Sum(
@@ -441,17 +439,17 @@ def customer_demographic(request):
     total_spent = 0
     rank = None
     if phone_number := request.GET.get('phone_number'):
-        query_set = Order.objects.filter(phone_number=phone_number).annotate(
+        query_set = Order.objects.filter(payment='P', phone_number=phone_number).annotate(
             product=F("order_detail__product__name")).annotate(quantity=F("order_detail__quantity")).annotate(
             price=F("order_detail__price")).values("product").annotate(spent=Sum(F('quantity') * F('price'))).annotate(
             total=Sum('quantity')).order_by("-spent")
 
         total_spent = query_set.aggregate(total_spent=Sum("spent"))
-        query_set2 = Order.objects.annotate(
+        query_set2 = Order.objects.filter(payment='P').annotate(
             hour=ExtractHour("order_date")).values(
             "hour").annotate(count=Count('id')).order_by('hour')
 
-        query_set3 = Order.objects.all().values('phone_number').annotate(
+        query_set3 = Order.objects.filter(payment='P').values('phone_number').annotate(
             total_sale=Sum(
                 F('order_detail__quantity') *
                 F('order_detail__price')
@@ -459,7 +457,7 @@ def customer_demographic(request):
         ).order_by('-total_sale')
         for i, obj in enumerate(query_set3):
             if obj['phone_number'] == phone_number:
-                rank = i+1
+                rank = i + 1
                 break
 
     context = {'query_set': query_set, "total_spent": total_spent, "query_set2": query_set2, 'rank': rank}
@@ -470,7 +468,7 @@ def customer_demographic(request):
 def sales_by_category(request):
     first_date = request.GET.get('first_date') or '1970-01-01'
     second_date = request.GET.get('second_date') or timezone.now()
-    query_set = Order_detail.objects.annotate(date=F('order__order_date')) \
+    query_set = Order_detail.objects.filter(order__payment='P').annotate(date=F('order__order_date')) \
         .filter(date__range=[first_date, second_date]) \
         .annotate(category=F("product__category__name")) \
         .values('category') \
@@ -572,7 +570,7 @@ def product_hour(request):
     first_date = request.GET.get('first_date') or '1970-01-01'
     second_date = request.GET.get('second_date') or timezone.now()
 
-    query_set = Order.objects.filter(order_date__range=[first_date, second_date]).annotate(
+    query_set = Order.objects.filter(order__payment='P', order_date__range=[first_date, second_date]).annotate(
         hour=ExtractHour('order_date')).annotate(
         product=F("order_detail__product__name")).annotate(
         quantity=F("order_detail__quantity")).values("product", "hour", "quantity").annotate(
