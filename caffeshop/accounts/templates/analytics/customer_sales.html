@@ -58,17 +58,22 @@
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src=" https://cdn.jsdelivr.net/npm/chart.js@4.2.0/dist/chart.umd.min.js "></script>
     <script>
-        const ctx = document.getElementById('myChart1');
-        new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: [{%for data in query_set %}'{{ data.phone_number }}', {%endfor%}],
-                datasets: [{
-                    data: [{%for data in query_set %}{{ data.total_sale }}, {%endfor%}],
-                    borderWidth: 1
-                }]
+        const dataLabels = [{%for data in query_set %}'{{ data.phone_number }}', {%endfor%}]
+        const data = {
+            labels: dataLabels,
+            datasets: [{
+                label: 'Customer Sale',
+                data: [{%for data in query_set %}{{ data.total_sale }}, {%endfor%}],
+                borderWidth: 1
             },
+            ]
+        };
+
+        const config = {
+            type: 'pie',
+            data: data,
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
@@ -86,9 +91,13 @@
                         display: false
                     }
                 }
-            }
 
-        });
+            }
+        };
+
+        let chart = new Chart(document.getElementById('chartContainer'), config);
+
+
 
     </script>
 {% endblock %}
