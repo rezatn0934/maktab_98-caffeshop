@@ -113,8 +113,12 @@
                             </form>
                         </div>
                         <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-striped" style="font-size: .8rem !important;">
+                            <!-- <div class="table-responsive">
+                                <table class="table table-striped" style="font-size: .8rem !important;"> -->
+                            <div class="table-responsive row justify-content-center d-flex align-items-center"
+                                    style="overflow: visible !important;" >
+                                   <table class="table table-responsive table-striped align-items-center"
+                                          style="font-size: .8rem !important;">
                                     <thead>
                                     <tr>
                                         <th scope="col"><a class="text-decoration-none text-dark"
@@ -166,7 +170,7 @@
                                     {% endfor %}
                                     </tbody>
                                 </table>
-                                <div class="d-flex justify-content-center">
+                                <div class="d-flex pgbox row justify-content-center">
                                     <!-- Display pagination links -->
                                     {% if orders.has_other_pages %}
                                         <ul class="pagination">
@@ -212,4 +216,37 @@
             </div>
         </div>
     </div>
+{% endblock %}
+{% block footerlink %}
+<script>
+        
+    function myFunction(phone, tablet) {
+        let tableEl = document.querySelector('table')
+        // let tableElParent = document.querySelector('table').parentElement.parentElement;;
+        // let tableElTr = document.querySelector('table tr').parentElement.parentElement;
+      if (phone.matches) { // If media query matches
+            tableEl.style.setProperty("transform", "scale(0.5)", "important");
+        // alert(tableEl)
+            // tableElParent.style.setProperty("transform", "scale(0.7)", "important");
+            // tableElTr.style.setProperty("transform", "scale(0.7)", "important");
+            // alert('phone-size')
+        }
+        else if (tablet.matches) {
+           tableEl.style.setProperty("transform", "scale(0.9)", "important");
+        //    tableElParent.style.setProperty("transform", "scale(0.9)", "important");
+        //    tableElTr.style.setProperty("transform", "scale(0.7)", "important");
+
+        // alert('tablet-size')
+    }
+      else {
+        // alert('pc-size')
+      }
+    }
+    
+    var phone = window.matchMedia("(max-width: 416px)");
+    var tablet = window.matchMedia("(max-width: 912px)");
+    myFunction(phone, tablet); // Call listener function at run time
+    // phone.addListener(myFunction) // Attach listener function on state changes
+    // tablet.addListener(myFunction) // Attach listener function on state changes
+    </script>
 {% endblock %}
