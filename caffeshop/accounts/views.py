@@ -469,6 +469,17 @@ def sales_by_category(request):
     return render(request, 'analytics/sales_by_category.html', context=context)
 
 
+def order_status_report(request):
+    first_date = request.GET.get('first_date') or '1980-01-01'
+    second_date = request.GET.get('second_date') or timezone.now()
+    query_set = Order.objects.filter(order_date__range=[first_date, second_date])\
+                                    .values('status')\
+                                    .annotate(status_count=Count("status"))\
+                                    .order_by('status')
+    context = {'query_set1': query_set}
+    return render(request, 'analytics/order_status_report.html', context=context)
+
+
 
 
 
