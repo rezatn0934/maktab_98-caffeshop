@@ -260,13 +260,14 @@ class CreateOrderItem(View):
         return redirect('order_detail', pk)
 
 
+@login_required
 def most_popular(request):
     if 'filter' in request.GET:
         first_date = request.GET.get('first_date')
         second_date = request.GET.get('second_date')
         limit = int(request.GET.get('quantity'))
-        query_set = Order_detail.objects.all().annotate(date=F('order__order_date')).filter(
-            date__range=[first_date, second_date]).values('product').annotate(order_count=Count('id')).annotate(
+        query_set = Order_detail.objects.filter(
+            order__order_date__range=[first_date, second_date]).values('product').annotate(order_count=Count('id')).annotate(
             name=F('product__name')).order_by(
             '-order_count')[:limit]
 
@@ -281,6 +282,7 @@ def most_popular(request):
     return render(request, 'analytics/most_popular.html', context=context)
 
 
+@login_required
 def peak_business_hour(request):
     lst2 = None
     first_date2 = None
@@ -315,6 +317,7 @@ def peak_business_hour(request):
     return render(request, 'analytics/peak_business_hour.html', context=context)
 
 
+@login_required
 def top_selling(request):
     if 'filter' in request.GET:
         first_date = request.GET.get('first_date')
@@ -334,6 +337,7 @@ def top_selling(request):
     return render(request, 'analytics/top_selling.html', {'query_set': query_set})
 
 
+@login_required
 def hourly_sales(request):
     if 'filter' in request.GET:
         first_date = request.GET.get('first_date')
@@ -355,6 +359,7 @@ def hourly_sales(request):
     return render(request, 'analytics/hourly_sales.html', {'query_set': query_set})
 
 
+@login_required
 def daily_sales(request):
     if 'filter' in request.GET:
         first_date = request.GET.get('first_date')
@@ -373,6 +378,7 @@ def daily_sales(request):
     return render(request, 'analytics/daily_sales.html', {'query_set': query_set})
 
 
+@login_required
 def monthly_sales(request):
     if 'filter' in request.GET:
         first_date = request.GET.get('first_date')
@@ -391,6 +397,7 @@ def monthly_sales(request):
     return render(request, 'analytics/monthly_sales.html', {'query_set': query_set})
 
 
+@login_required
 def yearly_sales(request):
     if 'filter' in request.GET:
         first_date = request.GET.get('first_date')
@@ -407,6 +414,7 @@ def yearly_sales(request):
     return render(request, 'analytics/yearly_sales.html', {'query_set': query_set})
 
 
+@login_required
 def customer_sales(request):
     limit = 5
     if 'filter' in request.GET:
@@ -426,6 +434,7 @@ def customer_sales(request):
     return render(request, 'analytics/customer_sales.html', {'query_set': query_set})
 
 
+@login_required
 def customer_demographic(request):
     query_set = None
     query_set2 = None
@@ -457,8 +466,9 @@ def customer_demographic(request):
     return render(request, 'analytics/customer_demographic.html', context=context)
 
 
+@login_required
 def sales_by_category(request):
-    first_date = request.GET.get('first_date') or '1980-01-01'
+    first_date = request.GET.get('first_date') or '1970-01-01'
     second_date = request.GET.get('second_date') or timezone.now()
     query_set = Order_detail.objects.annotate(date=F('order__order_date')) \
         .filter(date__range=[first_date, second_date]) \
@@ -470,6 +480,7 @@ def sales_by_category(request):
     return render(request, 'analytics/sales_by_category.html', context=context)
 
 
+@login_required
 def order_status_report(request):
     lst2 = None
     first_date = "1970-01-01"
@@ -515,6 +526,7 @@ def order_status_report(request):
     return render(request, 'analytics/order_status_report.html', context=context)
 
 
+@login_required
 def sales_by_employee_report(request):
     first_date = request.GET.get('first_date') or '1970-01-01'
     second_date = request.GET.get('second_date') or timezone.now()
@@ -538,6 +550,7 @@ def sales_by_employee_report(request):
     return render(request, 'analytics/sales_by_employee_report.html', context=context)
 
 
+@login_required
 def customer_order_history(request):
     context = {}
 
@@ -554,6 +567,7 @@ def customer_order_history(request):
     return render(request, 'analytics/customer_order_history.html', context=context)
 
 
+@login_required
 def product_hour(request):
     first_date = request.GET.get('first_date') or '1970-01-01'
     second_date = request.GET.get('second_date') or timezone.now()
