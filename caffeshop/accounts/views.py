@@ -2,8 +2,8 @@ from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
-from django.db.models import Q, F, Sum, Count, DateField, DateTimeField, CharField, TimeField
-from django.db.models.functions import TruncMonth, TruncYear, TruncDay, TruncHour, ExtractHour, Substr, Cast, ExtractDay
+from django.db.models import Q, F, Sum, Count, DateField, DateTimeField, CharField
+from django.db.models.functions import TruncMonth, TruncDay, TruncHour, ExtractHour, Substr, Cast
 
 from django.shortcuts import render, redirect
 from django.utils.decorators import method_decorator
@@ -11,14 +11,12 @@ from django.utils import timezone
 from django.views import View
 
 from .authentication import PhoneAuthBackend
-from .form import StaffLoginForm, VerifyCodeForm, OrderDetailUpdateForm
+from .form import StaffLoginForm, VerifyCodeForm
 from orders.models import Order, Order_detail
 from utils import send_otp_code, check_is_authenticated
 from menu.models import Product
-from .models import User
 
 import datetime
-import time
 
 
 # Create your views here.
@@ -350,7 +348,7 @@ def hourly_sales(request):
     query_set = Order.objects.filter(order_date__range=[first_date, second_date]) \
         .values(
         hour=Substr(Cast(TruncHour('order_date', output_field=DateTimeField()),
-                        output_field=CharField()), 1, 19)).annotate(
+                         output_field=CharField()), 1, 19)).annotate(
         total_sale=Sum(
             F('order_detail__quantity') *
             F('order_detail__price'))).order_by('hour')
@@ -447,11 +445,11 @@ def customer_demographic(request):
 def sales_by_category(request):
     first_date = request.GET.get('first_date') or '1980-01-01'
     second_date = request.GET.get('second_date') or timezone.now()
-    query_set = Order_detail.objects.annotate(date=F('order__order_date'))\
-                                    .filter(date__range=[first_date, second_date])\
-                                    .annotate(category=F("product__category__name"))\
-                                    .values('category')\
-                                    .annotate(total_sale=Sum( F("quantity") * F("price"))).order_by('total_sale')
+    query_set = Order_detail.objects.annotate(date=F('order__order_date')) \
+        .filter(date__range=[first_date, second_date]) \
+        .annotate(category=F("product__category__name")) \
+        .values('category') \
+        .annotate(total_sale=Sum(F("quantity") * F("price"))).order_by('total_sale')
     context = {'query_set1': query_set}
 
     return render(request, 'analytics/sales_by_category.html', context=context)
@@ -503,24 +501,31 @@ def order_status_report(request):
 
 
 def sales_by_employee_report(request):
-    staff = User.objects.filter(phone=request.GET.get('phone_number'))
-    staff = staff.first() if staff.exists() else None
-    first_date = request.GET.get('first_date') or '1980-01-01'
+    first_date = request.GET.get('first_date') or '1970-01-01'
     second_date = request.GET.get('second_date') or timezone.now()
-    query_set = Order.objects.filter(order_date__range=[first_date, second_date])\
-                                    .filter(staff=staff)\
-                                    .annotate(date=TruncDay("order_date", output_field=DateField()))\
-                                    .values("date")\
-                                    .annotate(count=Count('id')).order_by('count')
-    orders = Order.objects.filter(staff=staff).order_by('-order_date')
-    context = {'query_set1': query_set, "orders": orders}
 
+    if request.GET.get('phone_number'):
+        phone_number = request.GET.get('phone_number')
+        query_set = Order.objects.filter(
+            staff_id__isnull=False, order_date__range=[first_date, second_date]).annotate(
+            day=TruncDay("order_date",output_field=DateField())).values(
+            "day").annotate(
+            count=Count("id")).annotate(
+            phone_number_emp=F("staff__phone")).filter(phone_number_emp=phone_number).order_by("-count")
+        context = {'query_set2': query_set}
+        return render(request, 'analytics/sales_by_employee_report.html', context=context)
+
+    query_set = Order.objects.filter(
+        staff_id__isnull=False, order_date__range=[first_date, second_date]).values("staff_id").annotate(
+        count=Count("id")).annotate(
+        phone_number_emp=F("staff__phone")).order_by("-count")
+    context = {'query_set': query_set}
     return render(request, 'analytics/sales_by_employee_report.html', context=context)
 
 
 def customer_order_history(request):
     phone_number = request.GET.get('phone_number')
-    first_date = request.GET.get('first_date') or '1980-01-01'
+    first_date = request.GET.get('first_date') or '1970-01-01'
     second_date = request.GET.get('second_date') or timezone.now()
     query_set = Order.objects.filter(order_date__range=[first_date, second_date])\
                                     .filter(phone_number=phone_number)\
