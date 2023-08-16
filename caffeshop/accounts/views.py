@@ -266,27 +266,18 @@ def most_popular(request):
         first_date = request.GET.get('first_date')
         second_date = request.GET.get('second_date')
         limit = int(request.GET.get('quantity'))
-        query_set1 = Order_detail.objects.all().annotate(date=F('order__order_date')).filter(
+        query_set = Order_detail.objects.all().annotate(date=F('order__order_date')).filter(
             date__range=[first_date, second_date]).values('product').annotate(order_count=Count('id')).annotate(
             name=F('product__name')).order_by(
             '-order_count')[:limit]
-        query_set2 = Order_detail.objects.all().annotate(date=F('order__order_date')).filter(
-            date__range=[first_date, second_date])
 
     else:
         limit = 5
-        query_set1 = Product.objects.all().annotate(
+        query_set = Product.objects.all().annotate(
             order_count=Count('order_detail')
         ).order_by('-order_count')[:limit]
-        query_set2 = Order_detail.objects.all()
 
-    query_set2 = query_set2.annotate(category=F('product__category__name')).values('category').annotate(
-        total_sale=Sum(
-            F('quantity') *
-            F('price')
-        )).order_by('-total_sale')
-
-    context = {'query_set1': query_set1, 'query_set2': query_set2}
+    context = {'query_set': query_set}
 
     return render(request, 'analytics/most_popular.html', context=context)
 
