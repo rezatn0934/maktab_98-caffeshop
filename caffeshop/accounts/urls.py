@@ -17,6 +17,10 @@ urlpatterns = [
     path('monthly_sales/', views.monthly_sales, name='monthly_sales'),
     path('yearly_sales/', views.yearly_sales, name='yearly_sales'),
     path('customer_sales/', views.customer_sales, name='customer_sales'),
+    path('sales_by_category/', views.sales_by_category, name='sales_by_category'),
+    path('order_status_report/', views.order_status_report, name='order_status_report'),
+    path('customer_order_history/', views.customer_order_history, name='customer_order_history'),
+    path('sales_by_employee_report/', views.sales_by_employee_report, name='sales_by_employee_report'),
 
 
     path('orders/', views.Orders.as_view(), name='order_list'),
