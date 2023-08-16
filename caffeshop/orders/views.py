@@ -82,23 +82,13 @@ def order_history(request):
     if request.method == "GET":
 
         if customer_order_id := request.session.get('order_history'):
-            if last_query_time := request.session.get("last_query_time"):
-                last_query_time = datetime.datetime.fromisoformat(last_query_time)
-                if last_query_time + timezone.timedelta(minutes=1) > timezone.now():
-                    message = f"You have to wait {(timezone.timedelta(minutes=1) - (timezone.now() - last_query_time)).seconds} seconds."
-                    return render(request, "orders/order_history.html", context={"message": message})
-
             orders = Order.objects.filter(id__in=customer_order_id).order_by('-order_date')
-            request.session["last_query_time"] = str(timezone.now())
-
             context = {"orders": orders}
             return render(request, "orders/order_history.html", context=context)
 
         else:
-
             message = "You Don't have any order yet."
             return render(request, "orders/order_history.html", context={"message": message})
-
 
 def cancel_order_by_customer(request, pk):
     order = Order.objects.filter(id=pk)
