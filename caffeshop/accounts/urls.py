@@ -8,7 +8,7 @@ urlpatterns = [
 
     path('dashboard/', views.Dashboard.as_view(), name="dashboard"),
 
-    path('result/', views.most_popular, name="result"),
+    path('customer_demographic/', views.customer_demographic, name="customer_demographic"),
     path('most_popular/', views.most_popular, name='most_popular'),
     path('peak_hour/', views.peak_business_hour, name='peak_business_hour'),
     path('top_selling/', views.top_selling, name='top_selling'),
