@@ -3,7 +3,7 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db.models import Q, F, Sum, Count, DateField, DateTimeField, CharField, TimeField
-from django.db.models.functions import TruncMonth, TruncYear, TruncDay, TruncHour, ExtractHour, Substr, Cast
+from django.db.models.functions import TruncMonth, TruncYear, TruncDay, TruncHour, ExtractHour, Substr, Cast, ExtractDay
 
 from django.shortcuts import render, redirect
 from django.utils.decorators import method_decorator
@@ -15,6 +15,7 @@ from .form import StaffLoginForm, VerifyCodeForm, OrderDetailUpdateForm
 from orders.models import Order, Order_detail
 from utils import send_otp_code, check_is_authenticated
 from menu.models import Product
+from .models import User
 
 import datetime
 import time
@@ -472,9 +473,11 @@ def sales_by_employee_report(request):
     staff = staff.first() if staff.exists() else None
     first_date = request.GET.get('first_date') or '1980-01-01'
     second_date = request.GET.get('second_date') or timezone.now()
-    query_set = Order.objects.all().filter(
-        staff_id__isnull=False).values("staff_id").annotate(count=Count("id")).annotate(
-        phone_number_emp=F("staff__phone"))
+    query_set = Order.objects.filter(order_date__range=[first_date, second_date])\
+                                    .filter(staff=staff)\
+                                    .annotate(date=TruncDay("order_date", output_field=DateField()))\
+                                    .values("date")\
+                                    .annotate(count=Count('id')).order_by('count')
     orders = Order.objects.filter(staff=staff).order_by('-order_date')
     context = {'query_set1': query_set, "orders": orders}
 
