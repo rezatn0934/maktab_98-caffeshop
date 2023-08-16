@@ -53,38 +53,45 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        const ctx = document.getElementById('myChart');
-        new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: [{%for data in query_set %}'{{ data.hour }}', {%endfor%}],
-                datasets: [{
+        const dataLabels = [{%for data in query_set %}'{{ data.hour }}', {%endfor%}]
+        const data = {
+            labels: dataLabels,
+            datasets: [{
+                label: 'Customer Sale',
+                data: [{%for data in query_set %}{{ data.total_sale }}, {%endfor%}],
+                borderWidth: 1,
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.9)',
 
-                    data: [{%for data in query_set %}{{ data.total_sale }}, {%endfor%}],
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.9)',
-
-                    ],
-                    borderWidth: 1
-                }]
+                ],
             },
-            options:
-                {
-                    responsive: true,
-                    maintainAspectRatio: true,
+            ]
+        };
 
+        const config = {
+            type: 'bar',
+            data: data,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: "Hourly Sales"
+                    },
+                    legend: {
+                        display: false
+                    }
+                },
 
-                plugins: {title: {
-                display: true,
-                text: "Hourly Sales",
+                layout:
+                    {
+                        padding: 100
+                    },
+            }
+        };
 
-                }, legend: {display:false}},
-
-                    layout:
-                        {
-                            padding: 100
-                        },
-
+        let chart = new Chart(document.getElementById('chartContainer'), config);
 
                 }
         });
