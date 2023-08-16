@@ -539,6 +539,31 @@ def customer_order_history(request):
     return render(request, 'analytics/customer_order_history.html', context=context)
 
 
+def product_hour(request):
+    first_date = request.GET.get('first_date') or '1970-01-01'
+    second_date = request.GET.get('second_date') or timezone.now()
+
+    query_set = Order.objects.filter(order_date__range=[first_date, second_date]).annotate(
+        hour=ExtractHour('order_date')).annotate(
+        product=F("order_detail__product__name")).annotate(
+        quantity=F("order_detail__quantity")).values("product", "hour", "quantity").annotate(
+        order_count=Count("id")).values("product", "hour").annotate(total_order=(Sum("quantity"))).order_by("hour")
+    lst = []
+    for index, item in enumerate(query_set):
+        if index == 0:
+            lst.append(item)
+        else:
+            if item["hour"] != lst[-1]["hour"]:
+                lst.append(item)
+            else:
+                if item["total_order"] >= lst[-1]["total_order"]:
+                    lst.pop()
+                    lst.append(item)
+
+    context = {'query_set': lst}
+    return render(request, 'analytics/product_hour.html', context=context)
+
+
 @login_required
 def logout_view(request):
     logout(request)

@@ -21,6 +21,7 @@ urlpatterns = [
     path('order_status_report/', views.order_status_report, name='order_status_report'),
     path('customer_order_history/', views.customer_order_history, name='customer_order_history'),
     path('sales_by_employee_report/', views.sales_by_employee_report, name='sales_by_employee_report'),
+    path('product_hour/', views.product_hour, name='product_hour'),
 
 
     path('orders/', views.Orders.as_view(), name='order_list'),
@@ -30,4 +31,3 @@ urlpatterns = [
     path('confirm_order/<int:pk>', views.confirm_order, name='confirm_order'),
     path('cancel_order/<int:pk>', views.cancel_order, name='cancel_order'),
 ]
-
