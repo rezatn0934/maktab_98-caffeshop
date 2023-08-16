@@ -98,5 +98,37 @@
                 chart: chart
             })
         });
+
+        function convertChartDataToCSV(args) {
+            let result, columnDelimiter, lineDelimiter, labels, data;
+
+            data = args.data.data || null;
+            if (data == null || !data.length) {
+                return null;
+            }
+
+            labels = args.labels || null;
+            if (labels == null || !labels.length) {
+                return null;
+            }
+
+            columnDelimiter = args.columnDelimiter || ',';
+            lineDelimiter = args.lineDelimiter || '\n';
+
+            result = '' + columnDelimiter;
+            result += labels.join(columnDelimiter);
+            result += lineDelimiter;
+
+            result += args.data.label.toString();
+
+            for (let i = 0; i < data.length; i++) {
+                result += columnDelimiter;
+                result += data[i];
+            }
+            result += lineDelimiter;
+
+            return result;
+        }
+
     </script>
 {% endblock %}
