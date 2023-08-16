@@ -570,7 +570,7 @@ def product_hour(request):
     first_date = request.GET.get('first_date') or '1970-01-01'
     second_date = request.GET.get('second_date') or timezone.now()
 
-    query_set = Order.objects.filter(order__payment='P', order_date__range=[first_date, second_date]).annotate(
+    query_set = Order.objects.filter(payment='P', order_date__range=[first_date, second_date]).annotate(
         hour=ExtractHour('order_date')).annotate(
         product=F("order_detail__product__name")).annotate(
         quantity=F("order_detail__quantity")).values("product", "hour", "quantity").annotate(
