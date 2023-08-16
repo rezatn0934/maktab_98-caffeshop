@@ -494,7 +494,18 @@ def sales_by_employee_report(request):
     return render(request, 'analytics/sales_by_employee_report.html', context=context)
 
 
-
+def customer_order_history(request):
+    phone_number = request.GET.get('phone_number')
+    first_date = request.GET.get('first_date') or '1980-01-01'
+    second_date = request.GET.get('second_date') or timezone.now()
+    query_set = Order.objects.filter(order_date__range=[first_date, second_date])\
+                                    .filter(phone_number=phone_number)\
+                                    .annotate(date=TruncDay("order_date", output_field=DateField()))\
+                                    .values("date")\
+                                    .annotate(count=Count('id')).order_by('count')
+    orders = Order.objects.filter(phone_number=phone_number).order_by('-order_date')
+    context = {'query_set1': query_set, "orders": orders}
+    return render(request, 'analytics/customer_order_history.html', context=context)
 
 
 @login_required
