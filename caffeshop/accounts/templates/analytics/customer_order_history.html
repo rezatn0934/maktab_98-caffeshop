@@ -137,14 +137,15 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src=" https://cdn.jsdelivr.net/npm/chart.js@4.2.0/dist/chart.umd.min.js "></script>
     <script>
-        const dataLabels = [{%for data in query_set1 %}'{{ data.date }}', {%endfor%}];
+        {% if query_set %}
+        const dataLabels = [{%for data in query_set %}'{{ data.date }}', {%endfor%}];
         const data = {
 
             labels: dataLabels,
             datasets: [{
             label: 'Count',
 
-                data: [{%for data in query_set1 %}{{ data.count }}, {%endfor%}],
+                data: [{%for data in query_set %}{{ data.count }}, {%endfor%}],
                 borderWidth: 1
             }
             ]
@@ -272,6 +273,7 @@
       
       var element = document.getElementById("clickbind");
       element.addEventListener("click", onClick);
+        {% endif %}
     </script>
 
 {% endblock %}
