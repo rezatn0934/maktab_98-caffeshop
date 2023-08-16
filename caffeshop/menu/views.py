@@ -18,9 +18,10 @@ class Menu(ListView):
         return context
  
 
-def product(request, name):
-    product = Product.objects.get(name=name)
-    return render(request, 'menu/product.html', {'product': product})
+class ProductView(DetailView):
+    template_name = 'menu/product.html'
+    model = Product
+    context_object_name ='product'
 
 
 def search_product_view(request):
