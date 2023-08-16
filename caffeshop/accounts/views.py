@@ -427,19 +427,34 @@ def customer_sales(request):
 
 
 def customer_demographic(request):
-    phone_number = "09117200513"
-    query_set = Order.objects.filter(phone_number=phone_number).annotate(
-        product=F("order_detail__product__name")).annotate(quantity=F("order_detail__quantity")).annotate(
-        price=F("order_detail__price")).values("product").annotate(spent=Sum(F('quantity') * F('price'))).annotate(
-        total=Sum('quantity')).order_by("-spent")
+    query_set = None
+    query_set2 = None
+    total_spent = 0
+    rank = None
+    if phone_number := request.GET.get('phone_number'):
+        query_set = Order.objects.filter(phone_number=phone_number).annotate(
+            product=F("order_detail__product__name")).annotate(quantity=F("order_detail__quantity")).annotate(
+            price=F("order_detail__price")).values("product").annotate(spent=Sum(F('quantity') * F('price'))).annotate(
+            total=Sum('quantity')).order_by("-spent")
 
-    total_spent = query_set.aggregate(total_spent=Sum("spent"))
-    query_set2 = Order.objects.filter(phone_number=phone_number).annotate(
-        hour=ExtractHour("order_date")).values(
-        "hour").annotate(count=Count('id')).order_by('hour')
+        total_spent = query_set.aggregate(total_spent=Sum("spent"))
+        query_set2 = Order.objects.annotate(
+            hour=ExtractHour("order_date")).values(
+            "hour").annotate(count=Count('id')).order_by('hour')
 
-    context = {'query_set': query_set, "total_spent": total_spent, "query_set2": query_set2}
-    return render(request, 'result.html', context=context)
+        query_set3 = Order.objects.all().values('phone_number').annotate(
+            total_sale=Sum(
+                F('order_detail__quantity') *
+                F('order_detail__price')
+            )
+        ).order_by('-total_sale')
+        for i, obj in enumerate(query_set3):
+            if obj['phone_number'] == phone_number:
+                rank = i+1
+                break
+
+    context = {'query_set': query_set, "total_spent": total_spent, "query_set2": query_set2, 'rank': rank}
+    return render(request, 'analytics/customer_demographic.html', context=context)
 
 
 def sales_by_category(request):
