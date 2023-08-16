@@ -14,7 +14,7 @@
                     </div>
                 {% endif %}
             </div>
-            <form class="form-control" action="{% url 'sales_by_category' %}" method="GET">
+            <form class="form-control" action="{% url 'order_status_report' %}" method="GET">
                 <input type="hidden" name="filter">
                 <div class="card card-body">
                     <div class="col-md-3 mb-2">
@@ -26,22 +26,22 @@
                                 From:
                             </label>
                             <input class="form-control date" type="date" name="first_date"
-                                   id="first_date" value="{{ request.GET.first_date }}">
+                                   id="first_date" required>
                         </div>
                         <div class="col-md-3">
                             <label class="form-check-label" for="second_date">
                                 To:
                             </label>
                             <input class="form-control date" type="date" name="second_date"
-                                   id="second_date" value="{{ request.GET.first_date }}">
+                                   id="second_date" >
                         </div>
-                        <div class="col-md-3 py-5 m-0">
-                            <select class="btn btn-primary mb-0" id="chart-type"  onchange="changeConfig(this.value)">
-                                <option value="pie">Pie Chart</option>
-                                <option value="line">Line Chart</option>
-                                <option value="bar">Bar Chart</option>
-                            </select>
-                        </div>
+<!--                        <div class="col-md-3 py-5 m-0">-->
+<!--                            <select class="btn btn-primary mb-0" id="chart-type"  onchange="changeConfig(this.value)">-->
+<!--                                <option value="pie">Pie Chart</option>-->
+<!--                                <option value="line">Line Chart</option>-->
+<!--                                <option value="bar">Bar Chart</option>-->
+<!--                            </select>-->
+<!--                        </div>-->
                         <div class="col-md-3 mt-4 pt-3">
                             <button type="submit" class="btn btn-primary mb-0">
                                 <i class="bi bi-search"></i>
@@ -49,9 +49,7 @@
                             <button class="btn btn-primary mb-0" id="downloadCSV">
                                 <i class="bi bi-download"></i>
                             </button>
-                            <button class="btn btn-primary mb-0" >
-                                <i class="bi bi-download"></i>
-                            </button>
+
                         </div>
                     </div>
                 </div>
@@ -59,149 +57,50 @@
         </div>
         <div class="row d-flex g-f py-4 my-4 align-items-center justify-content-center">
             <div class="col-md-8 ">
-                <canvas id="chartContainer" style="width: 100%; height: 40em;"></canvas>
+                <canvas id="myChart" style="width: 100%; height: 40em;"></canvas>
             </div>
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src=" https://cdn.jsdelivr.net/npm/chart.js@4.2.0/dist/chart.umd.min.js "></script>
     <script>
-        let dataList = [{%for data in query_set1 %}{{ data.status_count }}, {%endfor%}]
-        let statusList = [{%for data in query_set1 %}'{{ data.status }}', {%endfor%}]
-        let newStatusList = []
-   
-        for (status_code of statusList){
-            if (status_code == 'A') {newStatusList.push('Approved'); }
-            if (status_code == 'P') {newStatusList.push('Proccessing'); }
-            if (status_code == 'C') {newStatusList.push('Canceled'); }
-        }
-        const dataLabels = newStatusList;
-        const data = {
+    const ctx = document.getElementById('myChart');
 
-            labels: dataLabels,
-            datasets: [{
-            label: 'Count',
 
-                data: dataList,
-                borderWidth: 1
-            }
-            ]
-        };
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ["Approved", "Canceled", "Processing"],
+        datasets: [{
+          label: "{{first_date}}",
+          data: {{lst1}},
+          backgroundColor: ['rgba(255, 99, 132, 0.9)'],
+          stack: 'Stack 0'},
+          {% if lst2 %}{
 
-        const config = {
-            type: 'pie',
-            data: data,
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    title: {
-                        display: true, text: "Sales by Products"
-                    }
-                },
-                layout: {},
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        display: false
-                    },
-                    x: {
-                        display: false
-                    }
-                }
+          label: "{{first_date2}}",
+          data: {{lst2}},
+          backgroundColor: [
+                        'rgba(0, 99, 132, 0.9)',
+                    ],
+          stack: 'Stack 1'},
 
-            }
-        };
+        {% endif %}],
 
-        let chart = new Chart(document.getElementById('chartContainer'), config);
+      },
+      options:
+      {
 
-        document.getElementById("downloadCSV").addEventListener("click", function () {
-            downloadCSV({
-                filename: "chart-data.csv",
-                chart: chart
-            })
-        });
+          responsive: true,
+        maintainAspectRatio: true,
 
-        function convertChartDataToCSV(args) {
-            let result, columnDelimiter, lineDelimiter, labels, data;
+          layout:
+          {
+            padding: 100
+          },
 
-            data = args.data.data || null;
-            if (data == null || !data.length) {
-                return null;
-            }
 
-            labels = args.labels || null;
-            if (labels == null || !labels.length) {
-                return null;
-            }
-
-            columnDelimiter = args.columnDelimiter || ',';
-            lineDelimiter = args.lineDelimiter || '\n';
-
-            result = '' + columnDelimiter;
-            result += labels.join(columnDelimiter);
-            result += lineDelimiter;
-
-            result += args.data.label.toString();
-
-            for (let i = 0; i < data.length; i++) {
-                result += columnDelimiter;
-                result += data[i];
-            }
-            result += lineDelimiter;
-
-            return result;
-        }
-
-        function downloadCSV(args) {
-            var data, filename, link;
-            var csv = "";
-            for (var i = 0; i < chart.data.datasets.length; i++) {
-                csv += convertChartDataToCSV({
-                    data: chart.data.datasets[i],
-                    labels: dataLabels
-                });
-            }
-            if (csv == null) return;
-            console.log(csv);
-
-            filename = args.filename || 'chart-data.csv';
-            if (!csv.match(/^data:text\/csv/i)) {
-                csv = 'data:text/csv;charset=utf-8,' + csv;
-            }
-
-            // not sure if anything below this comment works
-            data = encodeURI(csv);
-            link = document.createElement('a');
-            link.setAttribute('href', data);
-            link.setAttribute('download', filename);
-            document.body.appendChild(link); // Required for FF
-            link.click();
-            document.body.removeChild(link);
-        }
-        let ctx = document.getElementById('chartContainer');
-        let newConfig ={};
-        function changeConfig(newType){
-            chart.destroy()
-            config.type = newType;
-            config.data.datasets.data = dataList;
-            alert(JSON.stringify(config))
-            newConfig = JSON.parse(JSON.stringify(config));
-
-            if (newType == 'line'){
-                config.options.scales.x.display = true;
-                config.options.scales.y.display = true;
-            }
-            if (newType == 'bar'){
-                config.options.scales.x.display = true;
-                config.options.scales.y.display = true;
-            }
-            if (newType == 'pie'){ 
-                config.options.scales.x.display = false;
-                config.options.scales.y.display = false;
-            }
-            chart = new Chart(ctx, newConfig);
-        }
-
-    </script>
+      }
+    });
+</script>>
 {% endblock %}
