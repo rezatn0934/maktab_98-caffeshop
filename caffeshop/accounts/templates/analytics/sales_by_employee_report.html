@@ -1,4 +1,3 @@
-
 {% extends 'dashbase.html' %}
 {% load static %}
 {% block link %}
@@ -22,7 +21,7 @@
                     </div>
                 {% endif %}
             </div>
-            <form class="form-control" action="{% url 'customer_order_history' %}" method="GET">
+            <form class="form-control" action="{% url 'sales_by_employee_report' %}" method="GET">
                 <input type="hidden" name="filter">
                 <div class="card card-body">
                     <div class="col-md-3 mb-2">
@@ -34,21 +33,21 @@
                                 From:
                             </label>
                             <input class="form-control date" type="date" name="first_date"
-                                   id="first_date" value="{{ request.GET.first_date }}">
+                                   id="first_date">
                         </div>
                         <div class="col-md-3">
                             <label class="form-check-label" for="second_date">
                                 To:
                             </label>
                             <input class="form-control date" type="date" name="second_date"
-                                   id="second_date" value="{{ request.GET.first_date }}">
+                                   id="second_date">
                         </div>
                         <div class="col-md-5">
                             <label class="form-check-label" for="quantity">
-                                Customer Phone Number:
+                                Employee Phone Number:
                             </label>
                             <input class="form-control" type="tel" name="phone_number"
-                                   id="Phone" required>
+                                   id="Phone" >
                         </div>
 
                     </div>
@@ -60,17 +59,15 @@
                             <button class="btn btn-primary mb-0" id="downloadCSV">
                                 <i class="bi bi-download"></i>
                             </button>
-                            <button class="btn btn-primary mb-0" onclick="window.print()" >
-                                Download
-                            </button>
+
                         </div>
-                        <div class="col-md-3 py-5 m-0">
-                            <select class="btn btn-primary mb-0" id="chart-type"  onchange="changeConfig(this.value)">
-                                <option value="pie">Pie Chart</option>
-                                <option value="line">Line Chart</option>
-                                <option value="bar">Bar Chart</option>
-                            </select>
-                        </div>
+<!--                        <div class="col-md-3 py-5 m-0">-->
+<!--                            <select class="btn btn-primary mb-0" id="chart-type"  onchange="changeConfig(this.value)">-->
+<!--                                <option value="pie">Pie Chart</option>-->
+<!--                                <option value="line">Line Chart</option>-->
+<!--                                <option value="bar">Bar Chart</option>-->
+<!--                            </select>-->
+<!--                        </div>-->
                     </div>
                 </div>
             </form>
@@ -137,38 +134,55 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src=" https://cdn.jsdelivr.net/npm/chart.js@4.2.0/dist/chart.umd.min.js "></script>
     <script>
-        const dataLabels = [{%for data in query_set1 %}'{{ data.date }}', {%endfor%}];
+        {% if query_set %}
+        const dataLabels = [{%for data in query_set %}'{{ data.phone_number_emp }}', {%endfor%}];
         const data = {
 
             labels: dataLabels,
             datasets: [{
-            label: 'Count',
+            label: 'Number of orders handled by employee',
 
-                data: [{%for data in query_set1 %}{{ data.count }}, {%endfor%}],
+
+                data: [{%for data in query_set %}{{ data.count }}, {%endfor%}],
                 borderWidth: 1
             }
             ]
         };
+        {% else %}
+        const dataLabels = [{%for data in query_set2 %}'{{ data.day }}', {%endfor%}];
+        const data = {
+
+            labels: dataLabels,
+            datasets: [{
+            label: 'Number of orders handled by employee',
+
+
+                data: [{%for data in query_set2 %}{{ data.count }}, {%endfor%}],
+                borderWidth: 1
+            }
+            ]
+        };
+        {% endif %}
 
         const config = {
-            type: 'pie',
+            type: 'bar',
             data: data,
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
                     title: {
-                        display: true, text: "Customer History"
+                        display: true, text: "Employee Sale"
                     }
                 },
                 layout: {},
                 scales: {
                     y: {
                         beginAtZero: true,
-                        display: false
+                        display: true
                     },
                     x: {
-                        display: false
+                        display: true
                     }
                 }
 
@@ -275,5 +289,3 @@
     </script>
 
 {% endblock %}
-
-
