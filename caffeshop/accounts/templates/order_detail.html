@@ -36,11 +36,12 @@
                                     <p>Payment Status: {{ order.get_payment_display }}</p>
                                 </div>
                             </div>
-                            <div class="table-responsive">
-                                <table class="table table-striped align-items-center"
+                            <div class="table-responsive container justify-content-center d-flex align-items-center"
+                                 style="overflow: visible !important;" >
+                                <table class="table table-responsive table-striped align-items-center"
                                        style="font-size: .8rem !important;">
                                     <thead>
-                                    <tr>
+                                    <tr class="text-left" style="width: inherit !important;">
                                         <th scope="col">Order detail Id</th>
                                         <th scope="col">Product</th>
                                         <th scope="col">Quantity</th>
@@ -49,17 +50,46 @@
                                         <th scope="col"></th>
                                     </tr>
                                     </thead>
-                                    <tbody>
-                                    {% for id, total_price, order_detail in order_details %}
-                                        <form action="{% url 'order_detail' id %}" method="POST">
+                                    <tbody class="text-left">
+                                    {% for order_detail in order_details %}
+                                        <form action="{% url 'order_detail' order_detail.id %}" method="POST">
                                             {% csrf_token %}
-                                            <tr class="justify-content-center">
-                                                <th scope="row">{{ id }}</th>
-                                                {% for field in order_detail %}
-                                                    <td>{{ field }}</td>
-                                                {% endfor %}
+                                            <input type="radio" style="display: none;" name="s_product" value="{{ order_detail.product.id }}" checked>
+                                            <tr class="justify-content-center align-items-center" style="width: inherit !important;">
+                                                <th scope="row" class="py-4">{{ order_detail.id }}</th>
                                                 <td>
-                                                    ${{ total_price }}
+                                                    <div class="dropdown col-sm-2">
+                                                        <button class="btn btn1 btn-light dropdown-toggle"
+                                                                type="button"
+                                                                id="btn{{forloop.counter}}" data-bs-toggle="dropdown"
+                                                                aria-expanded="false">
+                                                            {{ order_detail.product }}
+                                                        </button>
+                                                        <ul class="dropdown-menu first-dr"
+                                                            aria-labelledby="btn{{forloop.counter}}">
+                                                            <label for="search"></label>
+                                                            <input id="search" class="form-control ins" type="text"
+                                                                   name="product" placeholder="Search..">
+                                                            {% for product in products %}
+                                                                <li class="dropdown-item">
+                                                                    <label for="s{{forloop.parentloop.counter}}-{{forloop.counter}}-{{ product.id }}">{{ product.name }}</label>
+                                                                    <input type="radio" onclick="reply_click('btn{{forloop.parentloop.counter}}', '{{product.name}}')"
+                                                                          id="s{{forloop.parentloop.counter}}-{{forloop.counter}}-{{ product.id }}"
+                                                                          value="{{ product.id }}"
+                                                                          style="margin-left:20px" name="s_product">
+
+                                                                </li>
+                                                            {% endfor %}
+                                                        </ul>
+                                                    </div>
+                                                </td>
+                                                <td class="py-3">
+                                                    <div class="col-md-3 ">
+                                                        <input id="quantity" class="form-control" style=" border-radius: 4px;" type="number" min="1"
+                                                               value="{{ order_detail.quantity }}" name="quantity">
+                                                </td>
+                                                <td class="py-4">
+                                                    ${{ order_detail.total_price }}
                                                 </td>
                                                 <td>
                                                     {% if order.get_payment_display == 'Unpaid' and not order.get_status_display == 'Canceled' %}
@@ -70,7 +100,7 @@
                                                 </td>
                                                 <td>
                                                     {% if order.get_payment_display == 'Unpaid' and not order.get_status_display == 'Canceled' %}
-                                                        <a href="{% url 'delete_order_item' id %}">
+                                                        <a href="{% url 'delete_order_item' order_detail.id %}">
                                                             <button type="button" class="btn btn-danger" name="delete">
                                                                 <i class="bi bi-trash"></i>
                                                             </button>
@@ -79,27 +109,54 @@
                                                 </td>
                                             </tr>
                                         </form>
-                                    {% endfor %}
+                                        {% endfor %}
+                                    {% if order.get_payment_display == 'Unpaid' and not order.get_status_display == 'Canceled' %}
+                                    <form action="{% url 'create_order_detail' order.id %}" method="POST">
+                                        {% csrf_token %}
+                                            <tr class="justify-content-center align-items-center" style="width: inherit !important; background-color: #b9ffe9 !important;">
+                                                <th scope="row" class="py-4">Add item</th>
+                                                <td>
+                                                    <div class="dropdown col-md-3">
+                                                        <button class="btn btn2 btn-light dropdown-toggle" type="button"
+                                                                id="btn_new_orderitem"
+                                                                data-bs-toggle="dropdown" aria-expanded="false">
+                                                            Products
+                                                        </button>
+                                                        <ul class="dropdown-menu second-dr" aria-labelledby="btn_new_orderitem">
+                                                            <label for="search"></label>
+                                                            <input id="search" class="form-control ins" type="text"
+                                                                   name="product"
+                                                                   placeholder="Search..">
+                                                            {% for product in products %}
+                                                                <li class="dropdown-item" value="{{ product.id }}">
+                                                                    <label for="s{{forloop.parentloop.counter}}-{{forloop.counter}}-{{ product.id }}">{{ product.name }}</label>
+                                                                    <input type="radio" onclick="reply_click('btn_new_orderitem', '{{product.name}}')"
+                                                                          id="s{{forloop.parentloop.counter}}-{{forloop.counter}}-{{ product.id }}"
+                                                                          value="{{ product.id }}"
+                                                                          style="margin-left:20px" name="s_product">
+                                                                </li>
+                                                                {% endfor %}
+                                                        </ul>
+                                                    </div>
+                                                </td>
+                                                <td class="py-3">
+                                                    <div class="col-md-3 ">
+                                                        <input id="quantity" class="form-control" style=" border-radius: 4px;" type="number" min="1"
+                                                               value=1 name="quantity">
+                                                </td>
+                                                <td class="py-4"></td>
+                                                <td>
+                                                    <button type="submit" class="btn btn-success" name="create">
+                                                        <i class="bi bi-plus-square"></i>
+                                                    </button>
+                                                </div>
+                                                </td>
+                                                <td></td>
+                                            </tr>
+                                        </form>
+                                    {% endif %}
                                     </tbody>
                                 </table>
-                            </div>
-                            <div class="row d-flex justify-content-center">
-                                {% if order.get_payment_display == 'Unpaid' and not order.get_status_display == 'Canceled' %}
-                                    <form action="{% url 'create_order_detail' order.id %}" method="POST"
-                                          class="justify-content-center d-flex align-items-center">
-                                        {% csrf_token %}
-                                        {% for field in creat_form %}
-                                            <div class="col-md-3">
-                                                {{ field }}
-                                            </div>
-                                        {% endfor %}
-                                        <div class="col-md-2">
-                                            <button type="submit" class="btn btn-success" name="update">
-                                                <i class="bi bi-plus-square"></i>
-                                            </button>
-                                        </div>
-                                    </form>
-                                {% endif %}
                             </div>
                             <div class="row mt-5 justify-content-between align-items-center">
                                 <div class="col-md-3">
@@ -126,4 +183,30 @@
             </div>
         </div>
     </div>
+{% endblock %}
+{% block footerlink %}
+<script>
+        
+    function myFunction(phone, tablet) {
+        let tableEl = document.querySelector('table');
+      if (phone.matches) { // If media query matches
+            tableEl.style.setProperty("transform", "scale(0.7)", "important");
+            // alert('phone-size')
+        }
+        else if (tablet.matches) {
+           tableEl.style.setProperty("transform", "scale(0.9)", "important");
+        // alert('tablet-size')
+    }
+      else {
+        // alert('pc-size')
+      }
+    }
+    
+    var phone = window.matchMedia("(max-width: 416px)");
+    var tablet = window.matchMedia("(max-width: 912px)");
+    myFunction(phone, tablet) // Call listener function at run time
+    // x.addListener(myFunction) // Attach listener function on state changes
+    // phone.addListener(myFunction) // Attach listener function on state changes
+    // tablet.addListener(myFunction) // Attach listener function on state changes
+    </script>
 {% endblock %}

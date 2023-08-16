@@ -1,0 +1,178 @@
+{% extends 'dashbase.html' %}
+{% load static %}
+{% block content %}
+    <div class="content-start transition">
+        <div class="container-fluid dashboard">
+            <div class="row justify-content-center d-flex align-items-center text-black">
+                {% if messages %}
+                    <div class="col-md-12">
+                        {% for message in messages %}
+                            <div id="msg" class="alert {{ message.tags }}" role="alert">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            <form class="form-control" action="{% url 'peak_business_hour' %}" method="GET">
+                <input type="hidden" name="filter">
+                <div class="card card-body">
+                    <div class="col-md-3 mb-2">
+                        <span>Base on Order Date:</span>
+                    </div>
+                    <div class="row d-flex g-4 column-gap-1 justify-content-between align-items-flex-end">
+                        <div class="col-md-3">
+                            <label class="form-check-label" for="first_date">
+                                Choose a date:
+                            </label>
+                            <input class="form-control date" type="date" name="first_date"
+                                   id="first_date" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-check-label" for="quantity">
+                                Compare with (optional):
+                            </label>
+                            <input class="form-control date" type="date" name="second_date"
+                                   id="first_date">
+                        </div>
+                        <div class="col-md-2 mt-4 pt-3">
+                            <button type="submit" class="btn btn-primary mb-0">
+                                <i class="bi bi-search"></i>
+                            </button>
+                            <button class="btn btn-primary mb-0" id="downloadCSV">
+                                <i class="bi bi-download"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="row">
+            <canvas id="chartContainer" style="height: 360px; width: 100%;"></canvas>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src=" https://cdn.jsdelivr.net/npm/chart.js@4.2.0/dist/chart.umd.min.js "></script>
+    <script>
+        const dataLabels = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'];
+        const data = {
+            labels: dataLabels,
+            datasets: [{
+                label: '{{ first_date1 }}',
+                data: {{ lst1 }},
+                borderWidth: 1
+            },
+                {% if lst2 %}{
+                    label: '{{ first_date2 }}',
+                    data: {{ lst2 }},
+                    borderWidth: 1
+                }
+                {% endif %}
+            ]
+        };
+
+        const config = {
+            type: 'line',
+            data: data,
+            options:
+
+                {
+                plugins: {title: {
+                display: true,
+                text: "Peak Business Hour"
+                }
+                 },
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    legend: {
+                        display: false
+                    },
+                    elements: {
+                            line:{
+                                tension: 0.3
+                              }
+                      },
+                    layout:
+                        {
+                        },
+                    scales: {
+                        x: {
+                            type: "linear",
+                            beginAtZero: true
+                        },
+                        y: {
+                            type: "linear",
+                            beginAtZero: true,
+                        }
+                    }
+                }
+        };
+
+        let chart = new Chart(document.getElementById('chartContainer'), config);
+
+        document.getElementById("downloadCSV").addEventListener("click", function () {
+            downloadCSV({
+                filename: "chart-data.csv",
+                chart: chart
+            })
+        });
+
+        function convertChartDataToCSV(args) {
+            let result, columnDelimiter, lineDelimiter, labels, data;
+
+            data = args.data.data || null;
+            if (data == null || !data.length) {
+                return null;
+            }
+
+            labels = args.labels || null;
+            if (labels == null || !labels.length) {
+                return null;
+            }
+
+            columnDelimiter = args.columnDelimiter || ',';
+            lineDelimiter = args.lineDelimiter || '\n';
+
+            result = '' + columnDelimiter;
+            result += labels.join(columnDelimiter);
+            result += lineDelimiter;
+
+            result += args.data.label.toString();
+
+            for (let i = 0; i < data.length; i++) {
+                result += columnDelimiter;
+                result += data[i];
+            }
+            result += lineDelimiter;
+
+            return result;
+        }
+
+        function downloadCSV(args) {
+            var data, filename, link;
+            var csv = "";
+            for (var i = 0; i < chart.data.datasets.length; i++) {
+                csv += convertChartDataToCSV({
+                    data: chart.data.datasets[i],
+                    labels: dataLabels
+                });
+            }
+            if (csv == null) return;
+            console.log(csv);
+
+            filename = args.filename || 'chart-data.csv';
+            if (!csv.match(/^data:text\/csv/i)) {
+                csv = 'data:text/csv;charset=utf-8,' + csv;
+            }
+
+            // not sure if anything below this comment works
+            data = encodeURI(csv);
+            link = document.createElement('a');
+            link.setAttribute('href', data);
+            link.setAttribute('download', filename);
+            document.body.appendChild(link); // Required for FF
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
+{% endblock %}

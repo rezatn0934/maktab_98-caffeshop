@@ -26,9 +26,7 @@
                             <form action="{% url 'order_list' %}" method="GET">
                                 <input type="hidden" name="search" value="search">
                                 <input type="hidden" name="sort" value="{{ sort }}">
-                                <input type="hidden" name="order" value="
-
-                                        {% if order == 'asc' %}{{ 'desc' }}{% elif order == 'desc' %}{{ 'asc' }}{% endif %}">
+                                <input type="hidden" name="order" value="{% if order == 'asc' %}'desc'{% elif order == 'desc' %}'asc'{% endif %}">
                                 <input type="hidden" name="filter" value="{{ filter }}">
                                 <input type="hidden" name="first_date" value="{{ first_date }}">
                                 <input type="hidden" name="second_date" value="{{ second_date }}">
@@ -36,18 +34,18 @@
 
                                 <div class="collapse" id="collapseExample">
                                     <div class="row g-3 mt-2 justify-content-center">
-                                        <div class="col-md-8 justify-content-center d-flex">
+                                        <div class="col col-md-10 col-sm-12 justify-content-center d-flex">
                                             <label class="form-label" for="form2"></label>
                                             <input type="text" class="form-control" id="form2" name="filter1"
                                                    placeholder="Select Field">
                                         </div>
-                                        <div class="col-md-2">
+                                        <div class="col-md-2 px-0">
                                             <button type="submit" class="btn btn-primary">
                                                 <i class="bi bi-search"></i>
                                             </button>
                                         </div>
                                     </div>
-                                    <div class="card card-body">
+                                    <div class="card card-body px-0">
                                         <div class="row justify-content-center">
                                             <div class="col-md-4">
                                                 <input class="form-check-input" type="radio" name="flexRadioDefault"
@@ -78,34 +76,34 @@
                                 <input type="hidden" name="filter" value="filter">
                                 <input type="hidden" name="search" value="search">
                                 <input type="hidden" name="sort" value="{{ sort }}">
-                                <input type="hidden" name="order" value="
-                                {% if order == 'asc' %}{{ 'desc' }}{% elif order == 'desc' %}{{ 'asc' }}{% endif %}">
+                                <input type="hidden" name="order" value="{% if order == 'asc' %}'desc'{% elif order == 'desc' %}'asc'{% endif %}">
                                 <input type="hidden" name="flexRadioDefault" value="{{ flexRadioDefault }}">
                                 <input type="hidden" name="filter1" value="{{ filter1 }}">
                                 <input type="hidden" name="page" value="page">
 
                                 <div class="collapse" id="collapseExample1">
                                     <div class="card card-body">
-                                        <div class="row justify-content-center align-items-center">
-                                            <div class="col-md-3">
+                                        <div class="col-md-3">
                                                 <span>Base on Order Date:</span>
                                             </div>
-                                            <div class="col-md-3">
+                                        <div class="row d-flex g-3 justify-content-between align-items-flex-end">
+
+                                            <div class="col-md-5">
                                                 <label class="form-check-label" for="first_date">
                                                     From:
                                                 </label>
-                                                <input class="date" type="date" name="first_date"
+                                                <input class="form-control date" type="date" name="first_date"
                                                        id="first_date">
                                             </div>
-                                            <div class="col-md-3">
+                                            <div class="col-md-5">
                                                 <label class="form-check-label" for="second_date">
                                                     To:
                                                 </label>
-                                                <input class="date" type="date" name="second_date"
+                                                <input class="form-control date" type="date" name="second_date"
                                                        id="second_date">
                                             </div>
-                                            <div class="col-md-2">
-                                                <button type="submit" class="btn btn-primary">
+                                            <div class="col-md-2 mt-3 pt-4">
+                                                <button type="submit" class="btn btn-primary m-0">
                                                     <i class="bi bi-search"></i>
                                                 </button>
                                             </div>
@@ -115,8 +113,12 @@
                             </form>
                         </div>
                         <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-striped" style="font-size: .8rem !important;">
+                            <!-- <div class="table-responsive">
+                                <table class="table table-striped" style="font-size: .8rem !important;"> -->
+                            <div class="table-responsive row justify-content-center d-flex align-items-center"
+                                    style="overflow: visible !important;" >
+                                   <table class="table table-responsive table-striped align-items-center"
+                                          style="font-size: .8rem !important;">
                                     <thead>
                                     <tr>
                                         <th scope="col"><a class="text-decoration-none text-dark"
@@ -148,7 +150,7 @@
                                             <th scope="row">{{ order.id }}</th>
                                             <td>{{ order.phone_number }}</td>
                                             <td>{{ order.order_date }}</td>
-                                            <td>{{ order.table_number.Table_number }} {{ order.table_number }}</td>
+                                            <td>{% if order.table_number %}{{ order.table_number.Table_number }} {{ order.table_number }}{% else %}Take away{% endif %}</td>
                                             <td>{{ order.get_status_display }}</td>
                                             <td>{{ order.get_payment_display }}</td>
                                             <td>
@@ -168,7 +170,7 @@
                                     {% endfor %}
                                     </tbody>
                                 </table>
-                                <div class="d-flex justify-content-center">
+                                <div class="d-flex pgbox row justify-content-center">
                                     <!-- Display pagination links -->
                                     {% if orders.has_other_pages %}
                                         <ul class="pagination">
@@ -214,4 +216,37 @@
             </div>
         </div>
     </div>
+{% endblock %}
+{% block footerlink %}
+<script>
+        
+    function myFunction(phone, tablet) {
+        let tableEl = document.querySelector('table')
+        // let tableElParent = document.querySelector('table').parentElement.parentElement;;
+        // let tableElTr = document.querySelector('table tr').parentElement.parentElement;
+      if (phone.matches) { // If media query matches
+            tableEl.style.setProperty("transform", "scale(0.5)", "important");
+        // alert(tableEl)
+            // tableElParent.style.setProperty("transform", "scale(0.7)", "important");
+            // tableElTr.style.setProperty("transform", "scale(0.7)", "important");
+            // alert('phone-size')
+        }
+        else if (tablet.matches) {
+           tableEl.style.setProperty("transform", "scale(0.9)", "important");
+        //    tableElParent.style.setProperty("transform", "scale(0.9)", "important");
+        //    tableElTr.style.setProperty("transform", "scale(0.7)", "important");
+
+        // alert('tablet-size')
+    }
+      else {
+        // alert('pc-size')
+      }
+    }
+    
+    var phone = window.matchMedia("(max-width: 416px)");
+    var tablet = window.matchMedia("(max-width: 912px)");
+    myFunction(phone, tablet); // Call listener function at run time
+    // phone.addListener(myFunction) // Attach listener function on state changes
+    // tablet.addListener(myFunction) // Attach listener function on state changes
+    </script>
 {% endblock %}

@@ -1,14 +1,29 @@
 from django.contrib.auth.backends import ModelBackend
 from .models import User
+from django.utils import timezone
+
+from datetime import datetime
 
 
 class PhoneAuthBackend(ModelBackend):
 
-    def authenticate(self, request, phone=None, user_input_otp=None, main_otp=None, **kwargs):
+    def authenticate(self, request, phone=None, user_input_otp=None, **kwargs):
         try:
             user = User.objects.get(phone=phone)
-            if user_input_otp and main_otp == user_input_otp:
-                return user
+            otp_valid_date = request.session.get("otp_valid_date")
+            if otp_valid_date:
+                valid_until = datetime.fromisoformat(otp_valid_date)
+                if valid_until > timezone.now():
+
+                    if user_input_otp and request.session.get("otp_code") == user_input_otp:
+                        return user
+                    else:
+                        raise ValueError("Invalid OTP")
+                else:
+                    raise ValueError("OTP has been expired")
+            else:
+                raise ValueError("Login First")
+
         except User.DoesNotExist:
             return
 

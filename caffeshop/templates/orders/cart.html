@@ -6,22 +6,18 @@
 
     <style>
 
-
         .intro {
             background-color: rgb(255, 255, 255) !important;
         }
 
         .cart {
-            /* width: 80% !important; */
             max-width: 750px;
         }
 
         .product-text {
-            /* padding: 0em 0em 0em 1em; */
             font-size: min(1.1rem, 1.8vw) !important;
             margin: 5px;
             height: auto;
-            /* height:0; */
             width: auto;
         }
 
@@ -31,12 +27,9 @@
         }
 
         td.cakes img {
-            /* padding: 1em 0em; */
-            /* background-color: yellow; */
             background-color: blue;
             background-size: cover;
             border-radius: 10px;
-            /* background-size: cover; */
         }
 
         #checkout1{
@@ -60,24 +53,6 @@
     </style>
 
     <link rel="stylesheet" href="{% static 'flat_cart_widget\web\css\style.css' %}">
-    <script>
-        $(document).ready(function (c) {
-            $('.close').on('click', function (c) {
-                $('.cake-top').fadeOut('slow', function (c) {
-                    $('.cake-top').remove();
-                });
-            });
-        });
-    </script>
-    <script>
-        $(document).ready(function (c) {
-            $('.close-btm').on('click', function (c) {
-                $('.cake-bottom').fadeOut('slow', function (c) {
-                    $('.cake-bottom').remove();
-                });
-            });
-        });
-    </script>
 {% endblock %}
 
 
@@ -93,7 +68,6 @@
                     <div style="height: 100px;">
                     </div>
                     <div class="logo">
-                        <!-- <h3>Flat Cart Widget</h3> -->
                     </div>
                     {% if messages %}
                         {% for message in messages %}
@@ -105,7 +79,7 @@
                     <div class="cart">
                         <div class="cart-top row text-center justify-content-center">
                             <div class="cart-experience col-sm-4">
-                                <h4>Shopping Cart</h4>
+                                <h4 class="text-center">Shopping Cart</h4>
                             </div>
                         </div>
                         <div class="cart-bottom row">
@@ -113,41 +87,41 @@
                                 <table>
                                     <tbody class="col-sm-12">
                                     {% for product , quantity , total in order_items %}
-                                        <form action="{% url 'orders:update_or_remove' %}" method="post">
-                                            {% csrf_token %}
-                                            <tr class="cake-top row justify-content-between d-flex align-items-center">
+                                        <form id="cart-item-form-{{forloop.counter}}">
+                                            <tr id="box-{{forloop.counter}}" class="cake-top row justify-content-between d-flex align-items-center">
                                                 <td class="cakes col-sm-3">
                                                     <div class="product-img  ">
-                                                        <img src="{{ product.image.url }}">
+                                                        <img class="p-img" src="{{ product.image.url }}">
                                                     </div>
                                                 </td>
-                                                <td class="cake-text1 col-sm-2">
+                                                <td class="product-text col-sm-2">
                                                     <div class="product-text">
                                                         <p class="my-5" >{{ product.name }}</p>
                                                     </div>
                                                 </td>
                                                 <td class="quantity col-sm-3 col-md-2">
                                                     <div class="product-right">
-                                                        <input class="form-control input-small" min="1" type="number"
+                                                        <input type="number" class="form-control input-small" min="1" type="number"
                                                                id="quantity" name="quantity" value="{{ quantity }}">
                                                     </div>
                                                 </td>
-                                                <td class="price col-md-1 col-sm-2 px-sm-2 py-2">
-                                                    <span 
-                                                          class=" col-sm-110">${{ product.price }}</span>
+                                                <td class="price i-p col-md-1 col-sm-2 px-sm-2 py-2">
+                                                    <span  value="{{ product.price }}" class="item-price">$ {{ product.price }}</span>
                                                 </td>
-                                                <td class="price col-md-1 col-sm-2 px-sm-2 py-2">
-                                                    <span  class="" id="total-count">${{ total }}</span>
+                                                <td class="price itp col-md-1 col-sm-2 px-sm-2 py-2">
+                                                    <span  class="itp" id="total-count-{{forloop.counter}}">$ {{ total }}</span>
                                                 </td>
                                                 <td class="top-remove col-sm-12 col-md-2 text-center mx-1 ">
                                                     <div class="row px-1 justify-content-around">
                                                         <input name="product" value="{{ product.id }}" type="hidden">
-                                                        <button name="update" value="True" type="submit"
-                                                                class="col-sm-4 btn btn-outline-warning m-auto  d-flex justify-content-center">
+                                                        <button name="update" value="True" type="button" onclick="return orderUpdate(this.form,  'box-{{forloop.counter}}')"
+                                                            form="cart-item-form-{{forloop.counter}}"   
+                                                            class="col-sm-4 btn btn-f btn-outline-warning m-auto  d-flex justify-content-center">
                                                             <i class="bi bi-arrow-repeat"></i>
                                                         </button>
-                                                        <button name="remove" value="True" type="submit"
-                                                                class="col-sm-4 mx-1 btn btn-outline-danger d-flex justify-content-center">
+                                                        <button name="remove" value="True" type="button" id="bttn-{{forloop.counter}}" onclick="return deleteOrderItem(this.form, 'box-{{forloop.counter}}')"
+                                                                form="cart-item-form-{{forloop.counter}}" 
+                                                                class="col-sm-4 mx-1 btn btn-f btn-outline-danger d-flex justify-content-center">
                                                             <i class="bi bi-trash"></i>
                                                         </button>
                                                     </div>
@@ -159,12 +133,6 @@
                                 </table>
                             </div>
                             <div class="vocher pt-0">
-                                <!-- <div class="dis-card">
-                                    <h5>Discount Code or Voucher</h2>
-                                    <p>Enter your discount code or voucher to receive a discount on your total order.</p>
-                                    <input type="text" value="">
-                                    <input type="submit"  value="Redeem">
-                                </div> -->
                                 <div class="dis-total">
                                     <div class="tot-btn1 ">
                                         <form action="{% url 'orders:cart' %}" id="table-reserve-form" method="post" novalidate>
@@ -172,13 +140,6 @@
                                             <div class="row justify-content-between active" id="RadioTarget1" aria-hidden="true">
                                                 <div class="col-sm-5 d-flex align-items-end">
                                                     <div class="row gy-2">
-<!--                                                        {% for field in form %}-->
-<!--                                                        <div class="py-1" style="color: black;">-->
-<!--                                                            {{ field.errors }}-->
-<!--                                                            <label>{{ field.label_tag }} </label>-->
-<!--                                                            {{ field }}-->
-<!--                                                        </div> -->
-<!--                                                        {% endfor %}-->
                                                         {{form}}
                                                     </div>
                                                 </div>
@@ -207,3 +168,81 @@
     
 {% endblock %}
 
+{% block footerlink %}
+
+<script>
+    function orderUpdate(formElement, box_id){
+        event.preventDefault();
+        let formData = new FormData(formElement);
+        let product = formData.get('product');
+        let quantity = formData.get('quantity');
+        let orders = getCookieObject('orders');
+        let itemBox = document.getElementById(box_id);
+        let price = itemBox.querySelector('td.i-p span.item-price').innerText.slice(1);
+        itemBox.querySelector('td.itp span.itp').innerText = '$' + ' ' + (price * +quantity);
+        orders[product] = +quantity;
+        setCookie('orders', JSON.stringify(orders), 60);
+        setOrderItemsNumber(orders);
+        return false;
+    }
+    function deleteOrderItem(formElement, box_id){
+        event.preventDefault();
+        let formData = new FormData(formElement);
+        let product = formData.get('product');
+        let orders = getCookieObject('orders');
+        delete orders[product];
+        setCookie('orders', JSON.stringify(orders), 60);
+        setOrderItemsNumber(orders);
+        document.getElementById(box_id).style.setProperty("display", "none", "important");
+        return false;
+    }
+    </script>
+    <script>
+        
+        function myFunction(phone, tablet) {
+            let priceEl = document.querySelectorAll('td.price, button.btn-f');
+            let productTextEl = document.querySelectorAll('td.product-text p');
+            let quantityEl = document.querySelectorAll('td.quantity');
+            let qElInput = document.querySelectorAll('td.quantity input');
+            let btnF = document.querySelectorAll('button.btn-f');
+            let trEl = document.querySelectorAll('tr, td.top-remove div');
+          if (phone.matches) { // If media query matches
+
+            priceEl.forEach((Item) => {
+                             Item.style.setProperty("width", "5em", "important");
+            });
+            btnF.forEach((Item) => {
+                             Item.style.setProperty("width", "5em", "important")
+                             Item.classList.add('mx-1');
+            });
+            productTextEl.forEach((Item) => {
+                             Item.classList.add('text-center');
+                             Item.classList.remove('my-5');
+            });
+            quantityEl.forEach((Item) => {
+                             Item.style.setProperty("width", "14em", "important");
+            });
+            qElInput.forEach((Item) => {
+                             Item.style.setProperty("text-align", "center", "important");
+            });
+            trEl.forEach((Item) => {
+                             Item.classList.remove('justify-content-between');
+                             Item.classList.remove('justify-content-around');
+                             Item.classList.add('justify-content-center');
+            });
+            // alert('phone-size')
+          }
+           else if (tablet.matches) {
+            // alert('tablet-size')
+        }
+          else {
+            // alert('pc-size')
+          }
+        }
+        
+        var phone = window.matchMedia("(max-width: 416px)");
+        var tablet = window.matchMedia("(max-width: 416px)");
+        myFunction(phone, tablet) // Call listener function at run time
+        x.addListener(myFunction) // Attach listener function on state changes
+        </script>
+  {% endblock %}

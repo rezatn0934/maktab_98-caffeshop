@@ -19,14 +19,20 @@
     <link rel="stylesheet" href="{% static 'assets/modules/boxicons/css/boxicons.min.css' %}">
     <!-- Apexcharts  CSS -->
     <link rel="stylesheet" href="{% static 'assets/modules/apexcharts/apexcharts.css' %}">
+    <!--Chart js-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"
+            integrity="sha256-Uv9BNBucvCPipKQ2NS9wYpJmi8DTOEfTA/nH2aoJALw=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.css"
+          integrity="sha256-aa0xaJgmK/X74WM224KMQeNQC2xYKwlAt08oZqjeF0E=" crossorigin="anonymous"/>
+          {% block link %} {% endblock %}
 </head>
 <body>
 
 <!--Topbar -->
-<div class="topbar transition">
+<div class="topbar transition noPrint">
     <div class="bars">
         <button type="button" class="btn transition" id="sidebar-toggle">
-            <i class="fa fa-bars"></i>
+            <i class="bi bi-list-task"></i>
         </button>
     </div>
     <div class="menu">
@@ -40,7 +46,7 @@
 </div>
 
 <!--Sidebar-->
-<div class="sidebar transition overlay-scrollbars animate__animated  animate__slideInLeft">
+<div class="sidebar transition overlay-scrollbars animate__animated  animate__slideInLeft noPrint">
     <div class="sidebar-content">
         <div id="sidebar">
 
@@ -53,9 +59,14 @@
                 {% endif %}
             </div>
             <ul class="side-menu">
+                <li>
+                    <a href="{% url 'dashboard' %}">
+                        <i class='bi bi-calendar4-event'></i>
+                        Dashboard
+                    </a>
+                </li>
                 <!-- Divider-->
-                <li class="divider" data-text="STARTER">STARTER</li>
-
+                <li class="divider" data-text="STARTER">Staff Section</li>
                 <li>
                     <a href="{% url 'order_list' %}">
                         <i class='bi bi-basket2'></i>
@@ -63,19 +74,19 @@
                     </a>
                 </li>
                 <li>
-                    <a href="blank-pages.html">
+                    <a href="">
                         <i class='bi bi-shop'></i>
                         Products
                     </a>
                 </li>
                 <li>
-                    <a href="blank-pages.html">
+                    <a href="">
                         <i class='bi bi-diagram-3-fill'></i>
                         Categories
                     </a>
                 </li>
                 <!-- Divider-->
-                <li class="divider" data-text="Atrana">Atrana</li>
+                <li class="divider" data-text="Atrana">Manger Section</li>
                 <li>
                     <a href="{% url 'home' %}">
                         <i class='bi bi-house'></i>
@@ -83,10 +94,26 @@
                     </a>
                 </li>
                 <li>
-                    <a href="blank-pages.html">
-                        <i class='bi bi-search'></i>
-                        Search
+                    <a href="#">
+                        <i class='bi bi-graph-up-arrow'></i>
+                        Analytics
                     </a>
+                    <ul class="side-dropdown">
+                        <li><a href="{% url 'most_popular' %}"><i  class="">Most Popular Product</i></a></li>
+                        <li><a href="{% url 'peak_business_hour' %}"><i  class="">Peak Business hour</i></a></li>
+                        <li><a href="{% url 'top_selling' %}"><i  class="">Top Selling</i></a></li>
+                        <li><a href="{% url 'hourly_sales' %}"><i  class="">Hourly Sales</i></a></li>
+                        <li><a href="{% url 'daily_sales' %}"><i  class="">Daily Sales</i></a></li>
+                        <li><a href="{% url 'monthly_sales' %}"><i  class="">Monthly Sales</i></a></li>
+                        <li><a href="{% url 'yearly_sales' %}"><i  class="">Yearly Sales</i></a></li>
+                        <li><a href="{% url 'customer_sales' %}"><i  class="">Customer Sales</i></a></li>
+                        <li><a href="{% url 'sales_by_category' %}"><i  class="">Sales By Category</i></a></li>
+                        <li><a href="{% url 'order_status_report' %}"><i  class="">Order Status Report</i></a></li>
+                        <li><a href="{% url 'customer_order_history' %}"><i  class="">Customer Order History</i></a></li>
+                        <li><a href="{% url 'customer_demographic' %}"><i  class="">Customer Demographic</i></a></li>
+                        <li><a href="{% url 'sales_by_employee_report' %}"><i  class="">Sales By Employee Report</i></a></li>
+                        <li><a href="{% url 'product_hour' %}"><i  class="">Product Frequency</i></a></li>
+                    </ul>
                 </li>
             </ul>
         </div>
@@ -98,6 +125,7 @@
 
 
 <!--Content Start-->
+
 {% block content %}
 {% endblock %}
 
@@ -135,7 +163,6 @@
 <script src="{% static 'assets/modules/popper/popper.min.js' %}"></script>
 
 <!-- Chart Js -->
-<script src="{% static 'assets/modules/apexcharts/apexcharts.js' %}"></script>
 <script src="{% static 'assets/js/ui-apexcharts.js' %}"></script>
 
 <!-- Template JS File -->
@@ -148,5 +175,25 @@
         }
     }, 5000)
 </script>
+<script>
+    $(document).ready(function(){
+      $(".ins").on("keyup", function() {
+        var value = $(this).val().toLowerCase();
+        $(".dropdown-menu li").filter(function() {
+          $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+        });
+      });
+    });
+</script>
+<script type="text/javascript">
+    function reply_click(btn_id, product_name) {
+        let dropdownBtn = document.getElementById(btn_id);
+        dropdownBtn.innerText = product_name;
+
+    }
+</script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+{% block footerlink %}
+{% endblock %}
 </body>
 </html>
