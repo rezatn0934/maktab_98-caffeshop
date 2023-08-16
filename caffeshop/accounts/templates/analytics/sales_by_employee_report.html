@@ -1,0 +1,279 @@
+
+{% extends 'dashbase.html' %}
+{% load static %}
+{% block link %}
+    <style>
+        @media print {
+            .noPrint { display: none; }
+        } 
+    </style>
+{% endblock %}
+{% block content %}
+    <div class="content-start transition">
+        <div class="container-fluid dashboard noPrint">
+            <div class="row justify-content-center d-flex align-items-center text-black">
+                {% if messages %}
+                    <div class="col-md-12">
+                        {% for message in messages %}
+                            <div id="msg" class="alert {{ message.tags }}" role="alert">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            <form class="form-control" action="{% url 'customer_order_history' %}" method="GET">
+                <input type="hidden" name="filter">
+                <div class="card card-body">
+                    <div class="col-md-3 mb-2">
+                        <span>Base on Order Date:</span>
+                    </div>
+                    <div class="row d-flex g-4 column-gap-1 justify-content-between align-items-flex-end">
+                        <div class="col-md-3">
+                            <label class="form-check-label" for="first_date">
+                                From:
+                            </label>
+                            <input class="form-control date" type="date" name="first_date"
+                                   id="first_date" value="{{ request.GET.first_date }}">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-check-label" for="second_date">
+                                To:
+                            </label>
+                            <input class="form-control date" type="date" name="second_date"
+                                   id="second_date" value="{{ request.GET.first_date }}">
+                        </div>
+                        <div class="col-md-5">
+                            <label class="form-check-label" for="quantity">
+                                Customer Phone Number:
+                            </label>
+                            <input class="form-control" type="tel" name="phone_number"
+                                   id="Phone" required>
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3 mt-4 pt-3">
+                            <button type="submit" class="btn btn-primary mb-0">
+                                <i class="bi bi-search"></i>
+                            </button>
+                            <button class="btn btn-primary mb-0" id="downloadCSV">
+                                <i class="bi bi-download"></i>
+                            </button>
+                            <button class="btn btn-primary mb-0" onclick="window.print()" >
+                                Download
+                            </button>
+                        </div>
+                        <div class="col-md-3 py-5 m-0">
+                            <select class="btn btn-primary mb-0" id="chart-type"  onchange="changeConfig(this.value)">
+                                <option value="pie">Pie Chart</option>
+                                <option value="line">Line Chart</option>
+                                <option value="bar">Bar Chart</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="row d-flex g-f py-4 my-4 align-items-center justify-content-center">
+            <div class="col-md-8 ">
+                <canvas id="chartContainer" style="width: 100%; height: 40em;"></canvas>
+            </div>
+        </div>
+        {% if orders %}
+        {% for order in orders %}
+        <div class="row d-flex justify-content-center align-items-center h-100 mb-3">
+            <div class="col col-lg-11 col-xl-9">
+                <div class="card rounded-3">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between mb-3">
+                            <div class="row">
+                                 <h4 >Order ID: {{ order.id }}</h4>
+                                 <h6 >{% if order.table_number %}Table: {{ order.table_number }}{% else %}Take away{% endif %}</h6>
+                            </div>
+                            <div class="row justify-content-center text-center">
+                                    <small style="color: black;">Order Date:</small>
+                                    <small style="color: black;">{{ order.order_date }}</small>
+                            </div>
+                        </div>
+                        <table class="table table-striped table-hover mb-4">
+                            <thead>
+                            <tr>
+                                <th scope="col">Product Name</th>
+                                <th scope="col">Quantity</th>
+                                <th scope="col">Price</th>
+                                <th scope="col">Total Price</th>
+
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for item in order.get_order_items %}
+                                <tr>
+                                    <td>{{ item.product }}</td>
+                                    <td>{{ item.quantity }}</td>
+                                    <td>${{ item.price }}</td>
+                                    <td>${{ item.total_price }}</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="text-center  d-flex justify-content-around align-items-center mt-4">
+                    <h3 >Total Price: ${{ order.total_price }} </h3>
+
+                    <h3 >Order Status: {{ order.get_status_display }} </h3>
+                </div>
+            </div>
+        </div>
+        <hr style="width: 70% !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        border-bottom: 5px solid green !important;">
+        {% endfor %}
+        {% endif %}
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.2/jspdf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src=" https://cdn.jsdelivr.net/npm/chart.js@4.2.0/dist/chart.umd.min.js "></script>
+    <script>
+        const dataLabels = [{%for data in query_set1 %}'{{ data.date }}', {%endfor%}];
+        const data = {
+
+            labels: dataLabels,
+            datasets: [{
+            label: 'Count',
+
+                data: [{%for data in query_set1 %}{{ data.count }}, {%endfor%}],
+                borderWidth: 1
+            }
+            ]
+        };
+
+        const config = {
+            type: 'pie',
+            data: data,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true, text: "Customer History"
+                    }
+                },
+                layout: {},
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        display: false
+                    },
+                    x: {
+                        display: false
+                    }
+                }
+
+            }
+        };
+
+        let chart = new Chart(document.getElementById('chartContainer'), config);
+
+        document.getElementById("downloadCSV").addEventListener("click", function () {
+            downloadCSV({
+                filename: "chart-data.csv",
+                chart: chart
+            })
+        });
+
+        function convertChartDataToCSV(args) {
+            let result, columnDelimiter, lineDelimiter, labels, data;
+
+            data = args.data.data || null;
+            if (data == null || !data.length) {
+                return null;
+            }
+
+            labels = args.labels || null;
+            if (labels == null || !labels.length) {
+                return null;
+            }
+
+            columnDelimiter = args.columnDelimiter || ',';
+            lineDelimiter = args.lineDelimiter || '\n';
+
+            result = '' + columnDelimiter;
+            result += labels.join(columnDelimiter);
+            result += lineDelimiter;
+
+            result += args.data.label.toString();
+
+            for (let i = 0; i < data.length; i++) {
+                result += columnDelimiter;
+                result += data[i];
+            }
+            result += lineDelimiter;
+
+            return result;
+        }
+
+        function downloadCSV(args) {
+            var data, filename, link;
+            var csv = "";
+            for (var i = 0; i < chart.data.datasets.length; i++) {
+                csv += convertChartDataToCSV({
+                    data: chart.data.datasets[i],
+                    labels: dataLabels
+                });
+            }
+            if (csv == null) return;
+            console.log(csv);
+
+            filename = args.filename || 'chart-data.csv';
+            if (!csv.match(/^data:text\/csv/i)) {
+                csv = 'data:text/csv;charset=utf-8,' + csv;
+            }
+
+            // not sure if anything below this comment works
+            data = encodeURI(csv);
+            link = document.createElement('a');
+            link.setAttribute('href', data);
+            link.setAttribute('download', filename);
+            document.body.appendChild(link); // Required for FF
+            link.click();
+            document.body.removeChild(link);
+        }
+        let ctx = document.getElementById('chartContainer')
+        function changeConfig(newType){
+            chart.destroy()
+            config.type = newType;
+            if (newType == 'line'){
+                config.options.scales.x.display = true;
+                config.options.scales.y.display = true;
+            }
+            if (newType == 'bar'){
+                config.options.scales.x.display = true;
+                config.options.scales.y.display = true;
+            }
+            if (newType == 'pie'){ 
+                config.options.scales.x.display = false;
+                config.options.scales.y.display = false;
+            }
+            chart = new Chart(ctx, config);
+        }
+
+        function onClick() {
+        var pdf = new jsPDF('p', 'pt', 'letter');
+        // pdf.canvas.height = 72 * 11;
+        // pdf.canvas.width = 72 * 8.5;
+      
+        // pdf.fromHTML(document.getElementById('main1'));
+      
+        pdf.save('test10.pdf');
+      };
+      
+      var element = document.getElementById("clickbind");
+      element.addEventListener("click", onClick);
+    </script>
+
+{% endblock %}
+
+
