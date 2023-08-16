@@ -496,7 +496,7 @@ def order_status_report(request):
         elif item["status"] == "P":
             lst1[2] = item["count"]
 
-    context = {'lst1': lst1, 'lst2': lst2, "first_date": first_date, "first_date2": first_date2 }
+    context = {'lst1': lst1, 'lst2': lst2, "first_date": first_date, "first_date2": first_date2}
     return render(request, 'analytics/order_status_report.html', context=context)
 
 
@@ -508,7 +508,7 @@ def sales_by_employee_report(request):
         phone_number = request.GET.get('phone_number')
         query_set = Order.objects.filter(
             staff_id__isnull=False, order_date__range=[first_date, second_date]).annotate(
-            day=TruncDay("order_date",output_field=DateField())).values(
+            day=TruncDay("order_date", output_field=DateField())).values(
             "day").annotate(
             count=Count("id")).annotate(
             phone_number_emp=F("staff__phone")).filter(phone_number_emp=phone_number).order_by("-count")
@@ -524,16 +524,18 @@ def sales_by_employee_report(request):
 
 
 def customer_order_history(request):
-    phone_number = request.GET.get('phone_number')
-    first_date = request.GET.get('first_date') or '1970-01-01'
-    second_date = request.GET.get('second_date') or timezone.now()
-    query_set = Order.objects.filter(order_date__range=[first_date, second_date])\
-                                    .filter(phone_number=phone_number)\
-                                    .annotate(date=TruncDay("order_date", output_field=DateField()))\
-                                    .values("date")\
-                                    .annotate(count=Count('id')).order_by('count')
-    orders = Order.objects.filter(phone_number=phone_number).order_by('-order_date')
-    context = {'query_set1': query_set, "orders": orders}
+    context = {}
+
+    if phone_number := request.GET.get('phone_number'):
+        first_date = request.GET.get('first_date') or '1970-01-01'
+        second_date = request.GET.get('second_date') or timezone.now()
+        query_set = Order.objects.filter(order_date__range=[first_date, second_date]) \
+            .filter(phone_number=phone_number) \
+            .annotate(date=TruncDay("order_date", output_field=DateField())) \
+            .values("date") \
+            .annotate(count=Count('id')).order_by('count')
+        orders = Order.objects.filter(phone_number=phone_number).order_by('-order_date')
+        context = {'query_set': query_set, "orders": orders}
     return render(request, 'analytics/customer_order_history.html', context=context)
 
 
