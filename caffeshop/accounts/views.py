@@ -456,6 +456,58 @@ def customer_demographic(request):
     return render(request, 'result.html', context=context)
 
 
+def sales_by_category(request):
+    first_date = request.GET.get('first_date') or '1980-01-01'
+    second_date = request.GET.get('second_date') or timezone.now()
+    query_set = Order_detail.objects.annotate(date=F('order__order_date'))\
+                                    .filter(date__range=[first_date, second_date])\
+                                    .annotate(category=F("product__category__name"))\
+                                    .values('category')\
+                                    .annotate(total_sale=Sum( F("quantity") * F("price"))).order_by('total_sale')
+    context = {'query_set1': query_set}
+
+    return render(request, 'analytics/sales_by_category.html', context=context)
+
+
+def order_status_report(request):
+    first_date = request.GET.get('first_date') or '1980-01-01'
+    second_date = request.GET.get('second_date') or timezone.now()
+    query_set = Order.objects.filter(order_date__range=[first_date, second_date])\
+                                    .values('status')\
+                                    .annotate(status_count=Count("status"))\
+                                    .order_by('status')
+    context = {'query_set1': query_set}
+    return render(request, 'analytics/order_status_report.html', context=context)
+
+
+def sales_by_employee_report(request):
+    staff = User.objects.filter(phone=request.GET.get('phone_number'))
+    staff = staff.first() if staff.exists() else None
+    first_date = request.GET.get('first_date') or '1980-01-01'
+    second_date = request.GET.get('second_date') or timezone.now()
+    query_set = Order.objects.all().filter(
+        staff_id__isnull=False).values("staff_id").annotate(count=Count("id")).annotate(
+        phone_number_emp=F("staff__phone"))
+    orders = Order.objects.filter(staff=staff).order_by('-order_date')
+    context = {'query_set1': query_set, "orders": orders}
+
+    return render(request, 'analytics/sales_by_employee_report.html', context=context)
+
+
+def customer_order_history(request):
+    phone_number = request.GET.get('phone_number')
+    first_date = request.GET.get('first_date') or '1980-01-01'
+    second_date = request.GET.get('second_date') or timezone.now()
+    query_set = Order.objects.filter(order_date__range=[first_date, second_date])\
+                                    .filter(phone_number=phone_number)\
+                                    .annotate(date=TruncDay("order_date", output_field=DateField()))\
+                                    .values("date")\
+                                    .annotate(count=Count('id')).order_by('count')
+    orders = Order.objects.filter(phone_number=phone_number).order_by('-order_date')
+    context = {'query_set1': query_set, "orders": orders}
+    return render(request, 'analytics/customer_order_history.html', context=context)
+
+
 @login_required
 def logout_view(request):
     logout(request)

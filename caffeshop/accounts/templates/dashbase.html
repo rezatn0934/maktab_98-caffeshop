@@ -29,7 +29,7 @@
 <body>
 
 <!--Topbar -->
-<div class="topbar transition">
+<div class="topbar transition noPrint">
     <div class="bars">
         <button type="button" class="btn transition" id="sidebar-toggle">
             <i class="bi bi-list-task"></i>
@@ -46,7 +46,7 @@
 </div>
 
 <!--Sidebar-->
-<div class="sidebar transition overlay-scrollbars animate__animated  animate__slideInLeft">
+<div class="sidebar transition overlay-scrollbars animate__animated  animate__slideInLeft noPrint">
     <div class="sidebar-content">
         <div id="sidebar">
 
@@ -101,6 +101,10 @@
                         <li><a href="{% url 'monthly_sales' %}"><i  class="">Monthly Sales</i></a></li>
                         <li><a href="{% url 'yearly_sales' %}"><i  class="">Yearly Sales</i></a></li>
                         <li><a href="{% url 'customer_sales' %}"><i  class="">Customer Sales</i></a></li>
+                        <li><a href="{% url 'sales_by_category' %}"><i  class="">sales by category</i></a></li>
+                        <li><a href="{% url 'order_status_report' %}"><i  class="">Order status report</i></a></li>
+                        <li><a href="{% url 'customer_order_history' %}"><i  class="">Customer order history</i></a></li>
+                        <li><a href="{% url 'sales_by_employee_report' %}"><i  class="">Sales by employee report</i></a></li>
                     </ul>
                 </li>
             </ul>
@@ -113,6 +117,7 @@
 
 
 <!--Content Start-->
+
 {% block content %}
 {% endblock %}
 
