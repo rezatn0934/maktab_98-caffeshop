@@ -480,6 +480,20 @@ def order_status_report(request):
     return render(request, 'analytics/order_status_report.html', context=context)
 
 
+def sales_by_employee_report(request):
+    staff = User.objects.filter(phone=request.GET.get('phone_number'))
+    staff = staff.first() if staff.exists() else None
+    first_date = request.GET.get('first_date') or '1980-01-01'
+    second_date = request.GET.get('second_date') or timezone.now()
+    query_set = Order.objects.all().filter(
+        staff_id__isnull=False).values("staff_id").annotate(count=Count("id")).annotate(
+        phone_number_emp=F("staff__phone"))
+    orders = Order.objects.filter(staff=staff).order_by('-order_date')
+    context = {'query_set1': query_set, "orders": orders}
+
+    return render(request, 'analytics/sales_by_employee_report.html', context=context)
+
+
 
 
 
