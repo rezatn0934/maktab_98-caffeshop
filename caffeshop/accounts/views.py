@@ -458,13 +458,47 @@ def sales_by_category(request):
 
 
 def order_status_report(request):
-    first_date = request.GET.get('first_date') or '1980-01-01'
-    second_date = request.GET.get('second_date') or timezone.now()
-    query_set = Order.objects.filter(order_date__range=[first_date, second_date])\
-                                    .values('status')\
-                                    .annotate(status_count=Count("status"))\
-                                    .order_by('status')
-    context = {'query_set1': query_set}
+    lst2 = None
+    first_date = "1970-01-01"
+    second_date = timezone.now()
+    first_date2 = None
+
+    if 'filter' in request.GET:
+        first_date = request.GET.get('first_date')
+        second_date = (
+                datetime.datetime.strptime(first_date, '%Y-%m-%d') + timezone.timedelta(
+            days=1)).strftime('%Y-%m-%d')
+        if request.GET.get('second_date'):
+            first_date2 = request.GET.get('second_date')
+
+            second_date2 = (datetime.datetime.strptime(request.GET.get('second_date'), '%Y-%m-%d') + timezone.timedelta(
+                days=1)).strftime('%Y-%m-%d')
+
+            query_set2 = Order.objects.filter(order_date__range=[first_date2, second_date2]).values("status").annotate(
+                count=Count("id")).order_by("status")
+
+            lst2 = [0, 0, 0]
+            for item in query_set2:
+                if item["status"] == "A":
+                    lst2[0] = item["count"]
+                elif item["status"] == "C":
+                    lst2[1] = item["count"]
+                elif item["status"] == "P":
+                    lst2[2] = item["count"]
+
+    query_set = Order.objects.filter(order_date__range=[first_date, second_date]).values("status").annotate(
+        count=Count("id")).order_by("status")
+
+    lst1 = [0, 0, 0]
+    for item in query_set:
+        if item["status"] == "A":
+            lst1[0] = item["count"]
+        elif item["status"] == "C":
+            lst1[1] = item["count"]
+        elif item["status"] == "P":
+            lst1[2] = item["count"]
+
+    context = {'lst1': lst1, 'lst2': lst2, "first_date": first_date, "first_date2": first_date2 }
     return render(request, 'analytics/order_status_report.html', context=context)
 
 
