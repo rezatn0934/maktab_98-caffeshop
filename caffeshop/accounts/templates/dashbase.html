@@ -59,6 +59,12 @@
                 {% endif %}
             </div>
             <ul class="side-menu">
+                <li>
+                    <a href="{% url 'dashboard' %}">
+                        <i class='bi bi-calendar4-event'></i>
+                        Dashboard
+                    </a>
+                </li>
                 <!-- Divider-->
                 <li class="divider" data-text="STARTER">Staff Section</li>
                 <li>
@@ -68,13 +74,13 @@
                     </a>
                 </li>
                 <li>
-                    <a href="blank-pages.html">
+                    <a href="">
                         <i class='bi bi-shop'></i>
                         Products
                     </a>
                 </li>
                 <li>
-                    <a href="blank-pages.html">
+                    <a href="">
                         <i class='bi bi-diagram-3-fill'></i>
                         Categories
                     </a>
@@ -101,10 +107,11 @@
                         <li><a href="{% url 'monthly_sales' %}"><i  class="">Monthly Sales</i></a></li>
                         <li><a href="{% url 'yearly_sales' %}"><i  class="">Yearly Sales</i></a></li>
                         <li><a href="{% url 'customer_sales' %}"><i  class="">Customer Sales</i></a></li>
-                        <li><a href="{% url 'sales_by_category' %}"><i  class="">sales by category</i></a></li>
-                        <li><a href="{% url 'order_status_report' %}"><i  class="">Order status report</i></a></li>
-                        <li><a href="{% url 'customer_order_history' %}"><i  class="">Customer order history</i></a></li>
-                        <li><a href="{% url 'sales_by_employee_report' %}"><i  class="">Sales by employee report</i></a></li>
+                        <li><a href="{% url 'sales_by_category' %}"><i  class="">Sales By Category</i></a></li>
+                        <li><a href="{% url 'order_status_report' %}"><i  class="">Order Status Report</i></a></li>
+                        <li><a href="{% url 'customer_order_history' %}"><i  class="">Customer Order History</i></a></li>
+                        <li><a href="{% url 'customer_demographic' %}"><i  class="">Customer Demographic</i></a></li>
+                        <li><a href="{% url 'sales_by_employee_report' %}"><i  class="">Sales By Employee Report</i></a></li>
                         <li><a href="{% url 'product_hour' %}"><i  class="">Product Frequency</i></a></li>
                     </ul>
                 </li>
