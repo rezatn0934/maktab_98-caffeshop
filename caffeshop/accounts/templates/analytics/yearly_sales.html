@@ -53,40 +53,50 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        const ctx = document.getElementById('myChart');
-        new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: [{%for data in query_set %}'{{ data.year }}', {%endfor%}],
-                datasets: [{
+        const dataLabels = [{%for data in query_set %}'{{ data.year }}', {%endfor%}]
+        const data = {
+            labels: dataLabels,
+            datasets: [{
+                data:  [{%for data in query_set %}{{ data.total_sale }}, {%endfor%}],
+                borderWidth: 1,
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.9)',
 
-                    data: [{%for data in query_set %}{{ data.total_sale }}, {%endfor%}],
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.9)',
-
-                    ],
-                    borderWidth: 1
-                }]
+                ],
             },
-            options:
-                {
-                    responsive: true,
-                    maintainAspectRatio: true,
+            ]
+        };
 
+        const config = {
+            type: 'bar',
+            data: data,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: "Yearly Sales"
+                    },
+                    legend: {
+                        display: false
+                    }
+                },
 
-                plugins: {title: {
-                display: true,
-                text: "Yearly Sales",
+                layout:
+                    {
+                        padding: 100
+                    },
+            }
+        };
 
-                }, legend: {display:false}},
+        let chart = new Chart(document.getElementById('chartContainer'), config);
 
-                    layout:
-                        {
-                            padding: 100
-                        },
-
-                }
-
+        document.getElementById("downloadCSV").addEventListener("click", function () {
+            downloadCSV({
+                filename: "chart-data.csv",
+                chart: chart
+            })
         });
     </script>
 {% endblock %}
