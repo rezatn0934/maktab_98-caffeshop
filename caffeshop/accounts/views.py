@@ -270,7 +270,8 @@ def most_popular(request):
             date__range=[first_date, second_date]).values('product').annotate(order_count=Count('id')).annotate(
             name=F('product__name')).order_by(
             '-order_count')[:limit]
-        query_set2 = Order_detail.objects.filter(date__range=[first_date, second_date])
+        query_set2 = Order_detail.objects.all().annotate(date=F('order__order_date')).filter(
+            date__range=[first_date, second_date])
 
     else:
         limit = 5
