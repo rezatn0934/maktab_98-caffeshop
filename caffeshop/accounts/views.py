@@ -456,6 +456,22 @@ def customer_demographic(request):
     return render(request, 'result.html', context=context)
 
 
+def sales_by_category(request):
+    first_date = request.GET.get('first_date') or '1980-01-01'
+    second_date = request.GET.get('second_date') or timezone.now()
+    query_set = Order_detail.objects.annotate(date=F('order__order_date'))\
+                                    .filter(date__range=[first_date, second_date])\
+                                    .annotate(category=F("product__category__name"))\
+                                    .values('category')\
+                                    .annotate(total_sale=Sum( F("quantity") * F("price"))).order_by('total_sale')
+    context = {'query_set1': query_set}
+
+    return render(request, 'analytics/sales_by_category.html', context=context)
+
+
+
+
+
 @login_required
 def logout_view(request):
     logout(request)
