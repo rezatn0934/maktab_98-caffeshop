@@ -366,13 +366,10 @@ def daily_sales(request):
         first_date = datetime.date(timezone.now().date().year, timezone.now().date().month, 1)
         second_date = timezone.now()
 
-    query_set = Order.objects.filter(order_date__range=[first_date, second_date]) \
-        .annotate(
-        day=TruncDay('order_date', output_field=DateField())).values('day') \
-        .annotate(
-        total_sale=Sum(
-            F('order_detail__quantity') *
-            F('order_detail__price'))).order_by('day')
+    query_set = Order.objects.filter(order_date__range=[first_date, second_date]).values(
+        day=Substr(Cast(TruncDay('order_date', output_field=DateField()),
+                        output_field=CharField()), 1, 10)).annotate(
+        total_sale=Sum(F('order_detail__quantity') * F('order_detail__price'))).order_by('day')
 
     return render(request, 'analytics/daily_sales.html', {'query_set': query_set})
 
@@ -431,7 +428,6 @@ def customer_sales(request):
 
 
 def customer_demographic(request):
-
     phone_number = "09117200513"
     query_set = Order.objects.filter(phone_number=phone_number).annotate(
         product=F("order_detail__product__name")).annotate(quantity=F("order_detail__quantity")).annotate(
@@ -451,4 +447,3 @@ def customer_demographic(request):
 def logout_view(request):
     logout(request)
     return redirect("login")
-
