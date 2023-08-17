@@ -27,3 +27,7 @@ class TestUrls(SimpleTestCase):
     def test_most_popular(self):
         url = reverse('most_popular')
         self.assertEqual(resolve(url).func, views.most_popular)
+
+    def test_peak_business_hour(self):
+        url = reverse('peak_business_hour')
+        self.assertEqual(resolve(url).func, views.peak_business_hour)
