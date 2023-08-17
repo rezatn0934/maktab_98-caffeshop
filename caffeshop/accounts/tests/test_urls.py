@@ -95,3 +95,7 @@ class TestUrls(SimpleTestCase):
     def test_confirm_order(self):
         url = reverse('confirm_order', args=(1,))
         self.assertEqual(resolve(url).func, views.confirm_order)
+
+    def test_cancel_order(self):
+        url = reverse('cancel_order', args=(1,))
+        self.assertEqual(resolve(url).func, views.cancel_order)
