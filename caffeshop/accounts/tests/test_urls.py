@@ -11,3 +11,8 @@ class TestUrls(SimpleTestCase):
     def test_verify(self):
         url = reverse('verify')
         self.assertEqual(resolve(url).func.view_class, views.Verify)
+
+    def test_logout(self):
+        url = reverse('logout')
+        print(resolve(url))
+        self.assertEqual(resolve(url).func, views.logout_view)
