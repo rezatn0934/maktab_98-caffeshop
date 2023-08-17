@@ -63,3 +63,7 @@ class TestUrls(SimpleTestCase):
     def test_order_status_report(self):
         url = reverse('order_status_report')
         self.assertEqual(resolve(url).func, views.order_status_report)
+
+    def test_customer_order_history(self):
+        url = reverse('customer_order_history')
+        self.assertEqual(resolve(url).func, views.customer_order_history)
