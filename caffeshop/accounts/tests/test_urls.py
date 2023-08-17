@@ -55,3 +55,7 @@ class TestUrls(SimpleTestCase):
     def test_customer_sales(self):
         url = reverse('customer_sales')
         self.assertEqual(resolve(url).func, views.customer_sales)
+
+    def test_sales_by_category(self):
+        url = reverse('sales_by_category')
+        self.assertEqual(resolve(url).func, views.sales_by_category)
