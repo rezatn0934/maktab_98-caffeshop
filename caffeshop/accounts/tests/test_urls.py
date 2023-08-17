@@ -71,3 +71,7 @@ class TestUrls(SimpleTestCase):
     def test_sales_by_employee_report(self):
         url = reverse('sales_by_employee_report')
         self.assertEqual(resolve(url).func, views.sales_by_employee_report)
+
+    def test_product_hour(self):
+        url = reverse('product_hour')
+        self.assertEqual(resolve(url).func, views.product_hour)
