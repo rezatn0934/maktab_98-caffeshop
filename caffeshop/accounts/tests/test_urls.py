@@ -23,3 +23,7 @@ class TestUrls(SimpleTestCase):
     def test_customer_demographic(self):
         url = reverse('customer_demographic')
         self.assertEqual(resolve(url).func, views.customer_demographic)
+
+    def test_most_popular(self):
+        url = reverse('most_popular')
+        self.assertEqual(resolve(url).func, views.most_popular)
