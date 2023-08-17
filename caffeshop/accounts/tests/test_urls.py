@@ -19,3 +19,7 @@ class TestUrls(SimpleTestCase):
     def test_dashboard(self):
         url = reverse('dashboard')
         self.assertEqual(resolve(url).func.view_class, views.Dashboard)
+
+    def test_customer_demographic(self):
+        url = reverse('customer_demographic')
+        self.assertEqual(resolve(url).func, views.customer_demographic)
