@@ -91,3 +91,7 @@ class TestUrls(SimpleTestCase):
     def test_delete_order_item(self):
         url = reverse('delete_order_item', args=(1,))
         self.assertEqual(resolve(url).func, views.delete_order_detail)
+
+    def test_confirm_order(self):
+        url = reverse('confirm_order', args=(1,))
+        self.assertEqual(resolve(url).func, views.confirm_order)
