@@ -97,7 +97,10 @@ class Dashboard(View):
                 F('order_detail__price')
             )
         )
-        return render(request, "dashboard.html", {"total_sale": total_sale})
+        query_set = Order.objects.annotate(
+            hour=ExtractHour("order_date")).values(
+            "hour").annotate(count=Count('id')).order_by('hour')
+        return render(request, "dashboard.html", {"total_sale": total_sale, 'query_set': query_set})
 
 
 class Orders(View):
