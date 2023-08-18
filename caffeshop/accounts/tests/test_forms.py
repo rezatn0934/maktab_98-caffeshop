@@ -46,6 +46,10 @@ class TestUseChangeForm(TestCase):
             first_name='reza',
             last_name='teymouri'
         )
+
+    def tearDown(self):
+        self.user.delete()
+
     def test_valid_data(self):
         form = CustomUserChangeForm(data={'phone': '0903891990', 'first_name': 'ali', 'last_name': 'ahmadi'})
         self.assertTrue(form.is_valid)
