@@ -9,3 +9,11 @@ from accounts.views import (
 
 
 class TestStaffLogin(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.user = User.objects.create(
+            phone='09038916990',
+            password='reza123456',
+            first_name='reza',
+            last_name='teymouri'
+        )
