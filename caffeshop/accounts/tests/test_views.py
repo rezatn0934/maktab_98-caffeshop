@@ -17,3 +17,9 @@ class TestStaffLogin(TestCase):
             first_name='reza',
             last_name='teymouri'
         )
+
+    def test_staff_login_GET(self):
+        response = self.client.get(reverse('login'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'login.html')
+        self.failUnless(response.context['form'], CustomUserCreationForm)
