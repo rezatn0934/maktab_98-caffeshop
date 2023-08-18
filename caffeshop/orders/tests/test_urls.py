@@ -14,3 +14,7 @@ class TestUrls(SimpleTestCase):
     def test_order_history(self):
         url = reverse("orders:order_history")
         self.assertEquals(resolve(url).func, order_history)
+
+    def test_cancle_order(self):
+        url = reverse("orders:cancel_order_by_customer", args=['1'])
+        self.assertEquals(resolve(url).func, cancel_order_by_customer)
