@@ -22,3 +22,10 @@ class TestUserCreationForm(TestCase):
                   'password2': 'reza123456'})
         self.assertEqual(len(form.errors), 1)
         self.assertTrue(form.has_error)
+
+    def test_unmatched_passwords(self):
+        form = CustomUserCreationForm(
+            data={'phone': '09198470934', 'first_name': 'reza', 'last_name': 'teymouri', 'password1': 'reza123456',
+                  'password2': 'reza1234'})
+        self.assertEqual(len(form.errors), 1)
+        self.assertTrue(form.has_error)
