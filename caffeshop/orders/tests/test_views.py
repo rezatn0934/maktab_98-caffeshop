@@ -7,12 +7,13 @@ class TestUser(SimpleTestCase):
     
     def setUp(self):
         self.client = Client()
-        self.cart_url = reverse('cart')
-        self.creat_order_url = reverse('create_order')
-        self.history_url = reverse('order_history')
-        self.cancle_order_url = reverse('cancle_order_by_customer')
+        self.cart_url = reverse('orders:cart')
+        self.creat_order_url = reverse('orders:create_order')
+        self.history_url = reverse('orders:order_history')
+        self.cancle_order_url = reverse('orders:cancle_order_by_customer', args=['1'])
 
 
     def test_cart_view_GET(self):
-        client = self.client.get()
-        response=client.get(reverse())
+        response= self.client.get(self.cart_url)
+        self.assertEquals(response.status_code, 200)
+        self.assertTemplateUsed(response, 'templates/orders/cart.html')
