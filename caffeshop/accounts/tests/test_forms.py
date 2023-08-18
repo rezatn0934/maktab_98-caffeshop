@@ -69,3 +69,11 @@ class TestUseChangeForm(TestCase):
         self.assertIn("phone", form.fields)
         self.assertIn("first_name", form.fields)
         self.assertIn("last_name", form.fields)
+
+    def test_invalid_phone_number(self):
+        form = CustomUserChangeForm(
+            instance=self.user,
+            data={'phone': '123', 'first_name': 'ali', 'last_name': 'ahmadi'}
+        )
+        self.assertFalse(form.is_valid())
+        self.assertIn('phone', form.errors)
