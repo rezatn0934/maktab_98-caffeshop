@@ -40,6 +40,9 @@ class TestUserCreationForm(TestCase):
 
 class TestUseChangeForm(TestCase):
     def test_valid_data(self):
-        User.objects.create(phone='09198470934', first_name='reza', last_name='teymouri', password='rtn093471')
         form = CustomUserChangeForm(data={'phone': '0903891990', 'first_name': 'ali', 'last_name': 'ahmadi'})
         self.assertTrue(form.is_valid)
+
+    def test_empty_form(self):
+        form = CustomUserChangeForm()
+        self.assertFalse(form.is_valid())
