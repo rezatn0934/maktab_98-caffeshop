@@ -28,3 +28,10 @@ class TestStaffLogin(TestCase):
         response = self.client.post(reverse('login'), data={'phone': '09038916990'})
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, reverse('verify'))
+
+    def test_staff_login_POST_invalid(self):
+        response = self.client.post(reverse('login'), data={'phone': 'gfhbjnh'})
+        self.assertEqual(response.status_code, 200)
+        self.failIf(response.context['form'].is_valid())
+        self.assertEqual(response.context['message'], 'Wrong input, Phone number Should Start 11 digits Like 09*********')
+        self.assertFormError(form=response.context['form'], field='phone', errors='Enter a valid value.')
