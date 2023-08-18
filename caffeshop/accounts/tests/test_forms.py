@@ -51,8 +51,18 @@ class TestUseChangeForm(TestCase):
         self.user.delete()
 
     def test_valid_data(self):
-        form = CustomUserChangeForm(data={'phone': '0903891990', 'first_name': 'ali', 'last_name': 'ahmadi'})
-        self.assertTrue(form.is_valid)
+        form_data = {
+            'phone': '09038916990',
+            'first_name': 'ali',
+            'last_name': 'ahmadi'
+        }
+        form = CustomUserChangeForm(instance=self.user, data=form_data)
+        self.assertTrue(form.is_valid())
+        updated_user = form.save()
+
+        self.assertEqual(updated_user.phone, '09038916990')
+        self.assertEqual(updated_user.first_name, 'ali')
+        self.assertEqual(updated_user.last_name, 'ahmadi')
 
     def test_empty_form(self):
         form = CustomUserChangeForm()
