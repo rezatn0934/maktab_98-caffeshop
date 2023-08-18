@@ -36,3 +36,10 @@ class TestUserCreationForm(TestCase):
                   'password2': 'reza123456'})
         self.assertEqual(len(form.errors), 1)
         self.assertTrue(form.has_error)
+
+
+class TestUseChangeForm(TestCase):
+    def test_valid_data(self):
+        User.objects.create(phone='09198470934', first_name='reza', last_name='teymouri', password='rtn093471')
+        form = CustomUserChangeForm(data={'phone': '0903891990', 'first_name': 'ali', 'last_name': 'ahmadi'})
+        self.assertTrue(form.is_valid)
