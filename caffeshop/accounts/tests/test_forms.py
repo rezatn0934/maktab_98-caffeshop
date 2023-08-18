@@ -66,4 +66,6 @@ class TestUseChangeForm(TestCase):
 
     def test_empty_form(self):
         form = CustomUserChangeForm()
-        self.assertFalse(form.is_valid())
+        self.assertIn("phone", form.fields)
+        self.assertIn("first_name", form.fields)
+        self.assertIn("last_name", form.fields)
