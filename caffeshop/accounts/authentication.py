@@ -25,7 +25,7 @@ class PhoneAuthBackend(ModelBackend):
                 raise ValueError("Login First")
 
         except User.DoesNotExist:
-            return
+            raise ValueError("Phone Number Does Not Exist")
 
     def get_user(self, user_id):
         try:
