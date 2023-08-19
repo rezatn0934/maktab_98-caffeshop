@@ -63,3 +63,10 @@ class ModelAdminTests(TestCase):
         request.user = self.user
         self.assertFalse(info_admin.has_delete_permission(request))
 
+    def test_truncated_content(self):
+        about_admin = AboutAdmin(About, AdminSite())
+        request = self.factory
+        request.user = self.user
+        self.assertEqual(about_admin.truncated_content(self.about),
+                         "this is a test for truncated content methode in About …")
+
