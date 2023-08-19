@@ -182,6 +182,22 @@ class OrderDetailView(DetailView):
         return context
 
 
+class UpdateOrderItem(UpdateView, DetailView):
+    model = Order_detail
+    fields = ['product', 'quantity']
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Order item has been successfully updated.')
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.error(self.request, 'Form input is not valid')
+        return redirect(reverse_lazy('order_detail', args=[self.get_object().order.id]))
+
+    def get_success_url(self):
+        return reverse_lazy('order_detail', args=[self.get_object().order.id])
+      
+
 
 @login_required
 def confirm_order(request, pk):
