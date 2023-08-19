@@ -25,3 +25,11 @@ class TestInfoModel(TestCase):
     def test_model_str(self):
         self.assertEqual(str(self.info), "farzam")
 
+    def test_model_save(self):
+        objs = Info.objects.all()
+        obj_f = Info.objects.filter(cafe_title="farzam")
+        obj_g = Info.objects.get(cafe_title="farzam")
+        self.assertEqual(len(objs), 1)
+        self.assertEqual(len(obj_f), 1)
+        self.assertEqual(obj_g.cafe_title, "farzam")
+
