@@ -1,20 +1,23 @@
-from django.contrib import messages
-from django.contrib.auth import login, logout
-from django.contrib.auth.decorators import login_required
-from django.core.paginator import Paginator
+from django.db.models.functions import TruncMonth, TruncDay, TruncHour, ExtractHour, Substr, Cast
 from django.db.models import Q, F, Sum, Count, DateField, DateTimeField, CharField
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth import login, logout
+from django.views.generic.edit import UpdateView, CreateView
 from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
-from django.views.generic.edit import UpdateView, CreateView
-from django.db.models.functions import TruncMonth, TruncDay, TruncHour, ExtractHour, Substr, Cast
 from django.urls import reverse, reverse_lazy
+from django.core.paginator import Paginator
+from django.contrib import messages
 
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.auth.decorators import permission_required
 from django.shortcuts import render, redirect
 from django.utils.decorators import method_decorator
 from django.utils import timezone
 from django.views import View
 
 from .authentication import PhoneAuthBackend
+from .mixins import ChartAccessMixin, chart_access_check
 from .form import StaffLoginForm, VerifyCodeForm
 from orders.models import Order, Order_detail
 from utils import send_otp_code, check_is_authenticated
@@ -92,9 +95,8 @@ class Verify(View):
         return render(request, self.html_temp, context=context)
 
 
-class Dashboard(View):
+class Dashboard(LoginRequiredMixin, View):
 
-    @method_decorator(login_required)
     def get(self, request):
         total_sale = Order.objects.aggregate(
             total_sale=Sum(
@@ -108,9 +110,9 @@ class Dashboard(View):
         return render(request, "dashboard.html", {"total_sale": total_sale, 'query_set': query_set})
 
 
-class Orders(View):
+class Orders(LoginRequiredMixin, PermissionRequiredMixin, View):
+    permission_required = ['orders.view_order']
 
-    @method_decorator(login_required)
     def get(self, request):
         sort = request.GET.get('sort', 'title')
         orderp = request.GET.get('orderp')
@@ -170,7 +172,7 @@ class Orders(View):
         return render(request, 'orders_list.html', context)
 
 
-class OrderDetailView(DetailView):
+class OrderDetailView(LoginRequiredMixin, DetailView):
     model = Order
     template_name = 'order_detail.html'
     context_object_name= "order"
@@ -182,7 +184,8 @@ class OrderDetailView(DetailView):
         return context
 
 
-class UpdateOrderItem(UpdateView, DetailView):
+class UpdateOrderItem(PermissionRequiredMixin, UpdateView, DetailView):
+    permission_required = ['orders.add_order_detail']
     model = Order_detail
     fields = ['product', 'quantity']
 
@@ -198,7 +201,8 @@ class UpdateOrderItem(UpdateView, DetailView):
         return reverse_lazy('order_detail', args=[self.get_object().order.id])
       
       
-class CreateOrderItem(CreateView):
+class CreateOrderItem(PermissionRequiredMixin, CreateView):
+    permission_required = ['orders.add_order_detail']
     model = Order_detail
     fields = ['product', 'quantity', 'order']
 
@@ -213,6 +217,7 @@ class CreateOrderItem(CreateView):
         return super().form_valid(form)
 
 @login_required
+@permission_required(['orders.change_order_status'])
 def confirm_order(request, pk):
     if request.method == 'GET':
         order = Order.objects.filter(id=pk)
@@ -229,6 +234,7 @@ def confirm_order(request, pk):
 
 
 @login_required
+@permission_required('change_order_status')
 def cancel_order(request, pk):
     if request.method == 'GET':
         order = Order.objects.filter(id=pk)
@@ -245,6 +251,7 @@ def cancel_order(request, pk):
 
 
 @login_required
+@permission_required(['orders.change_order_detail'])
 def delete_order_detail(request, pk):
     if request.method == 'GET':
         order_detail = Order_detail.objects.filter(id=pk)
@@ -260,6 +267,7 @@ def delete_order_detail(request, pk):
 
 
 @login_required
+@user_passes_test(chart_access_check)
 def most_popular(request):
     if 'filter' in request.GET:
         first_date = request.GET.get('first_date')
@@ -283,6 +291,7 @@ def most_popular(request):
 
 
 @login_required
+@user_passes_test(chart_access_check)
 def peak_business_hour(request):
     lst2 = None
     first_date2 = None
@@ -318,6 +327,7 @@ def peak_business_hour(request):
 
 
 @login_required
+@user_passes_test(chart_access_check)
 def top_selling(request):
     if 'filter' in request.GET:
         first_date = request.GET.get('first_date')
@@ -338,6 +348,7 @@ def top_selling(request):
 
 
 @login_required
+@user_passes_test(chart_access_check)
 def hourly_sales(request):
     if 'filter' in request.GET:
         first_date = request.GET.get('first_date')
@@ -357,6 +368,7 @@ def hourly_sales(request):
 
 
 @login_required
+@user_passes_test(chart_access_check)
 def daily_sales(request):
     if 'filter' in request.GET:
         first_date = request.GET.get('first_date')
@@ -376,6 +388,7 @@ def daily_sales(request):
 
 
 @login_required
+@user_passes_test(chart_access_check)
 def monthly_sales(request):
     if 'filter' in request.GET:
         first_date = request.GET.get('first_date')
@@ -395,6 +408,7 @@ def monthly_sales(request):
 
 
 @login_required
+@user_passes_test(chart_access_check)
 def yearly_sales(request):
     if 'filter' in request.GET:
         first_date = request.GET.get('first_date')
@@ -412,6 +426,7 @@ def yearly_sales(request):
 
 
 @login_required
+@user_passes_test(chart_access_check)
 def customer_sales(request):
     limit = 5
     if 'filter' in request.GET:
@@ -432,6 +447,7 @@ def customer_sales(request):
 
 
 @login_required
+@user_passes_test(chart_access_check)
 def customer_demographic(request):
     query_set = None
     query_set2 = None
@@ -464,6 +480,7 @@ def customer_demographic(request):
 
 
 @login_required
+@user_passes_test(chart_access_check)
 def sales_by_category(request):
     first_date = request.GET.get('first_date') or '1970-01-01'
     second_date = request.GET.get('second_date') or timezone.now()
@@ -478,6 +495,7 @@ def sales_by_category(request):
 
 
 @login_required
+@user_passes_test(chart_access_check)
 def order_status_report(request):
     lst2 = None
     first_date = "1970-01-01"
@@ -524,6 +542,7 @@ def order_status_report(request):
 
 
 @login_required
+@user_passes_test(chart_access_check)
 def sales_by_employee_report(request):
     first_date = request.GET.get('first_date') or '1970-01-01'
     second_date = request.GET.get('second_date') or timezone.now()
@@ -548,6 +567,7 @@ def sales_by_employee_report(request):
 
 
 @login_required
+@user_passes_test(chart_access_check)
 def customer_order_history(request):
     context = {}
 
@@ -565,6 +585,7 @@ def customer_order_history(request):
 
 
 @login_required
+@user_passes_test(chart_access_check)
 def product_hour(request):
     first_date = request.GET.get('first_date') or '1970-01-01'
     second_date = request.GET.get('second_date') or timezone.now()

@@ -43,6 +43,12 @@ class Product(ImageMixin, models.Model):
     is_active = models.BooleanField(verbose_name=_("Active"), default=True)
     image = models.ImageField(verbose_name=_("Product Image"), upload_to='images/product/')
 
+    class Meta:
+        permissions = [
+            ('change_active_status', 'can change product active status'),
+            ('change_price', 'can change product price'),
+        ]
+
     def img_preview(self):
         if self.image:
             return mark_safe(f'<img src = "{self.image.url}" width = "150" height="150"/> ')
