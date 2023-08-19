@@ -135,6 +135,18 @@ class TestVerify(TestCase):
         response = Verify.as_view()(request)
         self.assertEqual(response.status_code, 200)
 
+    def test_verify_POST_invalid_otp_date(self):
+        request = self.factory.post(reverse('verify'), data={'otp_code': '123456'})
+        middleware = SessionMiddleware(lambda request: None)
+        request.user = AnonymousUser()
+        middleware.process_request(request)
+        request.session['otp_code'] = '123456'
+        request.session['phone'] = '09038916990'
+        request.session['otp_valid_date'] = str(timezone.now())
+        request.session.save()
+        setattr(request, '_messages', FallbackStorage(request))
+        response = Verify.as_view()(request)
+        self.assertEqual(response.status_code, 200)
 
     def test_verify_POST_without_otp_code(self):
         request = self.factory.post(reverse('verify'), data={'otp_code': '123456'})
