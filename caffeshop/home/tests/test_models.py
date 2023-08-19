@@ -22,4 +22,6 @@ class TestInfoModel(TestCase):
         os.remove(os.path.join(settings.MEDIA_ROOT / "images/logo", "test_White_logo_-_no_background.png"))
         os.remove(os.path.join(settings.MEDIA_ROOT / "images/HomePageBackground", "test_intro-bg.jpg"))
 
+    def test_model_str(self):
+        self.assertEqual(str(self.info), "farzam")
 
