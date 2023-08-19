@@ -109,3 +109,8 @@ class TestGalleryModel(TestCase):
     def test_model_str(self):
         self.assertEqual(str(self.gallery), "farzam")
 
+    def test_model_image_preview(self):
+        image_preview = self.gallery.img_preview()
+        self.assertEqual(mark_safe(f'<img src = "{self.gallery.image.url}" width = "150" height="150"/> '),
+                         image_preview)
+
