@@ -34,9 +34,6 @@ class TestInfoModel(TestCase):
         if os.path.exists(logo_path):
             os.remove(logo_path)
 
-        background_image_path = os.path.join(settings.MEDIA_ROOT / "images/HomePageBackground", "test2_intro-bg.jpg")
-        if os.path.exists(background_image_path):
-            os.remove(background_image_path)
 
     def test_model_str(self):
         self.assertEqual(str(self.info), "farzam")
@@ -98,13 +95,6 @@ class TestGalleryModel(TestCase):
 
     def tearDown(self):
         self.gallery.delete()
-        image_path = os.path.join(settings.MEDIA_ROOT / "images/gallery", "test_gallery.jpg")
-        if os.path.exists(image_path):
-            os.remove(image_path)
-
-        image_path = os.path.join(settings.MEDIA_ROOT / "images/gallery", "test_gallery.jpg")
-        if os.path.exists(image_path):
-            os.remove(image_path)
 
     def test_model_str(self):
         self.assertEqual(str(self.gallery), "farzam")
@@ -117,8 +107,8 @@ class TestGalleryModel(TestCase):
     def test_model_update_save(self):
         self.gallery.title = "reza"
         self.gallery.image = SimpleUploadedFile(name='test2_gallery.jpg', content=open(
-                                      settings.MEDIA_ROOT / "images/test/test2_gallery.jpg",
-                                      'rb').read(), content_type='image/jpg')
+            settings.MEDIA_ROOT / "images/test/test2_gallery.jpg",
+            'rb').read(), content_type='image/jpg')
         self.gallery.save()
 
         objs = Gallery.objects.all()
