@@ -1,10 +1,12 @@
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.sessions.middleware import SessionMiddleware
+from django.contrib.messages.storage.fallback import FallbackStorage
 from django.test import TestCase, Client, RequestFactory
 from django.urls import reverse
+from django.utils import timezone
+
 
 from accounts.models import User
-from accounts.form import CustomUserCreationForm, VerifyCodeForm
 from accounts.views import (
     StaffLogin,
     Verify,
@@ -86,3 +88,4 @@ class TestVerify(TestCase):
         request.session.save()
         response = Verify.as_view()(request)
         self.assertEqual(response.status_code, 302)
+
