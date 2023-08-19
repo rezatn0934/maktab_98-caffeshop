@@ -6,3 +6,5 @@ class ChartAccessMixin(LoginRequiredMixin, UserPassesTestMixin):
         return self.request.user.groups.filter(name__in=['Managers', 'Supervisiors', 'Cashier'])
 
 
+def chart_access_check(user):
+    return user.groups.filter(name__in=['Managers', 'Supervisiors', 'Cashier'])
