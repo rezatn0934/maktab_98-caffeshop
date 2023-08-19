@@ -52,14 +52,13 @@
                                     </thead>
                                     <tbody class="text-left">
                                     {% for order_detail in order_details %}
-                                        <form action="{% url 'order_detail' order_detail.id %}" method="POST">
+                                        <form action="{% url 'update_order_detail' order_detail.id %}" method="POST">
                                             {% csrf_token %}
-                                            <input type="radio" style="display: none;" name="s_product" value="{{ order_detail.product.id }}" checked>
                                             <tr class="justify-content-center align-items-center" style="width: inherit !important;">
                                                 <th scope="row" class="py-4">{{ order_detail.id }}</th>
                                                 <td>
                                                     <div class="dropdown col-sm-2">
-                                                        <button class="btn btn1 mx-0 btn-light dropdown-toggle"
+                                                        <button class="btn btn1 btn-light dropdown-toggle"
                                                                 type="button"
                                                                 id="btn{{forloop.counter}}" data-bs-toggle="dropdown"
                                                                 aria-expanded="false">
@@ -76,7 +75,7 @@
                                                                     <input type="radio" onclick="reply_click('btn{{forloop.parentloop.counter}}', '{{product.name}}')"
                                                                           id="s{{forloop.parentloop.counter}}-{{forloop.counter}}-{{ product.id }}"
                                                                           value="{{ product.id }}"
-                                                                          style="margin-left:20px" name="s_product">
+                                                                          style="margin-left:20px" name="product" {% if order_detail.product.id == product.id %} checked {% endif %}>
 
                                                                 </li>
                                                             {% endfor %}
@@ -111,8 +110,9 @@
                                         </form>
                                         {% endfor %}
                                     {% if order.get_payment_display == 'Unpaid' and not order.get_status_display == 'Canceled' %}
-                                    <form action="{% url 'create_order_detail' order.id %}" method="POST">
+                                    <form action="{% url 'create_order_detail'%}" method="POST">
                                         {% csrf_token %}
+                                            <input name="order" type="hidden" value="{{order.id}}">
                                             <tr class="justify-content-center align-items-center" style="width: inherit !important; background-color: #b9ffe9 !important;">
                                                 <th scope="row" class="py-4">Add item</th>
                                                 <td>
@@ -133,7 +133,7 @@
                                                                     <input type="radio" onclick="reply_click('btn_new_orderitem', '{{product.name}}')"
                                                                           id="s{{forloop.parentloop.counter}}-{{forloop.counter}}-{{ product.id }}"
                                                                           value="{{ product.id }}"
-                                                                          style="margin-left:20px" name="s_product">
+                                                                          style="margin-left:20px" name="product">
                                                                 </li>
                                                                 {% endfor %}
                                                         </ul>
