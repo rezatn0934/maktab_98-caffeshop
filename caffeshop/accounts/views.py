@@ -197,7 +197,20 @@ class UpdateOrderItem(UpdateView, DetailView):
     def get_success_url(self):
         return reverse_lazy('order_detail', args=[self.get_object().order.id])
       
+      
+class CreateOrderItem(CreateView):
+    model = Order_detail
+    fields = ['product', 'quantity', 'order']
 
+    def form_valid(self, form):
+        order = form.cleaned_data['order'].id
+        messages.success(self.request, f"Order item has been successfully added to Order {order}")
+        self.success_url = reverse_lazy('order_detail', args=[order])
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.error(self.request, 'Form input is not valid')   
+        return super().form_valid(form)
 
 @login_required
 def confirm_order(request, pk):
