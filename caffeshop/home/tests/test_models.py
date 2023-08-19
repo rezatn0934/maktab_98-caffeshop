@@ -114,3 +114,19 @@ class TestGalleryModel(TestCase):
         self.assertEqual(mark_safe(f'<img src = "{self.gallery.image.url}" width = "150" height="150"/> '),
                          image_preview)
 
+    def test_model_update_save(self):
+        self.gallery.title = "reza"
+        self.gallery.image = SimpleUploadedFile(name='test2_gallery.jpg', content=open(
+                                      settings.MEDIA_ROOT / "images/test/test2_gallery.jpg",
+                                      'rb').read(), content_type='image/jpg')
+        self.gallery.save()
+
+        objs = Gallery.objects.all()
+        obj_f = Gallery.objects.filter(title="farzam")
+        obj_g = Gallery.objects.get(title="reza")
+
+        self.assertEqual(obj_g.title, "reza")
+        self.assertTrue(len(objs) == 1)
+        self.assertEqual(len(obj_f), 0)
+        with self.assertRaises(Http404):
+            get_object_or_404(Gallery, title="farzam")
