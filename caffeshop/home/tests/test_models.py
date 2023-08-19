@@ -141,3 +141,19 @@ class TestAboutModel(TestCase):
         self.assertEqual(mark_safe(f'<img src="{self.about.image.url}" width="482" height="316"/>'),
                          image_preview)
 
+    def test_model_update_save(self):
+        self.about.title = "reza"
+        self.about.image = SimpleUploadedFile(name='test2_about.jpg', content=open(
+            settings.MEDIA_ROOT / "images/test/test2_about.jpg",
+            'rb').read(), content_type='image/jpg')
+        self.about.save()
+
+        objs = About.objects.all()
+        obj_f = About.objects.filter(title="farzam")
+        obj_g = About.objects.get(title="reza")
+
+        self.assertEqual(obj_g.title, "reza")
+        self.assertTrue(len(objs) == 1)
+        self.assertEqual(len(obj_f), 0)
+        with self.assertRaises(Http404):
+            get_object_or_404(About, title="farzam")
