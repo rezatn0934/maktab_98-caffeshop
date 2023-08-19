@@ -26,6 +26,12 @@ class TestStaffLogin(TestCase):
         response = StaffLogin.as_view()(request)
         self.assertEqual(response.status_code, 302)
 
+    def test_staff_login_GET_anonymous(self):
+        request = self.factory.get(reverse('login'))
+        request.user = AnonymousUser()
+        response = StaffLogin.as_view()(request)
+        self.assertEqual(response.status_code, 200)
+
     def test_staff_login_POST_valid(self):
         response = self.client.post(reverse('login'), data={'phone': '09038916990'})
         self.assertEqual(response.status_code, 302)
