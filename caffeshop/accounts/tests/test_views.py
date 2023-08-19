@@ -63,3 +63,9 @@ class TestVerify(TestCase):
         request.user = self.user
         response = StaffLogin.as_view()(request)
         self.assertEqual(response.status_code, 302)
+
+    def test_staff_login_GET_anonymous(self):
+        request = self.factory.get(reverse('login'))
+        request.user = AnonymousUser()
+        response = StaffLogin.as_view()(request)
+        self.assertEqual(response.status_code, 200)
