@@ -89,3 +89,10 @@ class TestVerify(TestCase):
         response = Verify.as_view()(request)
         self.assertEqual(response.status_code, 302)
 
+    def test_verify_POST_invalid(self):
+        response = self.client.post(reverse('verify'), data={'otp_code': 'jjgh'})
+        self.assertEqual(response.status_code, 200)
+        self.failIf(response.context['form'].is_valid())
+        self.assertEqual(response.context['message'],
+                         'Wrong Input')
+        self.assertFormError(form=response.context['form'], field='otp_code', errors='Enter a valid value.')
