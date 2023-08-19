@@ -368,6 +368,7 @@ def hourly_sales(request):
 
 
 @login_required
+@user_passes_test(chart_access_check)
 def daily_sales(request):
     if 'filter' in request.GET:
         first_date = request.GET.get('first_date')
@@ -387,6 +388,7 @@ def daily_sales(request):
 
 
 @login_required
+@user_passes_test(chart_access_check)
 def monthly_sales(request):
     if 'filter' in request.GET:
         first_date = request.GET.get('first_date')
@@ -406,6 +408,7 @@ def monthly_sales(request):
 
 
 @login_required
+@user_passes_test(chart_access_check)
 def yearly_sales(request):
     if 'filter' in request.GET:
         first_date = request.GET.get('first_date')
@@ -423,6 +426,7 @@ def yearly_sales(request):
 
 
 @login_required
+@user_passes_test(chart_access_check)
 def customer_sales(request):
     limit = 5
     if 'filter' in request.GET:
@@ -443,6 +447,7 @@ def customer_sales(request):
 
 
 @login_required
+@user_passes_test(chart_access_check)
 def customer_demographic(request):
     query_set = None
     query_set2 = None
@@ -475,6 +480,7 @@ def customer_demographic(request):
 
 
 @login_required
+@user_passes_test(chart_access_check)
 def sales_by_category(request):
     first_date = request.GET.get('first_date') or '1970-01-01'
     second_date = request.GET.get('second_date') or timezone.now()
@@ -489,6 +495,7 @@ def sales_by_category(request):
 
 
 @login_required
+@user_passes_test(chart_access_check)
 def order_status_report(request):
     lst2 = None
     first_date = "1970-01-01"
@@ -535,6 +542,7 @@ def order_status_report(request):
 
 
 @login_required
+@user_passes_test(chart_access_check)
 def sales_by_employee_report(request):
     first_date = request.GET.get('first_date') or '1970-01-01'
     second_date = request.GET.get('second_date') or timezone.now()
@@ -559,6 +567,7 @@ def sales_by_employee_report(request):
 
 
 @login_required
+@user_passes_test(chart_access_check)
 def customer_order_history(request):
     context = {}
 
@@ -576,6 +585,7 @@ def customer_order_history(request):
 
 
 @login_required
+@user_passes_test(chart_access_check)
 def product_hour(request):
     first_date = request.GET.get('first_date') or '1970-01-01'
     second_date = request.GET.get('second_date') or timezone.now()
