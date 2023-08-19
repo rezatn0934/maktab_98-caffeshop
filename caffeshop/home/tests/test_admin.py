@@ -70,3 +70,16 @@ class ModelAdminTests(TestCase):
         self.assertEqual(about_admin.truncated_content(self.about),
                          "this is a test for truncated content methode in About …")
 
+    def test_delete_about_image(self):
+        about_admin = AboutAdmin(About, AdminSite())
+        request = self.factory.get(reverse("admin:home_about_changelist"))
+        request.user = self.user
+        middleware = SessionMiddleware(lambda request: None)
+        middleware.process_request(request)
+        request.session.save()
+        messages = FallbackStorage(request)
+        setattr(request, '_messages', messages)
+        qs = About.objects.all()
+        about_admin.delete_about_image(request, qs)
+        qs = About.objects.all()
+        self.assertEqual(len(qs), 1)
