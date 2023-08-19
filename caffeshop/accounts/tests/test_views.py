@@ -109,6 +109,33 @@ class TestVerify(TestCase):
         response = Verify.as_view()(request)
         self.assertEqual(response.status_code, 302)
 
+    def test_verify_POST_unknown_user(self):
+        request = self.factory.post(reverse('verify'), data={'otp_code': '123456'})
+        middleware = SessionMiddleware(lambda request: None)
+        request.user = AnonymousUser()
+        middleware.process_request(request)
+        request.session['phone'] = '09198470934'
+        request.session.save()
+        setattr(request, '_messages', FallbackStorage(request))
+        response = Verify.as_view()(request)
+        self.assertEqual(response.status_code, 200)
+
+    def test_verify_POST_invalid_otp_code(self):
+        request = self.factory.post(reverse('verify'), data={'otp_code': '123456'})
+        middleware = SessionMiddleware(lambda request: None)
+        request.user = AnonymousUser()
+        middleware.process_request(request)
+        request.session['otp_code'] = '123458'
+        request.session['phone'] = '09038916990'
+        request.session['otp_valid_date'] = str(timezone.now())
+        valid_date = timezone.now() + timezone.timedelta(minutes=1)
+        request.session["otp_valid_date"] = str(valid_date)
+        request.session.save()
+        setattr(request, '_messages', FallbackStorage(request))
+        response = Verify.as_view()(request)
+        self.assertEqual(response.status_code, 200)
+
+
     def test_verify_POST_without_otp_code(self):
         request = self.factory.post(reverse('verify'), data={'otp_code': '123456'})
         middleware = SessionMiddleware(lambda request: None)
