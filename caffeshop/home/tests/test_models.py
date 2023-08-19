@@ -120,3 +120,12 @@ class TestGalleryModel(TestCase):
         self.assertEqual(len(obj_f), 0)
         with self.assertRaises(Http404):
             get_object_or_404(Gallery, title="farzam")
+
+
+class TestAboutModel(TestCase):
+    def setUp(self) -> None:
+        self.about = baker.make(About, title="farzam",
+                                image=SimpleUploadedFile(name='test_about.jpg', content=open(
+                                    settings.MEDIA_ROOT / "images/test/test_about.jpg",
+                                    'rb').read(), content_type='image/jpg'),
+                                is_active=True)
