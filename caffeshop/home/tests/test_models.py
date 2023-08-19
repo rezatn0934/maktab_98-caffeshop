@@ -106,3 +106,6 @@ class TestGalleryModel(TestCase):
         if os.path.exists(image_path):
             os.remove(image_path)
 
+    def test_model_str(self):
+        self.assertEqual(str(self.gallery), "farzam")
+
