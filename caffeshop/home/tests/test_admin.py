@@ -51,3 +51,9 @@ class ModelAdminTests(TestCase):
         if os.path.exists(image_path):
             os.remove(image_path)
 
+    def test_has_add_permission(self):
+        info_admin = InfoAdmin(Info, AdminSite())
+        request = self.factory
+        request.user = self.user
+        self.assertFalse(info_admin.has_add_permission(request))
+
