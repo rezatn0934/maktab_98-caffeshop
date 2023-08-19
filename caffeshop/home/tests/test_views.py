@@ -30,3 +30,10 @@ class TestHomeView(TestCase):
         self.category.delete()
         self.about.delete()
 
+    def test_home_GET(self):
+        response = self.client.get(reverse("home"))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "home/home.html")
+        self.failUnless(response.context["categories"], self.categories)
+        self.failUnless(response.context["gallery"], self.galleries)
+        self.failUnless(response.context["about"], self.abouts)
