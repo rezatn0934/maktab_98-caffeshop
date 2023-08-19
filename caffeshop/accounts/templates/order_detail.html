@@ -92,7 +92,7 @@
                                                 </td>
                                                 <td>
                                                     {% if order.get_payment_display == 'Unpaid' and not order.get_status_display == 'Canceled' %}
-                                                        <button type="submit" class="btn btn-primary" name="update">
+                                                        <button type="submit" class="btn btn-primary" name="update" {% if not perms.orders.change_order_detail %}disabled{% endif %}>
                                                             <i class="bi bi-pencil"></i>
                                                         </button>
                                                     {% endif %}
@@ -100,7 +100,7 @@
                                                 <td>
                                                     {% if order.get_payment_display == 'Unpaid' and not order.get_status_display == 'Canceled' %}
                                                         <a href="{% url 'delete_order_item' order_detail.id %}">
-                                                            <button type="button" class="btn btn-danger" name="delete">
+                                                            <button type="button" class="btn btn-danger" name="delete" {% if not perms.orders.delete_order_detail %}disabled{% endif %}>
                                                                 <i class="bi bi-trash"></i>
                                                             </button>
                                                         </a>
@@ -146,7 +146,7 @@
                                                 </td>
                                                 <td class="py-4"></td>
                                                 <td>
-                                                    <button type="submit" class="btn btn-success" name="create">
+                                                    <button type="submit" class="btn btn-success" name="create" {% if not perms.orders.add_order_detail %}disabled{% endif %}>
                                                         <i class="bi bi-plus-square"></i>
                                                     </button>
                                                 </div>
@@ -164,12 +164,12 @@
                                 </div>
                                 <div class="col-md-6 text-end">
                                     {% if order.get_payment_display == 'Unpaid' and not order.get_status_display == 'Canceled' %}
-                                        <a href="{% url 'confirm_order' order.id %}">
+                                        <a href="{% url 'confirm_order' order.id %}" {% if not perms.orders.change_order_status %}disabled{% endif %}>
                                             <button type="button" class="btn btn-success btn-sm" name="confirm">
                                                 <i class="bi bi-check-circle"></i> Confirm Order
                                             </button>
                                         </a>
-                                        <a href="{% url 'cancel_order' order.id %}">
+                                        <a href="{% url 'cancel_order' order.id %}" {% if not perms.orders.change_order_status %}disabled{% endif %}>
                                             <button type="button" class="btn btn-danger btn-sm" name="cancel">
                                                 <i class="bi bi-x-circle"></i> Cancel Order
                                             </button>
