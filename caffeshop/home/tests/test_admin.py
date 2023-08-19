@@ -57,3 +57,9 @@ class ModelAdminTests(TestCase):
         request.user = self.user
         self.assertFalse(info_admin.has_add_permission(request))
 
+    def test_has_delete_permission(self):
+        info_admin = InfoAdmin(Info, AdminSite())
+        request = self.factory
+        request.user = self.user
+        self.assertFalse(info_admin.has_delete_permission(request))
+
