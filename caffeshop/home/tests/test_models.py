@@ -86,3 +86,13 @@ class TestInfoModel(TestCase):
         background_image_preview = self.info.background_image_preview()
         self.assertEqual(mark_safe(f'<img src = "{self.info.background_image.url}" width = "150" height="150"/> '),
                          background_image_preview)
+
+
+class TestGalleryModel(TestCase):
+
+    def setUp(self) -> None:
+        self.gallery = baker.make(Gallery, title="farzam",
+                                  image=SimpleUploadedFile(name='test_gallery.jpg', content=open(
+                                      settings.MEDIA_ROOT / "images/test/test_gallery.jpg",
+                                      'rb').read(), content_type='image/jpg'))
+
