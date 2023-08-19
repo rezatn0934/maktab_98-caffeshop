@@ -22,8 +22,21 @@ class TestInfoModel(TestCase):
 
     def tearDown(self):
         self.info.delete()
-        os.remove(os.path.join(settings.MEDIA_ROOT / "images/logo", "test_White_logo_-_no_background.png"))
-        os.remove(os.path.join(settings.MEDIA_ROOT / "images/HomePageBackground", "test_intro-bg.jpg"))
+        logo_path = os.path.join(settings.MEDIA_ROOT / "images/logo", "test_White_logo_-_no_background.png")
+        if os.path.exists(logo_path):
+            os.remove(logo_path)
+
+        background_image_path = os.path.join(settings.MEDIA_ROOT / "images/HomePageBackground", "test_intro-bg.jpg")
+        if os.path.exists(background_image_path):
+            os.remove(background_image_path)
+
+        logo_path = os.path.join(settings.MEDIA_ROOT / "images/logo", "test2_Color_logo_no_background.png")
+        if os.path.exists(logo_path):
+            os.remove(logo_path)
+
+        background_image_path = os.path.join(settings.MEDIA_ROOT / "images/HomePageBackground", "test2_intro-bg.jpg")
+        if os.path.exists(background_image_path):
+            os.remove(background_image_path)
 
     def test_model_str(self):
         self.assertEqual(str(self.info), "farzam")
@@ -49,13 +62,17 @@ class TestInfoModel(TestCase):
 
     def test_model_update_save(self):
         self.info.cafe_title = "reza"
+        self.info.logo = SimpleUploadedFile(name='test2_Color_logo_no_background.png', content=open(
+            settings.MEDIA_ROOT / "images/test/test2_Color_logo_no_background.png",
+            'rb').read(), content_type='image/png')
+
         self.info.save()
 
         objs = Info.objects.all()
         obj_f = Info.objects.filter(cafe_title="farzam")
         obj_g = Info.objects.get(cafe_title="reza")
-
         self.assertEqual(obj_g.cafe_title, "reza")
+        self.assertEqual(str(obj_g.logo).split("/")[-1], "test2_Color_logo_no_background.png")
         self.assertTrue(len(objs) == 1)
         self.assertEqual(len(obj_f), 0)
         with self.assertRaises(Http404):
