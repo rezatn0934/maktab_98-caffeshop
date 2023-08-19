@@ -1,4 +1,5 @@
-from django.test import TestCase, Client
+from django.contrib.auth.models import AnonymousUser
+from django.test import TestCase, Client, RequestFactory
 from django.urls import reverse
 
 from accounts.models import User
@@ -17,12 +18,13 @@ class TestStaffLogin(TestCase):
             first_name='reza',
             last_name='teymouri'
         )
+        self.factory = RequestFactory()
 
-    def test_staff_login_GET(self):
-        response = self.client.get(reverse('login'))
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'login.html')
-        self.failUnless(response.context['form'], CustomUserCreationForm)
+    def test_staff_login_GET_authenticate(self):
+        request = self.factory.get(reverse('login'))
+        request.user = self.user
+        response = StaffLogin.as_view()(request)
+        self.assertEqual(response.status_code, 302)
 
     def test_staff_login_POST_valid(self):
         response = self.client.post(reverse('login'), data={'phone': '09038916990'})
