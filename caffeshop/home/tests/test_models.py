@@ -129,3 +129,7 @@ class TestAboutModel(TestCase):
                                     settings.MEDIA_ROOT / "images/test/test_about.jpg",
                                     'rb').read(), content_type='image/jpg'),
                                 is_active=True)
+
+    def tearDown(self):
+        self.about.delete()
+
