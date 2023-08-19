@@ -3,7 +3,11 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db.models import Q, F, Sum, Count, DateField, DateTimeField, CharField
+from django.views.generic.detail import DetailView
+from django.views.generic.list import ListView
+from django.views.generic.edit import UpdateView, CreateView
 from django.db.models.functions import TruncMonth, TruncDay, TruncHour, ExtractHour, Substr, Cast
+from django.urls import reverse, reverse_lazy
 
 from django.shortcuts import render, redirect
 from django.utils.decorators import method_decorator
@@ -166,40 +170,47 @@ class Orders(View):
         return render(request, 'orders_list.html', context)
 
 
-class OrderDetailView(View):
+class OrderDetailView(DetailView):
+    model = Order
+    template_name = 'order_detail.html'
+    context_object_name= "order"
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['order_details'] = Order_detail.objects.filter(order=self.kwargs['pk'])
+        context['products'] = Product.objects.filter(is_active=True)
+        return context
 
-    @method_decorator(login_required)
-    def get(self, request, pk):
-        order = Order.objects.filter(id=pk)
-        products = Product.objects.filter(is_active=True)
-        if order:
-            order = order.get(id=pk)
-            order_details = Order_detail.objects.filter(order=pk)
-            context = {
-                'order': order,
-                'order_details': order_details,
-                'products': products
-            }
-            return render(request, 'order_detail.html', context)
-        else:
-            messages.error(request, f'Order {pk} not found')
-            return redirect('order_list')
 
-    @method_decorator(login_required)
-    def post(self, request, pk):
-        order_detail = Order_detail.objects.get(id=pk)
-        if request.POST.get('s_product') and request.POST.get('quantity'):
-            product = Product.objects.get(id=request.POST.get('s_product'))
-            order_detail.product = product
-            order_detail.price = product.price
-            order_detail.quantity = request.POST.get('quantity')
-            order_detail.save()
-            messages.success(request, 'Order item has been successfully updated.')
-            return redirect('order_detail', order_detail.order.id)
-        else:
-            messages.error(request, 'Form input is not valid')
-            return redirect('order_detail', order_detail.order.id)
+class UpdateOrderItem(UpdateView, DetailView):
+    model = Order_detail
+    fields = ['product', 'quantity']
 
+    def form_valid(self, form):
+        messages.success(self.request, 'Order item has been successfully updated.')
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.error(self.request, 'Form input is not valid')
+        return redirect(reverse_lazy('order_detail', args=[self.get_object().order.id]))
+
+    def get_success_url(self):
+        return reverse_lazy('order_detail', args=[self.get_object().order.id])
+      
+      
+class CreateOrderItem(CreateView):
+    model = Order_detail
+    fields = ['product', 'quantity', 'order']
+
+    def form_valid(self, form):
+        order = form.cleaned_data['order'].id
+        messages.success(self.request, f"Order item has been successfully added to Order {order}")
+        self.success_url = reverse_lazy('order_detail', args=[order])
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.error(self.request, 'Form input is not valid')   
+        return super().form_valid(form)
 
 @login_required
 def confirm_order(request, pk):
@@ -246,22 +257,6 @@ def delete_order_detail(request, pk):
         else:
             messages.error(request, f'Order items {pk} not found')
             return redirect('order_list')
-
-
-class CreateOrderItem(View):
-    @method_decorator(login_required)
-    def post(self, request, pk):
-        if request.POST.get('s_product') and request.POST.get('quantity'):
-            product = Product.objects.get(id=request.POST.get('s_product'))
-            quantity = request.POST.get('quantity')
-            order = Order.objects.get(id=pk)
-            order_detail = Order_detail.objects.create(order=order, product=product, quantity=quantity,
-                                                       price=product.price)
-            messages.success(request, f'Order item {order_detail.id} has benn successfully added to Order {pk}')
-        else:
-            messages.error(request, "You didn't provide valid inputs")
-
-        return redirect('order_detail', pk)
 
 
 @login_required
