@@ -133,3 +133,6 @@ class TestAboutModel(TestCase):
     def tearDown(self):
         self.about.delete()
 
+    def test_model_str(self):
+        self.assertEqual(str(self.about), "farzam")
+
