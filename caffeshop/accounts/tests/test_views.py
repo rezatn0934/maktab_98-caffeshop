@@ -96,3 +96,18 @@ class TestVerify(TestCase):
         self.assertEqual(response.context['message'],
                          'Wrong Input')
         self.assertFormError(form=response.context['form'], field='otp_code', errors='Enter a valid value.')
+
+    def test_verify_POST_valid(self):
+        request = self.factory.post(reverse('verify'), data={'otp_code': '123456'})
+        middleware = SessionMiddleware(lambda request: None)
+        request.user = AnonymousUser()
+        middleware.process_request(request)
+        request.session['otp_code'] = '123456'
+        request.session['phone'] = '09038916990'
+        request.session['otp_valid_date'] = str(timezone.now())
+        valid_date = timezone.now() + timezone.timedelta(minutes=1)
+        request.session["otp_valid_date"] = str(valid_date)
+        request.session.save()
+        setattr(request, '_messages', FallbackStorage(request))
+        response = Verify.as_view()(request)
+        self.assertEqual(response.status_code, 302)
