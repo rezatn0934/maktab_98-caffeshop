@@ -3,6 +3,7 @@ from home.models import About, Gallery, Info
 from model_bakery import baker
 from django.shortcuts import get_object_or_404
 from django.http import Http404
+from django.utils.html import mark_safe
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.conf import settings
 import os
@@ -59,5 +60,10 @@ class TestInfoModel(TestCase):
         self.assertEqual(len(obj_f), 0)
         with self.assertRaises(Http404):
             get_object_or_404(Info, cafe_title="farzam")
+
+    def test_model_logo_preview(self):
+        logo_preview = self.info.logo_preview()
+
+        self.assertEqual(mark_safe(f'<img src = "{self.info.logo.url}" width = "50" height="80"/> '), logo_preview)
 
 
