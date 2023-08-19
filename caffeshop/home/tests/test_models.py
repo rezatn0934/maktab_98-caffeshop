@@ -63,7 +63,9 @@ class TestInfoModel(TestCase):
 
     def test_model_logo_preview(self):
         logo_preview = self.info.logo_preview()
-
         self.assertEqual(mark_safe(f'<img src = "{self.info.logo.url}" width = "50" height="80"/> '), logo_preview)
 
-
+    def test_model_background_image_preview(self):
+        background_image_preview = self.info.background_image_preview()
+        self.assertEqual(mark_safe(f'<img src = "{self.info.background_image.url}" width = "150" height="150"/> '),
+                         background_image_preview)
