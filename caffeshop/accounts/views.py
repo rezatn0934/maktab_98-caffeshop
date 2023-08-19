@@ -42,7 +42,7 @@ class StaffLogin(View):
         else:
             message = "Wrong input, Phone number Should Start 11 digits Like 09*********"
 
-        context = {"message": message, "form": self.form()}
+        context = {"message": message, "form": form}
         return render(request, self.html_temp, context=context)
 
 
@@ -77,9 +77,10 @@ class Verify(View):
                 messages.success(request, 'You have been logged in successfully')
                 return redirect("dashboard")
             except Exception as e:
-                message = e
-                if message == "Login First":
-                    return redirect("login")
+                message = str(e)
+                if message == "Login First" or message == "Phone Number Does Not Exist":
+                    context = {"message": message, "form": StaffLoginForm}
+                    return render(request, "login.html", context=context)
         else:
             message = "Wrong Input"
 
