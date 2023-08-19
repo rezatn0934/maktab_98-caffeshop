@@ -57,7 +57,7 @@ class Info(ImageMixin, models.Model):
             return mark_safe(f'<img src = "{self.logo.url}" width = "50" height="80"/> ')
 
     def background_image_preview(self):
-        if self.logo:
+        if self.background_image:
             return mark_safe(f'<img src = "{self.background_image.url}" width = "150" height="150"/> ')
 
     def save(self, *args, **kwargs):
