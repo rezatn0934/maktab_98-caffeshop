@@ -76,3 +76,13 @@ class TestVerify(TestCase):
         response = Verify.as_view()(request)
         self.assertEqual(response.status_code, 200)
         del request.session['phone']
+
+    def test_verify_GET_anonymous_not_phone(self):
+
+        request = self.factory.get(reverse('verify'))
+        request.user = AnonymousUser()
+        middleware = SessionMiddleware(lambda request: None)
+        middleware.process_request(request)
+        request.session.save()
+        response = Verify.as_view()(request)
+        self.assertEqual(response.status_code, 302)
