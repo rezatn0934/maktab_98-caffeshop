@@ -96,3 +96,13 @@ class TestGalleryModel(TestCase):
                                       settings.MEDIA_ROOT / "images/test/test_gallery.jpg",
                                       'rb').read(), content_type='image/jpg'))
 
+    def tearDown(self):
+        self.gallery.delete()
+        image_path = os.path.join(settings.MEDIA_ROOT / "images/gallery", "test_gallery.jpg")
+        if os.path.exists(image_path):
+            os.remove(image_path)
+
+        image_path = os.path.join(settings.MEDIA_ROOT / "images/gallery", "test_gallery.jpg")
+        if os.path.exists(image_path):
+            os.remove(image_path)
+
