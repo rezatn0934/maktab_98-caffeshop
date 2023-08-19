@@ -136,3 +136,8 @@ class TestAboutModel(TestCase):
     def test_model_str(self):
         self.assertEqual(str(self.about), "farzam")
 
+    def test_model_image_preview(self):
+        image_preview = self.about.img_preview()
+        self.assertEqual(mark_safe(f'<img src="{self.about.image.url}" width="482" height="316"/>'),
+                         image_preview)
+
