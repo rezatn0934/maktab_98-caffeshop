@@ -36,3 +36,18 @@ class ModelAdminTests(TestCase):
         self.about2 = baker.make(About, title="about2", is_active=False)
         self.factory = RequestFactory()
 
+    def tearDown(self):
+        self.user.delete()
+        self.info.delete()
+        logo_path = os.path.join(settings.MEDIA_ROOT / "images/logo", "test_White_logo_-_no_background.png")
+        if os.path.exists(logo_path):
+            os.remove(logo_path)
+
+        background_image_path = os.path.join(settings.MEDIA_ROOT / "images/HomePageBackground", "test_intro-bg.jpg")
+        if os.path.exists(background_image_path):
+            os.remove(background_image_path)
+
+        image_path = os.path.join(settings.MEDIA_ROOT / "images/about", "test_about.jpg")
+        if os.path.exists(image_path):
+            os.remove(image_path)
+
