@@ -25,3 +25,8 @@ class TestHomeView(TestCase):
         self.categories = Category.objects.all()
         self.abouts = About.objects.get(is_active=True)
 
+    def tearDown(self):
+        self.gallery.delete()
+        self.category.delete()
+        self.about.delete()
+
