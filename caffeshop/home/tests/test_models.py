@@ -46,4 +46,18 @@ class TestInfoModel(TestCase):
         with self.assertRaises(Http404):
             get_object_or_404(Info, cafe_title="reza")
 
+    def test_model_update_save(self):
+        self.info.cafe_title = "reza"
+        self.info.save()
+
+        objs = Info.objects.all()
+        obj_f = Info.objects.filter(cafe_title="farzam")
+        obj_g = Info.objects.get(cafe_title="reza")
+
+        self.assertEqual(obj_g.cafe_title, "reza")
+        self.assertTrue(len(objs) == 1)
+        self.assertEqual(len(obj_f), 0)
+        with self.assertRaises(Http404):
+            get_object_or_404(Info, cafe_title="farzam")
+
 
