@@ -1,6 +1,6 @@
 {% extends 'dashbase.html' %}
 {% load static %}
-
+{% load user_tag %}
 {% block content %}
     <div class="content-start transition  ">
         <div class="container-fluid dashboard">
@@ -16,14 +16,18 @@
 
                         {% endfor %}
                     {% endif %}
+                    {% if request.user|has_group:"Managers" %}
                     <h1>Total Sales: ${{ total_sale.total_sale }}</h1>
+                    {% endif %}
                     <br>
                 </div>
+                {% if request.user|has_group:"Managers" %}
                 <div class="row">
                     <div class="col-md-12 ">
                         <canvas id="myChart" style="width: 100%; height: 600px;"></canvas>
                     </div>
                 </div>
+                {% endif %}
             </div>
         </div>
     </div>
