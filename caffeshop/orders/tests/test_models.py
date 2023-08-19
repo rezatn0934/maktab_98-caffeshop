@@ -29,3 +29,9 @@ class TestOrdersModels(TestCase):
         )
 
 
+class TestTableModel(TestCase):
+    def test_str(self):
+        table = Table.objects.create(name='Orchid', Table_number=14, occupied=True)
+        self.assertEqual('Orchid', str(table))
+
+
