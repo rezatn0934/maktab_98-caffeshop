@@ -39,16 +39,15 @@ Follow these steps to set up the project:
 
 Clone the repository using Git:
 
-```
+```ruby
 git clone https://github.com/rezatn0934/maktab_98-caffeshop.git
-
 ```
 Change into the project directory:
-```
+```ruby
 cd maktab_98-caffeshop
 ```
 Create a virtual environment (optional but recommended):
-```
+```ruby
 python3 -m venv env
 ```
 
@@ -56,31 +55,31 @@ Activate the virtual environment:
 
 For Windows:
 
-```
+```ruby
 env\Scripts\activate
 ```
 For macOS/Linux:
 
-```
+```ruby
 source env/bin/activate
 ```
 Install the project dependencies:
 
-```
+```ruby
 pip install -r requirements.txt
 ```
 This command will install all the required Python packages listed in the requirements.txt file.
 
 Set up the database:
 
-```
+```ruby
 python manage.py migrate
 ```
 This will apply the database migrations and create the necessary tables.
 
 Create a superuser account (admin):
 
-```
+```ruby
 python manage.py createsuperuser
 ```
 Follow the prompts to set a username and password for the admin account.
@@ -95,17 +94,17 @@ Activate the virtual environment (if not already activated):
 
 For Windows:
 
-```
+```ruby
 env\Scripts\activate
 ```
 For macOS/Linux:
 
-```
+```ruby
 source env/bin/activate
 ```
 Start the server:
 
-```
+```ruby
 python manage.py runserver
 ```
 Open your web browser and navigate to http://localhost:8000/. You should see the Caffe Shop web application.
@@ -126,24 +125,24 @@ Fork the repository on GitHub.
 
 Clone your forked repository to your local machine:
 
-```
+```ruby
 git clone https://github.com/your-username/maktab_98-caffeshop.git
 ```
 Create a new branch for your changes:
 
 
-```
+```ruby
 git checkout -b feature/your-feature-name
 ```
 Make the necessary changes and commit them:
 
 
-```
+```ruby
 git commit -m "Add your commit message here"
 ```
 Push your changes to your forked repository:
 
-```
+```ruby
 git push origin feature/your-feature-name
 ```
 Open a pull request on the original repository, describing your changes and explaining why they should be merged.
