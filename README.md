@@ -26,7 +26,7 @@ This project is a web application built with Django framework for managing a cof
 
 
 ## Setup
-<a name="Prerequisites"></a>
+
 ### Prerequisites
 Before setting up the Caffe Shop Django project, ensure that you have the following prerequisites installed on your machine:
 - [![Python][Python.js]][Python-url]
@@ -39,15 +39,15 @@ Follow these steps to set up the project:
 
 Clone the repository using Git:
 
-```ruby
+```bash
 git clone https://github.com/rezatn0934/maktab_98-caffeshop.git
 ```
 Change into the project directory:
-```ruby
+```bash
 cd maktab_98-caffeshop
 ```
 Create a virtual environment (optional but recommended):
-```ruby
+```bash
 python3 -m venv env
 ```
 
@@ -55,31 +55,31 @@ Activate the virtual environment:
 
 For Windows:
 
-```ruby
+```bash
 env\Scripts\activate
 ```
 For macOS/Linux:
 
-```ruby
+```bash
 source env/bin/activate
 ```
 Install the project dependencies:
 
-```ruby
+```bash
 pip install -r requirements.txt
 ```
 This command will install all the required Python packages listed in the requirements.txt file.
 
 Set up the database:
 
-```ruby
+```bash
 python manage.py migrate
 ```
 This will apply the database migrations and create the necessary tables.
 
 Create a superuser account (admin):
 
-```ruby
+```bash
 python manage.py createsuperuser
 ```
 Follow the prompts to set a username and password for the admin account.
@@ -94,17 +94,17 @@ Activate the virtual environment (if not already activated):
 
 For Windows:
 
-```ruby
+```bash
 env\Scripts\activate
 ```
 For macOS/Linux:
 
-```ruby
+```bash
 source env/bin/activate
 ```
 Start the server:
 
-```ruby
+```bash
 python manage.py runserver
 ```
 Open your web browser and navigate to http://localhost:8000/. You should see the Caffe Shop web application.
@@ -113,7 +113,7 @@ To access the admin interface, go to http://localhost:8000/admin and log in usin
 
 That's it! You can now explore and interact with the Caffe Shop Django project.
 
-a>
+
 ### License
 ![MIT][MIT.js]
 
@@ -125,24 +125,24 @@ Fork the repository on GitHub.
 
 Clone your forked repository to your local machine:
 
-```ruby
+```bash
 git clone https://github.com/your-username/maktab_98-caffeshop.git
 ```
 Create a new branch for your changes:
 
 
-```ruby
+```bash
 git checkout -b feature/your-feature-name
 ```
 Make the necessary changes and commit them:
 
 
-```ruby
+```bash
 git commit -m "Add your commit message here"
 ```
 Push your changes to your forked repository:
 
-```ruby
+```bash
 git push origin feature/your-feature-name
 ```
 Open a pull request on the original repository, describing your changes and explaining why they should be merged.
