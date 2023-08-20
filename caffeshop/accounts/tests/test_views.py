@@ -603,3 +603,10 @@ class TestCancelOrder(TestCase):
         self.user.groups.add(self.manager_group)
         self.client.login(phone=self.user.phone, password=self.password)
         response = self.client.get(reverse('cancel_order', args=(self.order.id,)))
+
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse('order_list'))
+        messages = list(get_messages(response.wsgi_request))
+        self.assertEqual(messages[0].message, f'Order {self.order.id} has been canceled.')
+        self.assertEqual(Order.objects.get(id=self.order.id).status, 'C')
+
