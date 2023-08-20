@@ -185,3 +185,10 @@ class TestDashboard(TestCase):
         self.product.delete()
         self.order.delete()
         self.table.delete()
+
+    def test_dashboard_GET(self):
+        self.client.force_login(self.user)
+        response = self.client.get(reverse('dashboard'))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context.get('total_sale')['total_sale'], 20.0)
+        self.assertTemplateUsed(response, 'dashboard.html')
