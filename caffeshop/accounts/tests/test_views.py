@@ -503,8 +503,9 @@ class TestConfirmOrder(TestCase):
         order_permission = Permission.objects.filter(content_type=content_type)
         manager_group, created = Group.objects.get_or_create(name="Managers")
         manager_group.permissions.add(*order_permission)
-        change_order_status_permission = Permission.objects.create(codename='change_order_status', name='can change order approval status',
-                                               content_type=content_type)
+        change_order_status_permission = Permission.objects.create(codename='change_order_status',
+                                                                   name='can change order approval status',
+                                                                   content_type=content_type)
         manager_group.permissions.add(change_order_status_permission)
 
     def setUp(self):
@@ -555,3 +556,17 @@ class TestConfirmOrder(TestCase):
         self.assertRedirects(response, reverse('order_list'))
         messages = list(get_messages(response.wsgi_request))
         self.assertEqual(messages[0].message, 'Order 100 not found')
+
+
+class TestCancelOrder(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        content_type = ContentType.objects.get_for_model(Order)
+        order_permission = Permission.objects.filter(content_type=content_type)
+        manager_group, created = Group.objects.get_or_create(name="Managers")
+        manager_group.permissions.add(*order_permission)
+        change_order_status_permission = Permission.objects.create(codename='change_order_status',
+                                                                   name='can change order approval status',
+                                                                   content_type=content_type)
+        manager_group.permissions.add(change_order_status_permission)
