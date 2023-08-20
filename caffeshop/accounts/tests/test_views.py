@@ -179,3 +179,9 @@ class TestDashboard(TestCase):
             phone='09038916990',
             password='reza123456',
         )
+
+    def tearDown(self):
+        self.order_detail.delete()
+        self.product.delete()
+        self.order.delete()
+        self.table.delete()
