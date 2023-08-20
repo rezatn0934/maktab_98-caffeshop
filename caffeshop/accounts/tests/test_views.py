@@ -293,7 +293,7 @@ class TestOrders(TestCase):
         self.assertEqual(len(response.context['orders']), 1)
         self.assertTemplateUsed(response, 'orders_list.html')
 
-    def test_orders_GET_filter_order_second_date(self):
+    def test_orders_GET_filter_order_first_date(self):
         self.user.groups.add(self.manager_group)
         self.client.login(phone=self.user.phone, password=self.password)
         order_date = timezone.now() - timezone.timedelta(days=1)
@@ -303,11 +303,22 @@ class TestOrders(TestCase):
         self.assertEqual(len(response.context['orders']), 2)
         self.assertTemplateUsed(response, 'orders_list.html')
 
-    def test_orders_GET_filter_order_first_date(self):
+    def test_orders_GET_filter_order_second_date(self):
+        self.user.groups.add(self.manager_group)
+        self.client.login(phone=self.user.phone, password=self.password)
+        order_date = timezone.now() - timezone.timedelta(days=1)
+        data = {'filter': 'filter', 'first_date': str(order_date), 'second_date': timezone}
+        response = self.client.get(reverse('order_list'), data=data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['orders']), 2)
+        self.assertTemplateUsed(response, 'orders_list.html')
+
+    def test_orders_GET_filter_payment(self):
         self.user.groups.add(self.manager_group)
         self.client.login(phone=self.user.phone, password=self.password)
         data = {'paid': self.order2.id}
         response = self.client.get(reverse('order_list'), data=data)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(Order.objects.get(id=self.order2.id).payment, 'P')
+        order = Order.objects.get(id=self.order2.id)
+        self.assertEqual(order.payment, 'P')
         self.assertTemplateUsed(response, 'orders_list.html')
