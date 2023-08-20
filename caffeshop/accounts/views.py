@@ -230,11 +230,11 @@ def confirm_order(request, pk):
             return redirect('order_list')
         else:
             messages.error(request, f'Order {pk} not found')
-            return redirect('order_detail', pk)
+            return redirect('order_list')
 
 
 @login_required
-@permission_required('change_order_status')
+@permission_required('orders.change_order_status')
 def cancel_order(request, pk):
     if request.method == 'GET':
         order = Order.objects.filter(id=pk)
@@ -247,7 +247,7 @@ def cancel_order(request, pk):
             return redirect('order_list')
         else:
             messages.error(request, f'Order {pk} not found')
-            return redirect('order_detail', pk)
+            return redirect('order_list')
 
 
 @login_required
@@ -259,7 +259,7 @@ def delete_order_detail(request, pk):
             order_detail = order_detail.get(id=pk)
             order = order_detail.order
             order_detail.delete()
-            messages.warning(request, f'Order item {pk} has been canceled!')
+            messages.warning(request, f'Order item {pk} has been deleted!')
             return redirect('order_detail', order.id)
         else:
             messages.error(request, f'Order items {pk} not found')
