@@ -425,3 +425,15 @@ class TestUpdateOrderItem(TestCase):
             self.assertEqual(messages[0].message, 'Order item has been successfully updated.')
         self.assertEqual(Order_detail.objects.get(pk=self.order_detail.pk).product, self.product)
         self.assertEqual(Order_detail.objects.get(pk=self.order_detail.pk).quantity, 10)
+
+    def test_orders_GET_has_perm_invalid_form(self):
+        self.user.groups.add(self.manager_group)
+        self.client.login(phone=self.user.phone, password=self.password)
+        data = {'product': self.product, 'quantity': 10}
+        response = self.client.post(reverse('update_order_detail', args=(self.order_detail.id,)), data=data)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse('order_detail', args=[self.order_detail.order.pk]))
+        messages = list(get_messages(response.wsgi_request))
+        if messages:
+            self.assertEqual(messages[0].message, 'Form input is not valid')
