@@ -661,4 +661,8 @@ class TestDeleteOrderItem(TestCase):
         Table.objects.all().delete()
         self.user.delete()
 
+    def test_cancel_orders_GET_dont_has_perm(self):
+        self.client.login(phone=self.user.phone, password=self.password)
+        response = self.client.get(reverse('delete_order_item', args=(self.order.id,)))
+        self.assertEqual(response.status_code, 302)
 
