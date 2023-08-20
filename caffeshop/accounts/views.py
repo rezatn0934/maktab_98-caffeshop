@@ -239,7 +239,6 @@ def cancel_order(request, pk):
     if request.method == 'GET':
         order = Order.objects.filter(id=pk)
         if order:
-            print('10'*100)
             order = order.get(id=pk)
             order.status = 'C'
             order.staff = request.user
