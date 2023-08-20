@@ -6,6 +6,8 @@ from django.urls import reverse
 from django.utils import timezone
 
 from accounts.models import User
+from orders.models import Order, Order_detail, Table
+from menu.models import Product, Category
 from accounts.views import (
     StaffLogin,
     Verify,
@@ -159,3 +161,21 @@ class TestVerify(TestCase):
         setattr(request, '_messages', FallbackStorage(request))
         response = Verify.as_view()(request)
         self.assertEqual(response.status_code, 200)
+
+
+class TestDashboard(TestCase):
+
+    def setUp(self):
+        self.table = Table.objects.create(name='orchid', Table_number=4, occupied=True)
+        self.order = Order.objects.create(
+            payment='P', status='A', phone_number='09152593858', table_number=self.table)
+        self.product = Product.objects.create(category=Category.objects.create(name='Drinks'), name='Tea',
+                                              description='drinks', price=5.00)
+        self.order_detail = Order_detail.objects.create(
+            order=self.order, product=self.product, quantity=4)
+
+        self.client = Client()
+        self.user = User.objects.create_user(
+            phone='09038916990',
+            password='reza123456',
+        )
