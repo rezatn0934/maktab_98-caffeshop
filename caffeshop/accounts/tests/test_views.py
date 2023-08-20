@@ -598,3 +598,8 @@ class TestCancelOrder(TestCase):
         self.client.login(phone=self.user.phone, password=self.password)
         response = self.client.get(reverse('cancel_order', args=(self.order.id,)))
         self.assertEqual(response.status_code, 302)
+
+    def test_cancel_orders_GET_has_perm(self):
+        self.user.groups.add(self.manager_group)
+        self.client.login(phone=self.user.phone, password=self.password)
+        response = self.client.get(reverse('cancel_order', args=(self.order.id,)))
