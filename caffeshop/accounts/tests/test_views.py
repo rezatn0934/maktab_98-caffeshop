@@ -393,3 +393,13 @@ class TestUpdateOrderItem(TestCase):
             phone='09198470934',
             password=self.password,
         )
+
+    def tearDown(self):
+        self.order_detail.delete()
+        self.order_detail2.delete()
+        self.product.delete()
+        self.order.delete()
+        self.order2.delete()
+        self.table.delete()
+        self.table2.delete()
+        self.user.delete()
