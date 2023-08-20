@@ -234,3 +234,11 @@ class TestOrders(TestCase):
         self.table.delete()
         self.table2.delete()
         self.user.delete()
+
+    def test_orders_GET_has_perm(self):
+        self.user.groups.add(self.manager_group)
+        self.client.login(phone=self.user.phone, password=self.password)
+        response = self.client.get(reverse('order_list'))
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(self.order, response.context['orders'])
+        self.assertTemplateUsed(response, 'orders_list.html')
