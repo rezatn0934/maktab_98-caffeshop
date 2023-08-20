@@ -558,7 +558,7 @@ class TestConfirmOrder(TestCase):
         self.assertEqual(messages[0].message, 'Order 100 not found')
 
 
-class TestConfirmOrder(TestCase):
+class TestCancelOrder(TestCase):
 
     @classmethod
     def setUpTestData(cls):
@@ -593,3 +593,8 @@ class TestConfirmOrder(TestCase):
         Order.objects.all().delete()
         Table.objects.all().delete()
         self.user.delete()
+
+    def test_cancel_orders_GET_dont_has_perm(self):
+        self.client.login(phone=self.user.phone, password=self.password)
+        response = self.client.get(reverse('cancel_order', args=(self.order.id,)))
+        self.assertEqual(response.status_code, 302)
