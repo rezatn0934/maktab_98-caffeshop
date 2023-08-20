@@ -477,14 +477,13 @@ class TestCreateOrderItem(TestCase):
         Table.objects.all().delete()
         self.user.delete()
 
-
     def test_create_orders_detail_POST_dont_has_perm(self):
         self.client.login(phone=self.user.phone, password=self.password)
         data = {'product': self.product, 'quantity': 10}
         response = self.client.post(reverse('create_order_detail'), data=data)
         self.assertEqual(response.status_code, 403)
 
-    def test_update_orders_POST_has_perm_valid_form(self):
+    def test_create_orders_POST_has_perm_valid_form(self):
         self.user.groups.add(self.manager_group)
         self.client.login(phone=self.user.phone, password=self.password)
         data = {'product': self.product2.id, 'quantity': 10, 'order': self.order.id}
@@ -527,3 +526,9 @@ class TestConfirmOrder(TestCase):
         Order.objects.all().delete()
         Table.objects.all().delete()
         self.user.delete()
+
+    def test_confirm_orders_GET_dont_has_perm(self):
+        self.client.login(phone=self.user.phone, password=self.password)
+        response = self.client.get(reverse('confirm_order', args=(self.order.id,)))
+        redirected_url = response.url
+        self.assertEqual(response.status_code, 302)
