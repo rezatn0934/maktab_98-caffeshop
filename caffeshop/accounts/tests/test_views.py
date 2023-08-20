@@ -492,3 +492,13 @@ class TestCreateOrderItem(TestCase):
         self.assertRedirects(response, reverse('order_detail', args=[self.order.id]))
         messages = list(get_messages(response.wsgi_request))
         self.assertEqual(messages[0].message, f"Order item has been successfully added to Order {self.order.id}")
+
+
+class TestConfirmOrder(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        content_type = ContentType.objects.get_for_model(Order_detail)
+        order_permission = Permission.objects.filter(content_type=content_type)
+        manager_group, created = Group.objects.get_or_create(name="Managers")
+        manager_group.permissions.add(*order_permission)
