@@ -55,6 +55,16 @@ class TestOrdersModels(TestCase):
         self.assertEqual(order_items[0].product.name, 'rice')
         self.assertEqual(order_items[1].product.name, 'hamburger')
 
+    def setup(self):
+        self.order = Order.objects.create(
+            payment = 'P',
+            status = 'A',
+            phone_number ='09152593858',
+            table_number = Table.objects.create(name='rose', Table_number = 20, occupied=True)
+        )
+    def test_str(self):
+        self.assertEquals(str(self.order), 'Order5')
+
 
       
 class TestTableModel(TestCase):
