@@ -2,13 +2,13 @@
 Welcome to the Caffe Shop Django project! 
 
 ## Table of Contents
-* [About the Project](#About-the-Project)
-* [Build With](#Build-With)
+* [About the Project](#About the Project)
+* [Build With](#Build With)
 * [Setup](#Setup)
   - [Prerequisites](#Prerequisites)
   - [Installation](#Installation)
 
-* [Running the Project](#Running-the-Project)
+* [Running the Project](#Running the Project)
 * [License](#License)
 * [Contributing](#Contributing)
 
