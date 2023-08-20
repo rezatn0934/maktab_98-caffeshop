@@ -2,29 +2,29 @@
 Welcome to the Caffe Shop Django project! 
 
 ## Table of Contents
-* [About the Project](#About-the-Project)
-* [Build With](#Build-With)
-* [Setup](#Setup)
-  - [Prerequisites](#Prerequisites)
-  - [Installation](#Installation)
+* [About the Project](#about-the-project)
+* [Build With](#build-with)
+* [Setup](#setup)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
 
-* [Running the Project](#Running-the-Project)
-* [License](#License)
-* [Contributing](#Contributing)
+* [Running the Project](#running-the-project)
+* [License](#license)
+* [Contributing](#contributing)
 
 
-<a name="About-the-Project"></a>
+
 ## About the Project
 This project is a web application built with Django framework for managing a coffee shop's orders and sales. This README file will guide you through the setup process, provide instructions for running the project, and explain how to contribute to its development.
 
-<a name="Build_With"></a>
+
 ## Build With
 * [![Django][django.js]][django-url]
 * [![JavaScript][JavaScript.js]][JavaScript-url]
 * [![HTML][HTML.js]][HTML-url]
 * [![CSS][CSS.js]][CSS-url]
 
-<a name="Setup"></a>
+
 ## Setup
 <a name="Prerequisites"></a>
 ### Prerequisites
@@ -33,7 +33,7 @@ Before setting up the Caffe Shop Django project, ensure that you have the follow
 - [![PIP][PIP.js]][PIP-url]
 - [![Github][Github.js]][Github-url]
 
-<a name="Installation"></a>
+
 ### Installation
 Follow these steps to set up the project:
 
@@ -87,7 +87,7 @@ Follow the prompts to set a username and password for the admin account.
 
 Congratulations! The Caffe Shop Django project has been successfully set up on your machine.
 
-<a name="Running-the-Project"></a>
+
 ### Running the Project
 To run the Caffe Shop Django project, follow these steps:
 
@@ -114,11 +114,11 @@ To access the admin interface, go to http://localhost:8000/admin and log in usin
 
 That's it! You can now explore and interact with the Caffe Shop Django project.
 
-<a name="License"></a>
+a>
 ### License
 ![MIT][MIT.js]
 
-<a name="Contributing"></a>
+
 ### Contributing
 We welcome contributions to the Caffe Shop Django project. If you'd like to contribute, please follow these steps:
 
