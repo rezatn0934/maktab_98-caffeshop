@@ -619,3 +619,40 @@ class TestCancelOrder(TestCase):
         self.assertRedirects(response, reverse('order_list'))
         messages = list(get_messages(response.wsgi_request))
         self.assertEqual(messages[0].message, 'Order 100 not found')
+
+
+class TestDeleteOrderItem(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        content_type = ContentType.objects.get_for_model(Order_detail)
+        content_type2 = ContentType.objects.get_for_model(Order)
+        order_permission = Permission.objects.filter(content_type=content_type2)
+        order_detail_permission = Permission.objects.filter(content_type=content_type)
+
+        manager_group, created = Group.objects.get_or_create(name="Managers")
+        manager_group.permissions.add(*order_permission)
+        manager_group.permissions.add(*order_detail_permission)
+
+    def setUp(self):
+        self.table = Table.objects.create(name='orchid', Table_number=4, occupied=True)
+        self.order = Order.objects.create(
+            payment='U', status='P', phone_number='09152593858', table_number=self.table)
+        self.product = Product.objects.create(category=Category.objects.create(name='Drinks'), name='Tea',
+                                              description='drinks', price=5.00)
+        self.product2 = Product.objects.create(category=Category.objects.create(name='foods'), name='pizza',
+                                               description='food', price=15.00)
+        self.order_detail = Order_detail.objects.create(
+            order=self.order, product=self.product, quantity=4)
+        self.order_detail = Order_detail.objects.create(
+            order=self.order, product=self.product2, quantity=2)
+        self.client = Client()
+        self.password = 'reza123456'
+        self.user = User.objects.create_user(
+            phone='09198470934',
+            password=self.password,
+        )
+        self.manager_group = Group.objects.get(name='Managers')
+
+
+
