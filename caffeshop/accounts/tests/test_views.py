@@ -420,7 +420,7 @@ class TestUpdateOrderItem(TestCase):
         response = self.client.post(reverse('update_order_detail', args=(self.order_detail.id,)), data=data)
 
         self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, reverse('order_detail', args=[self.order_detail.order.pk]))
+        self.assertRedirects(response, reverse('order_detail', args=(self.order_detail.order.pk,)))
         messages = list(get_messages(response.wsgi_request))
         self.assertEqual(messages[0].message, 'Order item has been successfully updated.')
         self.assertEqual(Order_detail.objects.get(pk=self.order_detail.pk).product, self.product)
@@ -433,7 +433,7 @@ class TestUpdateOrderItem(TestCase):
         response = self.client.post(reverse('update_order_detail', args=(self.order_detail.id,)), data=data)
 
         self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, reverse('order_detail', args=[self.order_detail.order.pk]))
+        self.assertRedirects(response, reverse('order_detail', args=(self.order_detail.order.pk,)))
         messages = list(get_messages(response.wsgi_request))
         self.assertEqual(messages[0].message, 'Form input is not valid')
 
@@ -490,7 +490,7 @@ class TestCreateOrderItem(TestCase):
         response = self.client.post(reverse('create_order_detail'), data=data)
 
         self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, reverse('order_detail', args=[self.order.id]))
+        self.assertRedirects(response, reverse('order_detail', args=(self.order.id,)))
         messages = list(get_messages(response.wsgi_request))
         self.assertEqual(messages[0].message, f"Order item has been successfully added to Order {self.order.id}")
 
@@ -503,6 +503,9 @@ class TestConfirmOrder(TestCase):
         order_permission = Permission.objects.filter(content_type=content_type)
         manager_group, created = Group.objects.get_or_create(name="Managers")
         manager_group.permissions.add(*order_permission)
+        change_order_status_permission = Permission.objects.create(codename='change_order_status', name='can change order approval status',
+                                               content_type=content_type)
+        manager_group.permissions.add(change_order_status_permission)
 
     def setUp(self):
         self.table = Table.objects.create(name='orchid', Table_number=4, occupied=True)
@@ -530,5 +533,15 @@ class TestConfirmOrder(TestCase):
     def test_confirm_orders_GET_dont_has_perm(self):
         self.client.login(phone=self.user.phone, password=self.password)
         response = self.client.get(reverse('confirm_order', args=(self.order.id,)))
-        redirected_url = response.url
         self.assertEqual(response.status_code, 302)
+
+    def test_confirm_orders_GET_has_perm(self):
+        self.user.groups.add(self.manager_group)
+        self.client.login(phone=self.user.phone, password=self.password)
+        response = self.client.get(reverse('confirm_order', args=(self.order.id,)))
+
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse('order_list'))
+        messages = list(get_messages(response.wsgi_request))
+        self.assertEqual(messages[0].message, f'Order {self.order.id} has been successfully Approved.')
+        self.assertEqual(Order.objects.get(id=self.order.id).status, 'A')
