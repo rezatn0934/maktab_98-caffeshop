@@ -99,6 +99,7 @@ class TestOrdersModels(TestCase):
         self.assertEqual(order.total_price, 0)
 
     def test_has_no_quantity(self):
+        
         pass
         
 
