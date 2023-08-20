@@ -403,3 +403,8 @@ class TestUpdateOrderItem(TestCase):
         self.table.delete()
         self.table2.delete()
         self.user.delete()
+
+    def test_orders_GET_dont_has_perm(self):
+        self.client.login(phone=self.user.phone, password=self.password)
+        response = self.client.get(reverse('order_list'))
+        self.assertEqual(response.status_code, 403)
