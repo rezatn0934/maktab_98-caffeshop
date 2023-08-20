@@ -357,9 +357,19 @@ class TestOrderDetailView(TestCase):
         self.table2.delete()
         self.user.delete()
 
-    def test_order_detail_GET_has_perm(self):
+    def test_order_detail_GET(self):
         self.client.login(phone=self.user.phone, password=self.password)
         response = self.client.get(reverse('order_detail', args=(self.order.id,)))
         self.assertIn(self.order_detail, response.context['order_details'])
         self.assertTemplateUsed(response, 'order_detail.html')
         self.assertEqual(response.status_code, 200)
+
+
+class TestUpdateOrderItem(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        content_type = ContentType.objects.get_for_model(Order)
+        order_permission = Permission.objects.filter(content_type=content_type)
+        manager_group, created = Group.objects.get_or_create(name="Managers")
+        manager_group.permissions.add(*order_permission)
