@@ -654,5 +654,11 @@ class TestDeleteOrderItem(TestCase):
         )
         self.manager_group = Group.objects.get(name='Managers')
 
+    def tearDown(self):
+        Order_detail.objects.all().delete()
+        Product.objects.all().delete()
+        Order.objects.all().delete()
+        Table.objects.all().delete()
+        self.user.delete()
 
 
