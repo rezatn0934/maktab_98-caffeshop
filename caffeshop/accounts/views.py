@@ -230,7 +230,7 @@ def confirm_order(request, pk):
             return redirect('order_list')
         else:
             messages.error(request, f'Order {pk} not found')
-            return redirect('order_detail', pk)
+            return redirect('order_list')
 
 
 @login_required
@@ -239,6 +239,7 @@ def cancel_order(request, pk):
     if request.method == 'GET':
         order = Order.objects.filter(id=pk)
         if order:
+            print('10'*100)
             order = order.get(id=pk)
             order.status = 'C'
             order.staff = request.user
@@ -247,7 +248,7 @@ def cancel_order(request, pk):
             return redirect('order_list')
         else:
             messages.error(request, f'Order {pk} not found')
-            return redirect('order_detail', pk)
+            return redirect('order_list')
 
 
 @login_required
