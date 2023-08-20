@@ -421,8 +421,7 @@ class TestUpdateOrderItem(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, reverse('order_detail', args=[self.order_detail.order.pk]))
         messages = list(get_messages(response.wsgi_request))
-        if messages:
-            self.assertEqual(messages[0].message, 'Order item has been successfully updated.')
+        self.assertEqual(messages[0].message, 'Order item has been successfully updated.')
         self.assertEqual(Order_detail.objects.get(pk=self.order_detail.pk).product, self.product)
         self.assertEqual(Order_detail.objects.get(pk=self.order_detail.pk).quantity, 10)
 
@@ -435,5 +434,4 @@ class TestUpdateOrderItem(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, reverse('order_detail', args=[self.order_detail.order.pk]))
         messages = list(get_messages(response.wsgi_request))
-        if messages:
-            self.assertEqual(messages[0].message, 'Form input is not valid')
+        self.assertEqual(messages[0].message, 'Form input is not valid')
