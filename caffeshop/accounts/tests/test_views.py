@@ -676,3 +676,14 @@ class TestDeleteOrderItem(TestCase):
         messages = list(get_messages(response.wsgi_request))
         self.assertEqual(messages[0].message, f'Order item {self.order_detail.id} has been deleted!')
 
+    def test_cancel_orders_GET_wrong_order_id(self):
+        self.user.groups.add(self.manager_group)
+        self.client.login(phone=self.user.phone, password=self.password)
+        response = self.client.get(reverse('delete_order_item', args=(100,)))
+
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse('order_list'))
+        messages = list(get_messages(response.wsgi_request))
+        self.assertEqual(messages[0].message, 'Order items 100 not found')
+
+
