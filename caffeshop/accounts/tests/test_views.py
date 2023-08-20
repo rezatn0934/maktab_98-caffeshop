@@ -558,7 +558,7 @@ class TestConfirmOrder(TestCase):
         self.assertEqual(messages[0].message, 'Order 100 not found')
 
 
-class TestCancelOrder(TestCase):
+class TestConfirmOrder(TestCase):
 
     @classmethod
     def setUpTestData(cls):
@@ -570,3 +570,19 @@ class TestCancelOrder(TestCase):
                                                                    name='can change order approval status',
                                                                    content_type=content_type)
         manager_group.permissions.add(change_order_status_permission)
+
+    def setUp(self):
+        self.table = Table.objects.create(name='orchid', Table_number=4, occupied=True)
+        self.order = Order.objects.create(
+            payment='U', status='P', phone_number='09152593858', table_number=self.table)
+        self.product = Product.objects.create(category=Category.objects.create(name='Drinks'), name='Tea',
+                                              description='drinks', price=5.00)
+        self.order_detail = Order_detail.objects.create(
+            order=self.order, product=self.product, quantity=4)
+        self.client = Client()
+        self.password = 'reza123456'
+        self.user = User.objects.create_user(
+            phone='09198470934',
+            password=self.password,
+        )
+        self.manager_group = Group.objects.get(name='Managers')
