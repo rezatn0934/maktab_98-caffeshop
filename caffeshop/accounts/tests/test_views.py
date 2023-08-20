@@ -38,10 +38,10 @@ class TestStaffLogin(TestCase):
         response = StaffLogin.as_view()(request)
         self.assertEqual(response.status_code, 200)
 
-    # def test_staff_login_POST_valid(self):
-    #     response = self.client.post(reverse('login'), data={'phone': '09038916990'})
-    #     self.assertEqual(response.status_code, 302)
-    #     self.assertRedirects(response, reverse('verify'))
+    def test_staff_login_POST_valid(self):
+        response = self.client.post(reverse('login'), data={'phone': '09038916990'})
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse('verify'))
 
     def test_staff_login_POST_invalid(self):
         response = self.client.post(reverse('login'), data={'phone': 'gfhbjnh'})
@@ -208,9 +208,9 @@ class TestOrders(TestCase):
         self.table = Table.objects.create(name='orchid', Table_number=4, occupied=True)
         self.table2 = Table.objects.create(name='rose', Table_number=3, occupied=True)
         self.order = Order.objects.create(
-            payment='P', status='A', phone_number='09152593858', table_number=self.table2)
+            payment='P', status='A', phone_number='09152593858', table_number=self.table)
         self.order2 = Order.objects.create(
-            payment='P', status='A', phone_number='09198470934', table_number=self.table)
+            payment='P', status='A', phone_number='09198470934', table_number=None)
         self.product = Product.objects.create(category=Category.objects.create(name='Drinks'), name='Tea',
                                               description='drinks', price=5.00)
         self.order_detail = Order_detail.objects.create(
@@ -247,3 +247,13 @@ class TestOrders(TestCase):
         self.client.login(phone=self.user.phone, password=self.password)
         response = self.client.get(reverse('order_list'))
         self.assertEqual(response.status_code, 403)
+
+    def test_orders_GET_sort_by_id_asc(self):
+        self.user.groups.add(self.manager_group)
+        self.client.login(phone=self.user.phone, password=self.password)
+        data = {'sort': 'id', 'orderp': 'asc'}
+        response = self.client.get(reverse('order_list'), data=data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['orders']), 2)
+        self.assertTemplateUsed(response, 'orders_list.html')
+
