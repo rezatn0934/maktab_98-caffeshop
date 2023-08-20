@@ -2,15 +2,16 @@
 Welcome to the Caffe Shop Django project! 
 
 ## Table of Contents
-* [About the Project](#About-the-Project)
-* [Build With](#Build-With)
-* [Setup](#Setup)
-  - [Prerequisites](#Prerequisites)
-  - [Installation](#Installation)
+* [About the Project](#markdown-header-About-the-Project)
+* [Build With](#markdown-header-Build-With)
+* [Setup](#markdown-header-Setup)
+  - [Prerequisites](#markdown-header-Prerequisites)
+  - [Installation](#markdown-header-Installation)
 
-* [Running the Project](#Running-the-Project)
-* [License](#License)
-* [Contributing](#Contributing)
+* [Running the Project](#markdown-header-Running-the-Project)
+* [License](#markdown-header-License)
+* [Contributing](#markdown-header-Contributing)
+* 
 
 ## About the Project
 This project is a web application built with Django framework for managing a coffee shop's orders and sales. This README file will guide you through the setup process, provide instructions for running the project, and explain how to contribute to its development.
