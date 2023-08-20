@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AnonymousUser, Permission, Group
 from django.contrib.contenttypes.models import ContentType
+from django.contrib.messages import get_messages
 from django.contrib.messages.storage.fallback import FallbackStorage
 from django.contrib.sessions.middleware import SessionMiddleware
 from django.test import TestCase, Client, RequestFactory
@@ -393,6 +394,7 @@ class TestUpdateOrderItem(TestCase):
             phone='09198470934',
             password=self.password,
         )
+        self.manager_group = Group.objects.get(name='Managers')
 
     def tearDown(self):
         self.order_detail.delete()
@@ -406,5 +408,20 @@ class TestUpdateOrderItem(TestCase):
 
     def test_orders_GET_dont_has_perm(self):
         self.client.login(phone=self.user.phone, password=self.password)
-        response = self.client.get(reverse('order_list'))
+        data = {'product': self.product, 'quantity': 10}
+        response = self.client.post(reverse('update_order_detail', args=(self.order_detail.id,)), data=data)
         self.assertEqual(response.status_code, 403)
+
+    def test_orders_GET_has_perm_valid_form(self):
+        self.user.groups.add(self.manager_group)
+        self.client.login(phone=self.user.phone, password=self.password)
+        data = {'product': self.product.id, 'quantity': 10}
+        response = self.client.post(reverse('update_order_detail', args=(self.order_detail.id,)), data=data)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse('order_detail', args=[self.order_detail.order.pk]))
+        messages = list(get_messages(response.wsgi_request))
+        if messages:
+            self.assertEqual(messages[0].message, 'Order item has been successfully updated.')
+        self.assertEqual(Order_detail.objects.get(pk=self.order_detail.pk).product, self.product)
+        self.assertEqual(Order_detail.objects.get(pk=self.order_detail.pk).quantity, 10)
