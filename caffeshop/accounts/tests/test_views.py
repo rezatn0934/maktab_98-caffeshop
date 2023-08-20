@@ -469,3 +469,14 @@ class TestCreateOrderItem(TestCase):
             password=self.password,
         )
         self.manager_group = Group.objects.get(name='Managers')
+
+    def tearDown(self):
+        self.order_detail.delete()
+        self.order_detail2.delete()
+        self.product.delete()
+        self.product2.delete()
+        self.order.delete()
+        self.order2.delete()
+        self.table.delete()
+        self.table2.delete()
+        self.user.delete()
