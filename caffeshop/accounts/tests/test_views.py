@@ -471,18 +471,24 @@ class TestCreateOrderItem(TestCase):
         self.manager_group = Group.objects.get(name='Managers')
 
     def tearDown(self):
-        self.order_detail.delete()
-        self.order_detail2.delete()
-        self.product.delete()
-        self.product2.delete()
-        self.order.delete()
-        self.order2.delete()
-        self.table.delete()
-        self.table2.delete()
-        self.user.delete()
+        Order_detail.objects.all().delete()
+        Product.objects.all().delete()
+        Order.objects.all().delete()
+        Table.objects.all().delete()
 
     def test_create_orders_detail_POST_dont_has_perm(self):
         self.client.login(phone=self.user.phone, password=self.password)
         data = {'product': self.product, 'quantity': 10}
         response = self.client.post(reverse('create_order_detail'), data=data)
         self.assertEqual(response.status_code, 403)
+
+    def test_update_orders_POST_has_perm_valid_form(self):
+        self.user.groups.add(self.manager_group)
+        self.client.login(phone=self.user.phone, password=self.password)
+        data = {'product': self.product2.id, 'quantity': 10, 'order': self.order.id}
+        response = self.client.post(reverse('create_order_detail'), data=data)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse('order_detail', args=[self.order.id]))
+        messages = list(get_messages(response.wsgi_request))
+        self.assertEqual(messages[0].message, f"Order item has been successfully added to Order {self.order.id}")
