@@ -192,3 +192,29 @@ class TestDashboard(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context.get('total_sale')['total_sale'], 20.0)
         self.assertTemplateUsed(response, 'dashboard.html')
+
+class TestOrders(TestCase):
+
+    def setUp(self):
+        self.table = Table.objects.create(name='orchid', Table_number=4, occupied=True)
+        self.table2 = Table.objects.create(name='rose', Table_number=3, occupied=True)
+        self.order = Order.objects.create(
+            payment='P', status='A', phone_number='09152593858', table_number=self.table2)
+        self.order2 = Order.objects.create(
+            payment='P', status='A', phone_number='09198470934', table_number=self.table)
+        self.product = Product.objects.create(category=Category.objects.create(name='Drinks'), name='Tea',
+                                              description='drinks', price=5.00)
+        self.order_detail = Order_detail.objects.create(
+            order=self.order, product=self.product, quantity=4)
+        self.order_detail2 = Order_detail.objects.create(
+            order=self.order2, product=self.product, quantity=3)
+        self.client = Client()
+        self.password = 'reza123456'
+        self.user = User.objects.create_superuser(
+            phone='09038916990',
+            password=self.password,
+        )
+        self.user2 = User.objects.create_user(
+            phone='09198470934',
+            password=self.password,
+        )
