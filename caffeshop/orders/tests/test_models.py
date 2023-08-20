@@ -64,7 +64,7 @@ class TestOrdersModels(TestCase):
     #         order_date = '2023-07-31'
     #     )
     def test_str(self):
-        self.assertEquals(str(self.order), 'Order7')
+        self.assertEquals(str(self.order), 'Order8')
 
     def test_total_price(self):
         order = Order.objects.create(
@@ -103,6 +103,10 @@ class TestOrdersModels(TestCase):
         pass
         
 
+    def test_save(self):
+        self.order.save()
+        self.assertEqual(str(self.order.phone_number), '09152593858')
+        self.assertEqual(str(self.order.table_number), 'rose')
       
 class TestTableModel(TestCase):
     def test_str(self):
