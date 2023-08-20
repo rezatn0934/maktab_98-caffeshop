@@ -55,16 +55,16 @@ class TestOrdersModels(TestCase):
         self.assertEqual(order_items[0].product.name, 'rice')
         self.assertEqual(order_items[1].product.name, 'hamburger')
 
-    def setup(self):
-        self.order = Order.objects.create(
-            payment = 'P',
-            status = 'A',
-            phone_number ='09152593858',
-            table_number = Table.objects.create(name='rose', Table_number = 20, occupied=True),
-            order_date = '2023-07-31'
-        )
+    # def setup(self):
+    #     self.order = Order.objects.create(
+    #         payment = 'P',
+    #         status = 'A',
+    #         phone_number ='09152593858',
+    #         table_number = Table.objects.create(name='rose', Table_number = 20, occupied=True),
+    #         order_date = '2023-07-31'
+    #     )
     def test_str(self):
-        self.assertEquals(str(self.order), 'Order7')
+        self.assertEquals(str(self.order), 'Order8')
 
     def test_total_price(self):
         order = Order.objects.create(
@@ -73,7 +73,7 @@ class TestOrdersModels(TestCase):
             phone_number = '09152593858',
             table_number = Table.objects.create(name='violet', Table_number=60, occupied = True)
         )
-        order_detail = Order_detail.objects.create(order=order,product=Product.objects.get(name='hamburger'),quantity=2, price=10.00)
+        order_detail = Order_detail.objects.create(order=self.order,product=Product.objects.get(name='hamburger'),quantity=2, price=10.00)
         self.assertEqual(order_detail.total_price, 20.0)
 
     def test_total_order_price(self):
@@ -103,6 +103,10 @@ class TestOrdersModels(TestCase):
         pass
         
 
+    def test_save(self):
+        self.order.save()
+        self.assertEqual(str(self.order.phone_number), '09152593858')
+        self.assertEqual(str(self.order.table_number), 'rose')
       
 class TestTableModel(TestCase):
     def test_str(self):
