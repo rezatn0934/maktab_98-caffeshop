@@ -234,7 +234,7 @@ def confirm_order(request, pk):
 
 
 @login_required
-@permission_required('change_order_status')
+@permission_required('orders.change_order_status')
 def cancel_order(request, pk):
     if request.method == 'GET':
         order = Order.objects.filter(id=pk)
