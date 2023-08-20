@@ -354,3 +354,7 @@ class TestOrderDetailView(TestCase):
         )
         self.manager_group = Group.objects.get(name='Managers')
 
+    def test_order_detail_GET_dont_has_perm(self):
+        self.client.login(phone=self.user.phone, password=self.password)
+        response = self.client.get(reverse('order_list'))
+        self.assertEqual(response.status_code, 403)
