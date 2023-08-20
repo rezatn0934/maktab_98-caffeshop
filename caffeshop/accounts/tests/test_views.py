@@ -494,6 +494,16 @@ class TestCreateOrderItem(TestCase):
         messages = list(get_messages(response.wsgi_request))
         self.assertEqual(messages[0].message, f"Order item has been successfully added to Order {self.order.id}")
 
+    def test_create_orders_detail_POST_has_perm_invalid_form(self):
+        self.user.groups.add(self.manager_group)
+        self.client.login(phone=self.user.phone, password=self.password)
+        data = {'product': self.product2, 'quantity': 10, 'order': self.order.id}
+        response = self.client.post(reverse('create_order_detail'), data=data)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse('order_detail', args=(self.order.id,)))
+        messages = list(get_messages(response.wsgi_request))
+        self.assertEqual(messages[0].message, 'Form input is not valid')
+
 
 class TestConfirmOrder(TestCase):
 
