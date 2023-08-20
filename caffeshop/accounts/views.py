@@ -259,7 +259,7 @@ def delete_order_detail(request, pk):
             order_detail = order_detail.get(id=pk)
             order = order_detail.order
             order_detail.delete()
-            messages.warning(request, f'Order item {pk} has been canceled!')
+            messages.warning(request, f'Order item {pk} has been deleted!')
             return redirect('order_detail', order.id)
         else:
             messages.error(request, f'Order items {pk} not found')
