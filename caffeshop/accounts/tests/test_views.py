@@ -407,13 +407,13 @@ class TestUpdateOrderItem(TestCase):
         self.table2.delete()
         self.user.delete()
 
-    def test_orders_GET_dont_has_perm(self):
+    def test_update_order_detail_POST_dont_has_perm(self):
         self.client.login(phone=self.user.phone, password=self.password)
         data = {'product': self.product, 'quantity': 10}
         response = self.client.post(reverse('update_order_detail', args=(self.order_detail.id,)), data=data)
         self.assertEqual(response.status_code, 403)
 
-    def test_orders_GET_has_perm_valid_form(self):
+    def test_update_orders_POST_has_perm_valid_form(self):
         self.user.groups.add(self.manager_group)
         self.client.login(phone=self.user.phone, password=self.password)
         data = {'product': self.product.id, 'quantity': 10}
@@ -426,7 +426,7 @@ class TestUpdateOrderItem(TestCase):
         self.assertEqual(Order_detail.objects.get(pk=self.order_detail.pk).product, self.product)
         self.assertEqual(Order_detail.objects.get(pk=self.order_detail.pk).quantity, 10)
 
-    def test_orders_GET_has_perm_invalid_form(self):
+    def test_update_orders_detail_POST_has_perm_invalid_form(self):
         self.user.groups.add(self.manager_group)
         self.client.login(phone=self.user.phone, password=self.password)
         data = {'product': self.product, 'quantity': 10}
@@ -480,3 +480,9 @@ class TestCreateOrderItem(TestCase):
         self.table.delete()
         self.table2.delete()
         self.user.delete()
+
+    def test_create_orders_detail_POST_dont_has_perm(self):
+        self.client.login(phone=self.user.phone, password=self.password)
+        data = {'product': self.product, 'quantity': 10}
+        response = self.client.post(reverse('create_order_detail'), data=data)
+        self.assertEqual(response.status_code, 403)
