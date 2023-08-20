@@ -545,3 +545,13 @@ class TestConfirmOrder(TestCase):
         messages = list(get_messages(response.wsgi_request))
         self.assertEqual(messages[0].message, f'Order {self.order.id} has been successfully Approved.')
         self.assertEqual(Order.objects.get(id=self.order.id).status, 'A')
+
+    def test_confirm_orders_GET_wrong_order_id(self):
+        self.user.groups.add(self.manager_group)
+        self.client.login(phone=self.user.phone, password=self.password)
+        response = self.client.get(reverse('confirm_order', args=(100,)))
+
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse('order_list'))
+        messages = list(get_messages(response.wsgi_request))
+        self.assertEqual(messages[0].message, 'Order 100 not found')
