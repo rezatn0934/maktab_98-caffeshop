@@ -475,6 +475,8 @@ class TestCreateOrderItem(TestCase):
         Product.objects.all().delete()
         Order.objects.all().delete()
         Table.objects.all().delete()
+        self.user.delete()
+
 
     def test_create_orders_detail_POST_dont_has_perm(self):
         self.client.login(phone=self.user.phone, password=self.password)
@@ -518,3 +520,10 @@ class TestConfirmOrder(TestCase):
             password=self.password,
         )
         self.manager_group = Group.objects.get(name='Managers')
+
+    def tearDown(self):
+        Order_detail.objects.all().delete()
+        Product.objects.all().delete()
+        Order.objects.all().delete()
+        Table.objects.all().delete()
+        self.user.delete()
