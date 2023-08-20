@@ -1,6 +1,7 @@
-from django.contrib.auth.models import AnonymousUser
-from django.contrib.sessions.middleware import SessionMiddleware
+from django.contrib.auth.models import AnonymousUser, Permission, Group
+from django.contrib.contenttypes.models import ContentType
 from django.contrib.messages.storage.fallback import FallbackStorage
+from django.contrib.sessions.middleware import SessionMiddleware
 from django.test import TestCase, Client, RequestFactory
 from django.urls import reverse
 from django.utils import timezone
@@ -193,7 +194,15 @@ class TestDashboard(TestCase):
         self.assertEqual(response.context.get('total_sale')['total_sale'], 20.0)
         self.assertTemplateUsed(response, 'dashboard.html')
 
+
 class TestOrders(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        content_type = ContentType.objects.get_for_model(Order)
+        order_permission = Permission.objects.filter(content_type=content_type)
+        manager_group, created = Group.objects.get_or_create(name="Managers")
+        manager_group.permissions.add(*order_permission)
 
     def setUp(self):
         self.table = Table.objects.create(name='orchid', Table_number=4, occupied=True)
@@ -210,14 +219,11 @@ class TestOrders(TestCase):
             order=self.order2, product=self.product, quantity=3)
         self.client = Client()
         self.password = 'reza123456'
-        self.user = User.objects.create_superuser(
-            phone='09038916990',
-            password=self.password,
-        )
-        self.user2 = User.objects.create_user(
+        self.user = User.objects.create_user(
             phone='09198470934',
             password=self.password,
         )
+        self.manager_group = Group.objects.get(name='Managers')
 
     def tearDown(self):
         self.order_detail.delete()
@@ -227,5 +233,4 @@ class TestOrders(TestCase):
         self.order2.delete()
         self.table.delete()
         self.table2.delete()
-        self.user2.delete()
         self.user.delete()
