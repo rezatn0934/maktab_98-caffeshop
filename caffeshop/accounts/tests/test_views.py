@@ -266,4 +266,12 @@ class TestOrders(TestCase):
         self.assertEqual(len(response.context['orders']), 2)
         self.assertTemplateUsed(response, 'orders_list.html')
 
+    def test_orders_GET_filter_tabel_name(self):
+        self.user.groups.add(self.manager_group)
+        self.client.login(phone=self.user.phone, password=self.password)
+        data = {'search': 'search', 'filter1': 'orchid', 'flexRadioDefault': 'table_number'}
+        response = self.client.get(reverse('order_list'), data=data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['orders']), 1)
+        self.assertTemplateUsed(response, 'orders_list.html')
 
