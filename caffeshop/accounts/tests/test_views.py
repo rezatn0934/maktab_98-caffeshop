@@ -1283,3 +1283,12 @@ class TestCustomerDemographic(TestCase):
         self.client.login(phone=self.user.phone, password=self.password)
         response = self.client.get(reverse('customer_demographic'))
         self.assertEqual(response.status_code, 302)
+
+    def test_customer_demographic_GET_has_perm_without_phone_number(self):
+        self.user.groups.add(self.manager_group)
+        self.client.login(phone=self.user.phone, password=self.password)
+        response = self.client.get(reverse('customer_demographic'))
+        customer_sales = response.context['query_set']
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNone(customer_sales)
