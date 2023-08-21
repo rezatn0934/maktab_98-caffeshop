@@ -1425,3 +1425,14 @@ class TestOrderStatusReport(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn('lst1', response.context)
         self.assertIn('lst2', response.context)
+
+
+class TestSalesByEmployeeReport(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        content_type = ContentType.objects.get_for_model(Order_detail)
+        order_detail_permission = Permission.objects.filter(content_type=content_type)
+
+        manager_group, created = Group.objects.get_or_create(name="Managers")
+        manager_group.permissions.add(*order_detail_permission)
