@@ -653,7 +653,7 @@ class TestDeleteOrderItem(TestCase):
                                                description='food', price=15.00)
         self.order_detail = Order_detail.objects.create(
             order=self.order, product=self.product, quantity=4)
-        self.order_detail = Order_detail.objects.create(
+        self.order_detail2 = Order_detail.objects.create(
             order=self.order, product=self.product2, quantity=2)
         self.client = Client()
         self.password = 'reza123456'
@@ -695,4 +695,14 @@ class TestDeleteOrderItem(TestCase):
         messages = list(get_messages(response.wsgi_request))
         self.assertEqual(messages[0].message, 'Order items 100 not found')
 
+
+class TestMostPopular(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        content_type = ContentType.objects.get_for_model(Order_detail)
+        order_detail_permission = Permission.objects.filter(content_type=content_type)
+
+        manager_group, created = Group.objects.get_or_create(name="Managers")
+        manager_group.permissions.add(*order_detail_permission)
 
