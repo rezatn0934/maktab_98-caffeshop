@@ -835,537 +835,537 @@ from accounts.views import (
 #         self.assertEqual(lst1[hour], 4)
 #
 
-class TestTopSelling(TestCase):
-
-    @classmethod
-    def setUpTestData(cls):
-        content_type = ContentType.objects.get_for_model(Order_detail)
-        order_detail_permission = Permission.objects.filter(content_type=content_type)
-
-        manager_group, created = Group.objects.get_or_create(name="Managers")
-        manager_group.permissions.add(*order_detail_permission)
-
-    def setUp(self):
-        self.order1 = baker.make(Order, payment='P')
-        self.order2 = baker.make(Order, payment='P')
-        self.order3 = baker.make(Order, payment='U')
-        self.order4 = baker.make(Order, payment='P')
-        self.product1 = baker.make(Product, price=25)
-        self.product2 = baker.make(Product, price=10)
-        self.order_detail1 = baker.make(Order_detail, product=self.product1, order=self.order1, quantity=3)
-        self.order_detail2 = baker.make(Order_detail, product=self.product1, order=self.order2, quantity=2)
-        self.order_detail3 = baker.make(Order_detail, product=self.product1, order=self.order3, quantity=4)
-        self.order_detail4 = baker.make(Order_detail, product=self.product2, order=self.order4, quantity=1)
-
-        self.client = Client()
-        self.password = 'reza123456'
-        self.user = User.objects.create_user(
-            phone='09198470934',
-            password=self.password,
-        )
-        self.manager_group = Group.objects.get(name='Managers')
-
-    def tearDown(self):
-        Order_detail.objects.all().delete()
-        Product.objects.all().delete()
-        Order.objects.all().delete()
-        Table.objects.all().delete()
-        self.user.delete()
-
-    def test_top_selling_GET_dont_has_perm(self):
-        self.client.login(phone=self.user.phone, password=self.password)
-        response = self.client.get(reverse('top_selling'))
-        self.assertEqual(response.status_code, 302)
-
-    def test_top_selling_GET_has_perm(self):
-        self.user.groups.add(self.manager_group)
-        self.client.login(phone=self.user.phone, password=self.password)
-        response = self.client.get(reverse('top_selling'))
-        mot_popular_products = response.context['query_set']
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(mot_popular_products[0], self.product1)
-
-    def test_top_selling_GET_has_date_filter(self):
-        self.user.groups.add(self.manager_group)
-        self.client.login(phone=self.user.phone, password=self.password)
-        first_date = timezone.now() - timezone.timedelta(hours=5)
-        data = {'filter': '', 'first_date': str(first_date.date()), 'second_date': str(timezone.now())}
-        response = self.client.get(reverse('top_selling'), data=data)
-        mot_popular_products = response.context['query_set']
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(mot_popular_products[0]['name'], self.product1.name)
-
-
-class TestHourlySales(TestCase):
-
-    @classmethod
-    def setUpTestData(cls):
-        content_type = ContentType.objects.get_for_model(Order_detail)
-        order_detail_permission = Permission.objects.filter(content_type=content_type)
-
-        manager_group, created = Group.objects.get_or_create(name="Managers")
-        manager_group.permissions.add(*order_detail_permission)
-
-    def setUp(self):
-        self.order1 = baker.make(Order, payment='P')
-        self.order2 = baker.make(Order, payment='P')
-        self.order3 = baker.make(Order, payment='U')
-        self.order4 = baker.make(Order, payment='P')
-        self.product1 = baker.make(Product, price=25)
-        self.product2 = baker.make(Product, price=10)
-        self.order_detail1 = baker.make(Order_detail, product=self.product1, order=self.order1, quantity=3)
-        self.order_detail2 = baker.make(Order_detail, product=self.product1, order=self.order2, quantity=2)
-        self.order_detail3 = baker.make(Order_detail, product=self.product1, order=self.order3, quantity=4)
-        self.order_detail4 = baker.make(Order_detail, product=self.product2, order=self.order4, quantity=1)
-
-        self.client = Client()
-        self.password = 'reza123456'
-        self.user = User.objects.create_user(
-            phone='09198470934',
-            password=self.password,
-        )
-        self.manager_group = Group.objects.get(name='Managers')
-
-    def tearDown(self):
-        Order_detail.objects.all().delete()
-        Product.objects.all().delete()
-        Order.objects.all().delete()
-        Table.objects.all().delete()
-        self.user.delete()
-
-    def test_hourly_sales_GET_dont_has_perm(self):
-        self.client.login(phone=self.user.phone, password=self.password)
-        response = self.client.get(reverse('hourly_sales'))
-        self.assertEqual(response.status_code, 302)
-
-    def test_hourly_sales_GET_has_perm(self):
-        self.user.groups.add(self.manager_group)
-        self.client.login(phone=self.user.phone, password=self.password)
-        response = self.client.get(reverse('hourly_sales'))
-        hourly_sales = response.context['query_set']
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(float(hourly_sales[0]['total_sale']), 135.0)
-
-    def test_hourly_sales_GET_first_date_filter(self):
-        self.user.groups.add(self.manager_group)
-        self.client.login(phone=self.user.phone, password=self.password)
-        first_date = timezone.now() - timezone.timedelta(hours=5)
-        data = {'filter': '', 'first_date': str(first_date.date())}
-        response = self.client.get(reverse('hourly_sales'), data=data)
-        hourly_sales = response.context['query_set']
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(float(hourly_sales[0]['total_sale']), 135.0)
-
-    def test_hourly_sales_GET_has_date_filter(self):
-        self.user.groups.add(self.manager_group)
-        self.client.login(phone=self.user.phone, password=self.password)
-        first_date = timezone.now() - timezone.timedelta(hours=5)
-        data = {'filter': '', 'first_date': str(first_date.date()), 'second_date': str(timezone.now())}
-        response = self.client.get(reverse('hourly_sales'), data=data)
-        hourly_sales = response.context['query_set']
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(float(hourly_sales[0]['total_sale']), 135.0)
-
-
-class TestDailySales(TestCase):
-
-    @classmethod
-    def setUpTestData(cls):
-        content_type = ContentType.objects.get_for_model(Order_detail)
-        order_detail_permission = Permission.objects.filter(content_type=content_type)
-
-        manager_group, created = Group.objects.get_or_create(name="Managers")
-        manager_group.permissions.add(*order_detail_permission)
-
-    def setUp(self):
-        self.order1 = baker.make(Order, payment='P')
-        self.order2 = baker.make(Order, payment='P')
-        self.order3 = baker.make(Order, payment='U')
-        self.order4 = baker.make(Order, payment='P')
-        self.product1 = baker.make(Product, price=25)
-        self.product2 = baker.make(Product, price=10)
-        self.order_detail1 = baker.make(Order_detail, product=self.product1, order=self.order1, quantity=3)
-        self.order_detail2 = baker.make(Order_detail, product=self.product1, order=self.order2, quantity=2)
-        self.order_detail3 = baker.make(Order_detail, product=self.product1, order=self.order3, quantity=4)
-        self.order_detail4 = baker.make(Order_detail, product=self.product2, order=self.order4, quantity=1)
-
-        self.client = Client()
-        self.password = 'reza123456'
-        self.user = User.objects.create_user(
-            phone='09198470934',
-            password=self.password,
-        )
-        self.manager_group = Group.objects.get(name='Managers')
-
-    def tearDown(self):
-        Order_detail.objects.all().delete()
-        Product.objects.all().delete()
-        Order.objects.all().delete()
-        Table.objects.all().delete()
-        self.user.delete()
-
-    def test_daily_sales_GET_dont_has_perm(self):
-        self.client.login(phone=self.user.phone, password=self.password)
-        response = self.client.get(reverse('daily_sales'))
-        self.assertEqual(response.status_code, 302)
-
-    def test_daily_sales_GET_has_perm(self):
-        self.user.groups.add(self.manager_group)
-        self.client.login(phone=self.user.phone, password=self.password)
-        response = self.client.get(reverse('daily_sales'))
-        daily_sales = response.context['query_set']
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(float(daily_sales[0]['total_sale']), 135.0)
-
-    def test_daily_sales_GET_first_date_filter(self):
-        self.user.groups.add(self.manager_group)
-        self.client.login(phone=self.user.phone, password=self.password)
-        first_date = timezone.now() - timezone.timedelta(days=5)
-        data = {'filter': '', 'first_date': str(first_date.date())}
-        response = self.client.get(reverse('daily_sales'), data=data)
-        daily_sales = response.context['query_set']
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(float(daily_sales[0]['total_sale']), 135.0)
-
-    def test_daily_sales_GET_has_date_filter(self):
-        self.user.groups.add(self.manager_group)
-        self.client.login(phone=self.user.phone, password=self.password)
-        first_date = timezone.now() - timezone.timedelta(days=5)
-        data = {'filter': '', 'first_date': str(first_date.date()), 'second_date': str(timezone.now())}
-        response = self.client.get(reverse('daily_sales'), data=data)
-        daily_sales = response.context['query_set']
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(float(daily_sales[0]['total_sale']), 135.0)
-
-
-class TestMonthlySales(TestCase):
-
-    @classmethod
-    def setUpTestData(cls):
-        content_type = ContentType.objects.get_for_model(Order_detail)
-        order_detail_permission = Permission.objects.filter(content_type=content_type)
-
-        manager_group, created = Group.objects.get_or_create(name="Managers")
-        manager_group.permissions.add(*order_detail_permission)
-
-    def setUp(self):
-        self.order1 = baker.make(Order, payment='P')
-        self.order2 = baker.make(Order, payment='P')
-        self.order3 = baker.make(Order, payment='U')
-        self.order4 = baker.make(Order, payment='P')
-        self.product1 = baker.make(Product, price=25)
-        self.product2 = baker.make(Product, price=10)
-        self.order_detail1 = baker.make(Order_detail, product=self.product1, order=self.order1, quantity=3)
-        self.order_detail2 = baker.make(Order_detail, product=self.product1, order=self.order2, quantity=2)
-        self.order_detail3 = baker.make(Order_detail, product=self.product1, order=self.order3, quantity=4)
-        self.order_detail4 = baker.make(Order_detail, product=self.product2, order=self.order4, quantity=1)
-
-        self.client = Client()
-        self.password = 'reza123456'
-        self.user = User.objects.create_user(
-            phone='09198470934',
-            password=self.password,
-        )
-        self.manager_group = Group.objects.get(name='Managers')
-
-    def tearDown(self):
-        Order_detail.objects.all().delete()
-        Product.objects.all().delete()
-        Order.objects.all().delete()
-        Table.objects.all().delete()
-        self.user.delete()
-
-    def test_monthly_sales_GET_dont_has_perm(self):
-        self.client.login(phone=self.user.phone, password=self.password)
-        response = self.client.get(reverse('monthly_sales'))
-        self.assertEqual(response.status_code, 302)
-
-    def test_monthly_sales_GET_has_perm(self):
-        self.user.groups.add(self.manager_group)
-        self.client.login(phone=self.user.phone, password=self.password)
-        response = self.client.get(reverse('monthly_sales'))
-        monthly_sales = response.context['query_set']
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(float(monthly_sales[0]['total_sale']), 135.0)
-
-    def test_monthly_sales_GET_first_date_filter(self):
-        self.user.groups.add(self.manager_group)
-        self.client.login(phone=self.user.phone, password=self.password)
-        first_date = timezone.now() - timezone.timedelta(days=90)
-        data = {'filter': '', 'first_date': str(first_date.date())}
-        response = self.client.get(reverse('monthly_sales'), data=data)
-        monthly_sales = response.context['query_set']
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(float(monthly_sales[0]['total_sale']), 135.0)
-
-    def test_monthly_sales_GET_has_date_filter(self):
-        self.user.groups.add(self.manager_group)
-        self.client.login(phone=self.user.phone, password=self.password)
-        first_date = timezone.now() - timezone.timedelta(days=90)
-        data = {'filter': '', 'first_date': str(first_date.date()), 'second_date': str(timezone.now())}
-        response = self.client.get(reverse('monthly_sales'), data=data)
-        monthly_sales = response.context['query_set']
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(float(monthly_sales[0]['total_sale']), 135.0)
-
-
-class TestYearlySales(TestCase):
-
-    @classmethod
-    def setUpTestData(cls):
-        content_type = ContentType.objects.get_for_model(Order_detail)
-        order_detail_permission = Permission.objects.filter(content_type=content_type)
-
-        manager_group, created = Group.objects.get_or_create(name="Managers")
-        manager_group.permissions.add(*order_detail_permission)
-
-    def setUp(self):
-        self.order1 = baker.make(Order, payment='P')
-        self.order2 = baker.make(Order, payment='P')
-        self.order3 = baker.make(Order, payment='U')
-        self.order4 = baker.make(Order, payment='P')
-        self.product1 = baker.make(Product, price=25)
-        self.product2 = baker.make(Product, price=10)
-        self.order_detail1 = baker.make(Order_detail, product=self.product1, order=self.order1, quantity=3)
-        self.order_detail2 = baker.make(Order_detail, product=self.product1, order=self.order2, quantity=2)
-        self.order_detail3 = baker.make(Order_detail, product=self.product1, order=self.order3, quantity=4)
-        self.order_detail4 = baker.make(Order_detail, product=self.product2, order=self.order4, quantity=1)
-
-        self.client = Client()
-        self.password = 'reza123456'
-        self.user = User.objects.create_user(
-            phone='09198470934',
-            password=self.password,
-        )
-        self.manager_group = Group.objects.get(name='Managers')
-
-    def tearDown(self):
-        Order_detail.objects.all().delete()
-        Product.objects.all().delete()
-        Order.objects.all().delete()
-        Table.objects.all().delete()
-        self.user.delete()
-
-    def test_yearly_sales_GET_dont_has_perm(self):
-        self.client.login(phone=self.user.phone, password=self.password)
-        response = self.client.get(reverse('yearly_sales'))
-        self.assertEqual(response.status_code, 302)
-
-    def test_yearly_sales_GET_has_perm(self):
-        self.user.groups.add(self.manager_group)
-        self.client.login(phone=self.user.phone, password=self.password)
-        response = self.client.get(reverse('yearly_sales'))
-        yearly_sales = response.context['query_set']
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(float(yearly_sales[0]['total_sale']), 135.0)
-
-    def test_yearly_sales_GET_first_date_filter(self):
-        self.user.groups.add(self.manager_group)
-        self.client.login(phone=self.user.phone, password=self.password)
-        data = {'filter': '', 'first_date': '2020-01-01'}
-        response = self.client.get(reverse('yearly_sales'), data=data)
-        yearly_sales = response.context['query_set']
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(float(yearly_sales[0]['total_sale']), 135.0)
-
-    def test_yearly_sales_GET_has_date_filter(self):
-        self.user.groups.add(self.manager_group)
-        self.client.login(phone=self.user.phone, password=self.password)
-        data = {'filter': '', 'first_date': '2020-01-01', 'second_date': str(timezone.now())}
-        response = self.client.get(reverse('yearly_sales'), data=data)
-        yearly_sales = response.context['query_set']
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(float(yearly_sales[0]['total_sale']), 135.0)
-
-
-class TestCustomerSales(TestCase):
-
-    @classmethod
-    def setUpTestData(cls):
-        content_type = ContentType.objects.get_for_model(Order_detail)
-        order_detail_permission = Permission.objects.filter(content_type=content_type)
-
-        manager_group, created = Group.objects.get_or_create(name="Managers")
-        manager_group.permissions.add(*order_detail_permission)
-
-    def setUp(self):
-        self.customer1 = '09198470934'
-        self.customer2 = '09123456789'
-        self.order1 = baker.make(Order, payment='P', phone_number=self.customer1)
-        self.order2 = baker.make(Order, payment='P', phone_number=self.customer1)
-        self.order3 = baker.make(Order, payment='P', phone_number=self.customer2)
-        self.product1 = baker.make(Product, price=25)
-        self.product2 = baker.make(Product, price=10)
-        self.order_detail1 = baker.make(Order_detail, product=self.product1, order=self.order1, quantity=3)
-        self.order_detail2 = baker.make(Order_detail, product=self.product1, order=self.order1, quantity=3)
-        self.order_detail3 = baker.make(Order_detail, product=self.product1, order=self.order2, quantity=2)
-        self.order_detail4 = baker.make(Order_detail, product=self.product1, order=self.order2, quantity=4)
-        self.order_detail5 = baker.make(Order_detail, product=self.product2, order=self.order3, quantity=1)
-        self.client = Client()
-        self.password = 'reza123456'
-        self.user = User.objects.create_user(
-            phone='09198470934',
-            password=self.password,
-        )
-        self.manager_group = Group.objects.get(name='Managers')
-
-    def tearDown(self):
-        Order_detail.objects.all().delete()
-        Product.objects.all().delete()
-        Order.objects.all().delete()
-        Table.objects.all().delete()
-        self.user.delete()
-
-    def test_customer_sales_GET_dont_has_perm(self):
-        self.client.login(phone=self.user.phone, password=self.password)
-        response = self.client.get(reverse('customer_sales'))
-        self.assertEqual(response.status_code, 302)
-
-    def test_customer_sales_GET_has_perm(self):
-        self.user.groups.add(self.manager_group)
-        self.client.login(phone=self.user.phone, password=self.password)
-        response = self.client.get(reverse('customer_sales'))
-        customer_sales = response.context['query_set']
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(customer_sales[0]['phone_number'], self.customer1)
-        self.assertEqual(float(customer_sales[0]['total_sale']), 300.0)
-
-    def test_customer_sales_GET_has_date_filter(self):
-        self.user.groups.add(self.manager_group)
-        self.client.login(phone=self.user.phone, password=self.password)
-        data = {'filter': '', 'first_date': '2020-01-01', 'second_date': str(timezone.now())}
-        response = self.client.get(reverse('customer_sales'), data=data)
-        customer_sales = response.context['query_set']
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(customer_sales[0]['phone_number'], self.customer1)
-        self.assertEqual(float(customer_sales[0]['total_sale']), 300.0)
-
-
-class TestCustomerDemographic(TestCase):
-
-    @classmethod
-    def setUpTestData(cls):
-        content_type = ContentType.objects.get_for_model(Order_detail)
-        order_detail_permission = Permission.objects.filter(content_type=content_type)
-
-        manager_group, created = Group.objects.get_or_create(name="Managers")
-        manager_group.permissions.add(*order_detail_permission)
-
-    def setUp(self):
-        self.customer1 = '09198470934'
-        self.customer2 = '09123456789'
-        self.order1 = baker.make(Order, payment='P', phone_number=self.customer1)
-        self.order2 = baker.make(Order, payment='P', phone_number=self.customer1)
-        self.order3 = baker.make(Order, payment='P', phone_number=self.customer2)
-        self.product1 = baker.make(Product, price=25)
-        self.product2 = baker.make(Product, price=10)
-        self.order_detail1 = baker.make(Order_detail, product=self.product1, order=self.order1, quantity=3)
-        self.order_detail2 = baker.make(Order_detail, product=self.product1, order=self.order1, quantity=3)
-        self.order_detail3 = baker.make(Order_detail, product=self.product1, order=self.order2, quantity=2)
-        self.order_detail4 = baker.make(Order_detail, product=self.product1, order=self.order2, quantity=4)
-        self.order_detail5 = baker.make(Order_detail, product=self.product2, order=self.order3, quantity=1)
-        self.client = Client()
-        self.password = 'reza123456'
-        self.user = User.objects.create_user(
-            phone='09308916990',
-            password=self.password,
-        )
-        self.manager_group = Group.objects.get(name='Managers')
-
-    def tearDown(self):
-        Order_detail.objects.all().delete()
-        Product.objects.all().delete()
-        Order.objects.all().delete()
-        Table.objects.all().delete()
-        self.user.delete()
-
-    def test_customer_demographic_GET_dont_has_perm(self):
-        self.client.login(phone=self.user.phone, password=self.password)
-        response = self.client.get(reverse('customer_demographic'))
-        self.assertEqual(response.status_code, 302)
-
-    def test_customer_demographic_GET_has_perm_without_phone_number(self):
-        self.user.groups.add(self.manager_group)
-        self.client.login(phone=self.user.phone, password=self.password)
-        response = self.client.get(reverse('customer_demographic'))
-        customer_sales = response.context['query_set']
-
-        self.assertEqual(response.status_code, 200)
-        self.assertIsNone(customer_sales)
-
-    def test_customer_demographic_GET_has_perm_with_phone_number(self):
-        self.user.groups.add(self.manager_group)
-        self.client.login(phone=self.user.phone, password=self.password)
-        data = {'phone_number': '09198470934'}
-        response = self.client.get(reverse('customer_demographic'), data=data)
-        customer_sales = response.context['query_set'][0]
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(float(customer_sales['spent']), 300.0)
-
-
-class TestSalesByCategory(TestCase):
-
-    @classmethod
-    def setUpTestData(cls):
-        content_type = ContentType.objects.get_for_model(Order_detail)
-        order_detail_permission = Permission.objects.filter(content_type=content_type)
-
-        manager_group, created = Group.objects.get_or_create(name="Managers")
-        manager_group.permissions.add(*order_detail_permission)
-
-    def setUp(self):
-
-        self.order1 = baker.make(Order, payment='P')
-        self.order2 = baker.make(Order, payment='P')
-        self.order3 = baker.make(Order, payment='P')
-        self.category1 = baker.make(Category)
-        self.category2 = baker.make(Category)
-        self.product1 = baker.make(Product, price=25, category=self.category1)
-        self.product2 = baker.make(Product, price=10, category=self.category2)
-        self.order_detail1 = baker.make(Order_detail, product=self.product1, order=self.order1, quantity=3)
-        self.order_detail2 = baker.make(Order_detail, product=self.product1, order=self.order1, quantity=3)
-        self.order_detail3 = baker.make(Order_detail, product=self.product1, order=self.order2, quantity=2)
-        self.order_detail4 = baker.make(Order_detail, product=self.product1, order=self.order2, quantity=4)
-        self.order_detail5 = baker.make(Order_detail, product=self.product2, order=self.order3, quantity=1)
-        self.client = Client()
-        self.password = 'reza123456'
-        self.user = User.objects.create_user(
-            phone='09308916990',
-            password=self.password,
-        )
-        self.manager_group = Group.objects.get(name='Managers')
-
-    def tearDown(self):
-        Order_detail.objects.all().delete()
-        Product.objects.all().delete()
-        Order.objects.all().delete()
-        Table.objects.all().delete()
-        self.user.delete()
-
-    def test_sales_by_category_GET_dont_has_perm(self):
-        self.client.login(phone=self.user.phone, password=self.password)
-        response = self.client.get(reverse('sales_by_category'))
-        self.assertEqual(response.status_code, 302)
-
-    def test_sales_by_category_GET_has_perm_without_date(self):
-        self.user.groups.add(self.manager_group)
-        self.client.login(phone=self.user.phone, password=self.password)
-        response = self.client.get(reverse('sales_by_category'))
-        sales_by_category = response.context['query_set1'][1]
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(float(sales_by_category['total_sale']), 300.0)
-
-    def test_sales_by_category_GET_has_perm_with_date(self):
-        self.user.groups.add(self.manager_group)
-        self.client.login(phone=self.user.phone, password=self.password)
-        data = {'filter': '', 'first_date': '2020-01-01', 'second_date': str(timezone.now())}
-        response = self.client.get(reverse('sales_by_category'), data=data)
-        sales_by_category = response.context['query_set1'][1]
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(float(sales_by_category['total_sale']), 300.0)
-
-
+# class TestTopSelling(TestCase):
+#
+#     @classmethod
+#     def setUpTestData(cls):
+#         content_type = ContentType.objects.get_for_model(Order_detail)
+#         order_detail_permission = Permission.objects.filter(content_type=content_type)
+#
+#         manager_group, created = Group.objects.get_or_create(name="Managers")
+#         manager_group.permissions.add(*order_detail_permission)
+#
+#     def setUp(self):
+#         self.order1 = baker.make(Order, payment='P')
+#         self.order2 = baker.make(Order, payment='P')
+#         self.order3 = baker.make(Order, payment='U')
+#         self.order4 = baker.make(Order, payment='P')
+#         self.product1 = baker.make(Product, price=25)
+#         self.product2 = baker.make(Product, price=10)
+#         self.order_detail1 = baker.make(Order_detail, product=self.product1, order=self.order1, quantity=3)
+#         self.order_detail2 = baker.make(Order_detail, product=self.product1, order=self.order2, quantity=2)
+#         self.order_detail3 = baker.make(Order_detail, product=self.product1, order=self.order3, quantity=4)
+#         self.order_detail4 = baker.make(Order_detail, product=self.product2, order=self.order4, quantity=1)
+#
+#         self.client = Client()
+#         self.password = 'reza123456'
+#         self.user = User.objects.create_user(
+#             phone='09198470934',
+#             password=self.password,
+#         )
+#         self.manager_group = Group.objects.get(name='Managers')
+#
+#     def tearDown(self):
+#         Order_detail.objects.all().delete()
+#         Product.objects.all().delete()
+#         Order.objects.all().delete()
+#         Table.objects.all().delete()
+#         self.user.delete()
+#
+#     def test_top_selling_GET_dont_has_perm(self):
+#         self.client.login(phone=self.user.phone, password=self.password)
+#         response = self.client.get(reverse('top_selling'))
+#         self.assertEqual(response.status_code, 302)
+#
+#     def test_top_selling_GET_has_perm(self):
+#         self.user.groups.add(self.manager_group)
+#         self.client.login(phone=self.user.phone, password=self.password)
+#         response = self.client.get(reverse('top_selling'))
+#         mot_popular_products = response.context['query_set']
+#         self.assertEqual(response.status_code, 200)
+#         self.assertEqual(mot_popular_products[0], self.product1)
+#
+#     def test_top_selling_GET_has_date_filter(self):
+#         self.user.groups.add(self.manager_group)
+#         self.client.login(phone=self.user.phone, password=self.password)
+#         first_date = timezone.now() - timezone.timedelta(hours=5)
+#         data = {'filter': '', 'first_date': str(first_date.date()), 'second_date': str(timezone.now())}
+#         response = self.client.get(reverse('top_selling'), data=data)
+#         mot_popular_products = response.context['query_set']
+#         self.assertEqual(response.status_code, 200)
+#         self.assertEqual(mot_popular_products[0]['name'], self.product1.name)
+#
+#
+# class TestHourlySales(TestCase):
+#
+#     @classmethod
+#     def setUpTestData(cls):
+#         content_type = ContentType.objects.get_for_model(Order_detail)
+#         order_detail_permission = Permission.objects.filter(content_type=content_type)
+#
+#         manager_group, created = Group.objects.get_or_create(name="Managers")
+#         manager_group.permissions.add(*order_detail_permission)
+#
+#     def setUp(self):
+#         self.order1 = baker.make(Order, payment='P')
+#         self.order2 = baker.make(Order, payment='P')
+#         self.order3 = baker.make(Order, payment='U')
+#         self.order4 = baker.make(Order, payment='P')
+#         self.product1 = baker.make(Product, price=25)
+#         self.product2 = baker.make(Product, price=10)
+#         self.order_detail1 = baker.make(Order_detail, product=self.product1, order=self.order1, quantity=3)
+#         self.order_detail2 = baker.make(Order_detail, product=self.product1, order=self.order2, quantity=2)
+#         self.order_detail3 = baker.make(Order_detail, product=self.product1, order=self.order3, quantity=4)
+#         self.order_detail4 = baker.make(Order_detail, product=self.product2, order=self.order4, quantity=1)
+#
+#         self.client = Client()
+#         self.password = 'reza123456'
+#         self.user = User.objects.create_user(
+#             phone='09198470934',
+#             password=self.password,
+#         )
+#         self.manager_group = Group.objects.get(name='Managers')
+#
+#     def tearDown(self):
+#         Order_detail.objects.all().delete()
+#         Product.objects.all().delete()
+#         Order.objects.all().delete()
+#         Table.objects.all().delete()
+#         self.user.delete()
+#
+#     def test_hourly_sales_GET_dont_has_perm(self):
+#         self.client.login(phone=self.user.phone, password=self.password)
+#         response = self.client.get(reverse('hourly_sales'))
+#         self.assertEqual(response.status_code, 302)
+#
+#     def test_hourly_sales_GET_has_perm(self):
+#         self.user.groups.add(self.manager_group)
+#         self.client.login(phone=self.user.phone, password=self.password)
+#         response = self.client.get(reverse('hourly_sales'))
+#         hourly_sales = response.context['query_set']
+#         self.assertEqual(response.status_code, 200)
+#         self.assertEqual(float(hourly_sales[0]['total_sale']), 135.0)
+#
+#     def test_hourly_sales_GET_first_date_filter(self):
+#         self.user.groups.add(self.manager_group)
+#         self.client.login(phone=self.user.phone, password=self.password)
+#         first_date = timezone.now() - timezone.timedelta(hours=5)
+#         data = {'filter': '', 'first_date': str(first_date.date())}
+#         response = self.client.get(reverse('hourly_sales'), data=data)
+#         hourly_sales = response.context['query_set']
+#         self.assertEqual(response.status_code, 200)
+#         self.assertEqual(float(hourly_sales[0]['total_sale']), 135.0)
+#
+#     def test_hourly_sales_GET_has_date_filter(self):
+#         self.user.groups.add(self.manager_group)
+#         self.client.login(phone=self.user.phone, password=self.password)
+#         first_date = timezone.now() - timezone.timedelta(hours=5)
+#         data = {'filter': '', 'first_date': str(first_date.date()), 'second_date': str(timezone.now())}
+#         response = self.client.get(reverse('hourly_sales'), data=data)
+#         hourly_sales = response.context['query_set']
+#         self.assertEqual(response.status_code, 200)
+#         self.assertEqual(float(hourly_sales[0]['total_sale']), 135.0)
+#
+#
+# class TestDailySales(TestCase):
+#
+#     @classmethod
+#     def setUpTestData(cls):
+#         content_type = ContentType.objects.get_for_model(Order_detail)
+#         order_detail_permission = Permission.objects.filter(content_type=content_type)
+#
+#         manager_group, created = Group.objects.get_or_create(name="Managers")
+#         manager_group.permissions.add(*order_detail_permission)
+#
+#     def setUp(self):
+#         self.order1 = baker.make(Order, payment='P')
+#         self.order2 = baker.make(Order, payment='P')
+#         self.order3 = baker.make(Order, payment='U')
+#         self.order4 = baker.make(Order, payment='P')
+#         self.product1 = baker.make(Product, price=25)
+#         self.product2 = baker.make(Product, price=10)
+#         self.order_detail1 = baker.make(Order_detail, product=self.product1, order=self.order1, quantity=3)
+#         self.order_detail2 = baker.make(Order_detail, product=self.product1, order=self.order2, quantity=2)
+#         self.order_detail3 = baker.make(Order_detail, product=self.product1, order=self.order3, quantity=4)
+#         self.order_detail4 = baker.make(Order_detail, product=self.product2, order=self.order4, quantity=1)
+#
+#         self.client = Client()
+#         self.password = 'reza123456'
+#         self.user = User.objects.create_user(
+#             phone='09198470934',
+#             password=self.password,
+#         )
+#         self.manager_group = Group.objects.get(name='Managers')
+#
+#     def tearDown(self):
+#         Order_detail.objects.all().delete()
+#         Product.objects.all().delete()
+#         Order.objects.all().delete()
+#         Table.objects.all().delete()
+#         self.user.delete()
+#
+#     def test_daily_sales_GET_dont_has_perm(self):
+#         self.client.login(phone=self.user.phone, password=self.password)
+#         response = self.client.get(reverse('daily_sales'))
+#         self.assertEqual(response.status_code, 302)
+#
+#     def test_daily_sales_GET_has_perm(self):
+#         self.user.groups.add(self.manager_group)
+#         self.client.login(phone=self.user.phone, password=self.password)
+#         response = self.client.get(reverse('daily_sales'))
+#         daily_sales = response.context['query_set']
+#         self.assertEqual(response.status_code, 200)
+#         self.assertEqual(float(daily_sales[0]['total_sale']), 135.0)
+#
+#     def test_daily_sales_GET_first_date_filter(self):
+#         self.user.groups.add(self.manager_group)
+#         self.client.login(phone=self.user.phone, password=self.password)
+#         first_date = timezone.now() - timezone.timedelta(days=5)
+#         data = {'filter': '', 'first_date': str(first_date.date())}
+#         response = self.client.get(reverse('daily_sales'), data=data)
+#         daily_sales = response.context['query_set']
+#         self.assertEqual(response.status_code, 200)
+#         self.assertEqual(float(daily_sales[0]['total_sale']), 135.0)
+#
+#     def test_daily_sales_GET_has_date_filter(self):
+#         self.user.groups.add(self.manager_group)
+#         self.client.login(phone=self.user.phone, password=self.password)
+#         first_date = timezone.now() - timezone.timedelta(days=5)
+#         data = {'filter': '', 'first_date': str(first_date.date()), 'second_date': str(timezone.now())}
+#         response = self.client.get(reverse('daily_sales'), data=data)
+#         daily_sales = response.context['query_set']
+#         self.assertEqual(response.status_code, 200)
+#         self.assertEqual(float(daily_sales[0]['total_sale']), 135.0)
+#
+#
+# class TestMonthlySales(TestCase):
+#
+#     @classmethod
+#     def setUpTestData(cls):
+#         content_type = ContentType.objects.get_for_model(Order_detail)
+#         order_detail_permission = Permission.objects.filter(content_type=content_type)
+#
+#         manager_group, created = Group.objects.get_or_create(name="Managers")
+#         manager_group.permissions.add(*order_detail_permission)
+#
+#     def setUp(self):
+#         self.order1 = baker.make(Order, payment='P')
+#         self.order2 = baker.make(Order, payment='P')
+#         self.order3 = baker.make(Order, payment='U')
+#         self.order4 = baker.make(Order, payment='P')
+#         self.product1 = baker.make(Product, price=25)
+#         self.product2 = baker.make(Product, price=10)
+#         self.order_detail1 = baker.make(Order_detail, product=self.product1, order=self.order1, quantity=3)
+#         self.order_detail2 = baker.make(Order_detail, product=self.product1, order=self.order2, quantity=2)
+#         self.order_detail3 = baker.make(Order_detail, product=self.product1, order=self.order3, quantity=4)
+#         self.order_detail4 = baker.make(Order_detail, product=self.product2, order=self.order4, quantity=1)
+#
+#         self.client = Client()
+#         self.password = 'reza123456'
+#         self.user = User.objects.create_user(
+#             phone='09198470934',
+#             password=self.password,
+#         )
+#         self.manager_group = Group.objects.get(name='Managers')
+#
+#     def tearDown(self):
+#         Order_detail.objects.all().delete()
+#         Product.objects.all().delete()
+#         Order.objects.all().delete()
+#         Table.objects.all().delete()
+#         self.user.delete()
+#
+#     def test_monthly_sales_GET_dont_has_perm(self):
+#         self.client.login(phone=self.user.phone, password=self.password)
+#         response = self.client.get(reverse('monthly_sales'))
+#         self.assertEqual(response.status_code, 302)
+#
+#     def test_monthly_sales_GET_has_perm(self):
+#         self.user.groups.add(self.manager_group)
+#         self.client.login(phone=self.user.phone, password=self.password)
+#         response = self.client.get(reverse('monthly_sales'))
+#         monthly_sales = response.context['query_set']
+#         self.assertEqual(response.status_code, 200)
+#         self.assertEqual(float(monthly_sales[0]['total_sale']), 135.0)
+#
+#     def test_monthly_sales_GET_first_date_filter(self):
+#         self.user.groups.add(self.manager_group)
+#         self.client.login(phone=self.user.phone, password=self.password)
+#         first_date = timezone.now() - timezone.timedelta(days=90)
+#         data = {'filter': '', 'first_date': str(first_date.date())}
+#         response = self.client.get(reverse('monthly_sales'), data=data)
+#         monthly_sales = response.context['query_set']
+#         self.assertEqual(response.status_code, 200)
+#         self.assertEqual(float(monthly_sales[0]['total_sale']), 135.0)
+#
+#     def test_monthly_sales_GET_has_date_filter(self):
+#         self.user.groups.add(self.manager_group)
+#         self.client.login(phone=self.user.phone, password=self.password)
+#         first_date = timezone.now() - timezone.timedelta(days=90)
+#         data = {'filter': '', 'first_date': str(first_date.date()), 'second_date': str(timezone.now())}
+#         response = self.client.get(reverse('monthly_sales'), data=data)
+#         monthly_sales = response.context['query_set']
+#         self.assertEqual(response.status_code, 200)
+#         self.assertEqual(float(monthly_sales[0]['total_sale']), 135.0)
+#
+#
+# class TestYearlySales(TestCase):
+#
+#     @classmethod
+#     def setUpTestData(cls):
+#         content_type = ContentType.objects.get_for_model(Order_detail)
+#         order_detail_permission = Permission.objects.filter(content_type=content_type)
+#
+#         manager_group, created = Group.objects.get_or_create(name="Managers")
+#         manager_group.permissions.add(*order_detail_permission)
+#
+#     def setUp(self):
+#         self.order1 = baker.make(Order, payment='P')
+#         self.order2 = baker.make(Order, payment='P')
+#         self.order3 = baker.make(Order, payment='U')
+#         self.order4 = baker.make(Order, payment='P')
+#         self.product1 = baker.make(Product, price=25)
+#         self.product2 = baker.make(Product, price=10)
+#         self.order_detail1 = baker.make(Order_detail, product=self.product1, order=self.order1, quantity=3)
+#         self.order_detail2 = baker.make(Order_detail, product=self.product1, order=self.order2, quantity=2)
+#         self.order_detail3 = baker.make(Order_detail, product=self.product1, order=self.order3, quantity=4)
+#         self.order_detail4 = baker.make(Order_detail, product=self.product2, order=self.order4, quantity=1)
+#
+#         self.client = Client()
+#         self.password = 'reza123456'
+#         self.user = User.objects.create_user(
+#             phone='09198470934',
+#             password=self.password,
+#         )
+#         self.manager_group = Group.objects.get(name='Managers')
+#
+#     def tearDown(self):
+#         Order_detail.objects.all().delete()
+#         Product.objects.all().delete()
+#         Order.objects.all().delete()
+#         Table.objects.all().delete()
+#         self.user.delete()
+#
+#     def test_yearly_sales_GET_dont_has_perm(self):
+#         self.client.login(phone=self.user.phone, password=self.password)
+#         response = self.client.get(reverse('yearly_sales'))
+#         self.assertEqual(response.status_code, 302)
+#
+#     def test_yearly_sales_GET_has_perm(self):
+#         self.user.groups.add(self.manager_group)
+#         self.client.login(phone=self.user.phone, password=self.password)
+#         response = self.client.get(reverse('yearly_sales'))
+#         yearly_sales = response.context['query_set']
+#         self.assertEqual(response.status_code, 200)
+#         self.assertEqual(float(yearly_sales[0]['total_sale']), 135.0)
+#
+#     def test_yearly_sales_GET_first_date_filter(self):
+#         self.user.groups.add(self.manager_group)
+#         self.client.login(phone=self.user.phone, password=self.password)
+#         data = {'filter': '', 'first_date': '2020-01-01'}
+#         response = self.client.get(reverse('yearly_sales'), data=data)
+#         yearly_sales = response.context['query_set']
+#         self.assertEqual(response.status_code, 200)
+#         self.assertEqual(float(yearly_sales[0]['total_sale']), 135.0)
+#
+#     def test_yearly_sales_GET_has_date_filter(self):
+#         self.user.groups.add(self.manager_group)
+#         self.client.login(phone=self.user.phone, password=self.password)
+#         data = {'filter': '', 'first_date': '2020-01-01', 'second_date': str(timezone.now())}
+#         response = self.client.get(reverse('yearly_sales'), data=data)
+#         yearly_sales = response.context['query_set']
+#         self.assertEqual(response.status_code, 200)
+#         self.assertEqual(float(yearly_sales[0]['total_sale']), 135.0)
+#
+#
+# class TestCustomerSales(TestCase):
+#
+#     @classmethod
+#     def setUpTestData(cls):
+#         content_type = ContentType.objects.get_for_model(Order_detail)
+#         order_detail_permission = Permission.objects.filter(content_type=content_type)
+#
+#         manager_group, created = Group.objects.get_or_create(name="Managers")
+#         manager_group.permissions.add(*order_detail_permission)
+#
+#     def setUp(self):
+#         self.customer1 = '09198470934'
+#         self.customer2 = '09123456789'
+#         self.order1 = baker.make(Order, payment='P', phone_number=self.customer1)
+#         self.order2 = baker.make(Order, payment='P', phone_number=self.customer1)
+#         self.order3 = baker.make(Order, payment='P', phone_number=self.customer2)
+#         self.product1 = baker.make(Product, price=25)
+#         self.product2 = baker.make(Product, price=10)
+#         self.order_detail1 = baker.make(Order_detail, product=self.product1, order=self.order1, quantity=3)
+#         self.order_detail2 = baker.make(Order_detail, product=self.product1, order=self.order1, quantity=3)
+#         self.order_detail3 = baker.make(Order_detail, product=self.product1, order=self.order2, quantity=2)
+#         self.order_detail4 = baker.make(Order_detail, product=self.product1, order=self.order2, quantity=4)
+#         self.order_detail5 = baker.make(Order_detail, product=self.product2, order=self.order3, quantity=1)
+#         self.client = Client()
+#         self.password = 'reza123456'
+#         self.user = User.objects.create_user(
+#             phone='09198470934',
+#             password=self.password,
+#         )
+#         self.manager_group = Group.objects.get(name='Managers')
+#
+#     def tearDown(self):
+#         Order_detail.objects.all().delete()
+#         Product.objects.all().delete()
+#         Order.objects.all().delete()
+#         Table.objects.all().delete()
+#         self.user.delete()
+#
+#     def test_customer_sales_GET_dont_has_perm(self):
+#         self.client.login(phone=self.user.phone, password=self.password)
+#         response = self.client.get(reverse('customer_sales'))
+#         self.assertEqual(response.status_code, 302)
+#
+#     def test_customer_sales_GET_has_perm(self):
+#         self.user.groups.add(self.manager_group)
+#         self.client.login(phone=self.user.phone, password=self.password)
+#         response = self.client.get(reverse('customer_sales'))
+#         customer_sales = response.context['query_set']
+#         self.assertEqual(response.status_code, 200)
+#         self.assertEqual(customer_sales[0]['phone_number'], self.customer1)
+#         self.assertEqual(float(customer_sales[0]['total_sale']), 300.0)
+#
+#     def test_customer_sales_GET_has_date_filter(self):
+#         self.user.groups.add(self.manager_group)
+#         self.client.login(phone=self.user.phone, password=self.password)
+#         data = {'filter': '', 'first_date': '2020-01-01', 'second_date': str(timezone.now())}
+#         response = self.client.get(reverse('customer_sales'), data=data)
+#         customer_sales = response.context['query_set']
+#         self.assertEqual(response.status_code, 200)
+#         self.assertEqual(customer_sales[0]['phone_number'], self.customer1)
+#         self.assertEqual(float(customer_sales[0]['total_sale']), 300.0)
+#
+#
+# class TestCustomerDemographic(TestCase):
+#
+#     @classmethod
+#     def setUpTestData(cls):
+#         content_type = ContentType.objects.get_for_model(Order_detail)
+#         order_detail_permission = Permission.objects.filter(content_type=content_type)
+#
+#         manager_group, created = Group.objects.get_or_create(name="Managers")
+#         manager_group.permissions.add(*order_detail_permission)
+#
+#     def setUp(self):
+#         self.customer1 = '09198470934'
+#         self.customer2 = '09123456789'
+#         self.order1 = baker.make(Order, payment='P', phone_number=self.customer1)
+#         self.order2 = baker.make(Order, payment='P', phone_number=self.customer1)
+#         self.order3 = baker.make(Order, payment='P', phone_number=self.customer2)
+#         self.product1 = baker.make(Product, price=25)
+#         self.product2 = baker.make(Product, price=10)
+#         self.order_detail1 = baker.make(Order_detail, product=self.product1, order=self.order1, quantity=3)
+#         self.order_detail2 = baker.make(Order_detail, product=self.product1, order=self.order1, quantity=3)
+#         self.order_detail3 = baker.make(Order_detail, product=self.product1, order=self.order2, quantity=2)
+#         self.order_detail4 = baker.make(Order_detail, product=self.product1, order=self.order2, quantity=4)
+#         self.order_detail5 = baker.make(Order_detail, product=self.product2, order=self.order3, quantity=1)
+#         self.client = Client()
+#         self.password = 'reza123456'
+#         self.user = User.objects.create_user(
+#             phone='09308916990',
+#             password=self.password,
+#         )
+#         self.manager_group = Group.objects.get(name='Managers')
+#
+#     def tearDown(self):
+#         Order_detail.objects.all().delete()
+#         Product.objects.all().delete()
+#         Order.objects.all().delete()
+#         Table.objects.all().delete()
+#         self.user.delete()
+#
+#     def test_customer_demographic_GET_dont_has_perm(self):
+#         self.client.login(phone=self.user.phone, password=self.password)
+#         response = self.client.get(reverse('customer_demographic'))
+#         self.assertEqual(response.status_code, 302)
+#
+#     def test_customer_demographic_GET_has_perm_without_phone_number(self):
+#         self.user.groups.add(self.manager_group)
+#         self.client.login(phone=self.user.phone, password=self.password)
+#         response = self.client.get(reverse('customer_demographic'))
+#         customer_sales = response.context['query_set']
+#
+#         self.assertEqual(response.status_code, 200)
+#         self.assertIsNone(customer_sales)
+#
+#     def test_customer_demographic_GET_has_perm_with_phone_number(self):
+#         self.user.groups.add(self.manager_group)
+#         self.client.login(phone=self.user.phone, password=self.password)
+#         data = {'phone_number': '09198470934'}
+#         response = self.client.get(reverse('customer_demographic'), data=data)
+#         customer_sales = response.context['query_set'][0]
+#
+#         self.assertEqual(response.status_code, 200)
+#         self.assertEqual(float(customer_sales['spent']), 300.0)
+#
+#
+# class TestSalesByCategory(TestCase):
+#
+#     @classmethod
+#     def setUpTestData(cls):
+#         content_type = ContentType.objects.get_for_model(Order_detail)
+#         order_detail_permission = Permission.objects.filter(content_type=content_type)
+#
+#         manager_group, created = Group.objects.get_or_create(name="Managers")
+#         manager_group.permissions.add(*order_detail_permission)
+#
+#     def setUp(self):
+#
+#         self.order1 = baker.make(Order, payment='P')
+#         self.order2 = baker.make(Order, payment='P')
+#         self.order3 = baker.make(Order, payment='P')
+#         self.category1 = baker.make(Category)
+#         self.category2 = baker.make(Category)
+#         self.product1 = baker.make(Product, price=25, category=self.category1)
+#         self.product2 = baker.make(Product, price=10, category=self.category2)
+#         self.order_detail1 = baker.make(Order_detail, product=self.product1, order=self.order1, quantity=3)
+#         self.order_detail2 = baker.make(Order_detail, product=self.product1, order=self.order1, quantity=3)
+#         self.order_detail3 = baker.make(Order_detail, product=self.product1, order=self.order2, quantity=2)
+#         self.order_detail4 = baker.make(Order_detail, product=self.product1, order=self.order2, quantity=4)
+#         self.order_detail5 = baker.make(Order_detail, product=self.product2, order=self.order3, quantity=1)
+#         self.client = Client()
+#         self.password = 'reza123456'
+#         self.user = User.objects.create_user(
+#             phone='09308916990',
+#             password=self.password,
+#         )
+#         self.manager_group = Group.objects.get(name='Managers')
+#
+#     def tearDown(self):
+#         Order_detail.objects.all().delete()
+#         Product.objects.all().delete()
+#         Order.objects.all().delete()
+#         Table.objects.all().delete()
+#         self.user.delete()
+#
+#     def test_sales_by_category_GET_dont_has_perm(self):
+#         self.client.login(phone=self.user.phone, password=self.password)
+#         response = self.client.get(reverse('sales_by_category'))
+#         self.assertEqual(response.status_code, 302)
+#
+#     def test_sales_by_category_GET_has_perm_without_date(self):
+#         self.user.groups.add(self.manager_group)
+#         self.client.login(phone=self.user.phone, password=self.password)
+#         response = self.client.get(reverse('sales_by_category'))
+#         sales_by_category = response.context['query_set1'][1]
+#         self.assertEqual(response.status_code, 200)
+#         self.assertEqual(float(sales_by_category['total_sale']), 300.0)
+#
+#     def test_sales_by_category_GET_has_perm_with_date(self):
+#         self.user.groups.add(self.manager_group)
+#         self.client.login(phone=self.user.phone, password=self.password)
+#         data = {'filter': '', 'first_date': '2020-01-01', 'second_date': str(timezone.now())}
+#         response = self.client.get(reverse('sales_by_category'), data=data)
+#         sales_by_category = response.context['query_set1'][1]
+#         self.assertEqual(response.status_code, 200)
+#         self.assertEqual(float(sales_by_category['total_sale']), 300.0)
+#
+#
 class TestOrderStatusReport(TestCase):
 
     @classmethod
@@ -1415,3 +1415,13 @@ class TestOrderStatusReport(TestCase):
         status_count = response.context['lst1']
         self.assertEqual(response.status_code, 200)
         self.assertEqual(status_count[2], 2)
+
+    def test_order_status_report_GET_has_perm_with_date(self):
+        self.user.groups.add(self.manager_group)
+        self.client.login(phone=self.user.phone, password=self.password)
+        first_date = timezone.now().date() - timezone.timedelta(days=1)
+        data = {'filter': '', 'first_date': str(first_date), 'second_date': str(timezone.now().date())}
+        response = self.client.get(reverse('order_status_report'), data=data)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('lst1', response.context)
+        self.assertIn('lst2', response.context)
