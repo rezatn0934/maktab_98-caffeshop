@@ -848,7 +848,7 @@ class TestTopSelling(TestCase):
         manager_group.permissions.add(*order_detail_permission)
 
     def setUp(self):
-        self.order1 = baker.make(Order, payment='P')
+        self.order1 = baker.make(Order,payment='P')
         self.order2 = baker.make(Order, payment='P')
         self.order3 = baker.make(Order, payment='U')
         self.order4 = baker.make(Order, payment='P')
@@ -902,7 +902,7 @@ class TestHourlySales(TestCase):
         manager_group.permissions.add(*order_detail_permission)
 
     def setUp(self):
-        self.order1 = baker.make(Order, payment='P')
+        self.order1 = baker.make(Order,payment='P')
         self.order2 = baker.make(Order, payment='P')
         self.order3 = baker.make(Order, payment='U')
         self.order4 = baker.make(Order, payment='P')
@@ -920,4 +920,9 @@ class TestHourlySales(TestCase):
             password=self.password,
         )
         self.manager_group = Group.objects.get(name='Managers')
+
+    def test_hourly_sales_GET_dont_has_perm(self):
+        self.client.login(phone=self.user.phone, password=self.password)
+        response = self.client.get(reverse('hourly_sales'))
+        self.assertEqual(response.status_code, 302)
 
