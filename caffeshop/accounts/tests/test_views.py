@@ -879,3 +879,13 @@ class TestTopSelling(TestCase):
         mot_popular_products = response.context['query_set']
         self.assertEqual(response.status_code, 200)
         self.assertEqual(mot_popular_products[0], self.product1)
+
+    def test_top_selling_GET_has_date_filter(self):
+        self.user.groups.add(self.manager_group)
+        self.client.login(phone=self.user.phone, password=self.password)
+        first_date = timezone.now() - timezone.timedelta(hours=5)
+        data = {'filter': '', 'first_date': str(first_date.date()), 'second_date': str(timezone.now())}
+        response = self.client.get(reverse('top_selling'), data=data)
+        mot_popular_products = response.context['query_set']
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(mot_popular_products[0]['name'], self.product1.name)
