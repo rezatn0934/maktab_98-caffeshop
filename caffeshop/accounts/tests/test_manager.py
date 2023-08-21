@@ -4,7 +4,7 @@ from accounts.models import User
 
 class TestManager(TestCase):
     def setUp(self):
-        self.superuser = User.objects.create(phone="09117200513", password="Ffarzam_1992")
+        self.superuser = User.objects.create_superuser(phone="09117200513", password="Ffarzam_1992")
 
     def tearDown(self):
         self.superuser.delete()
