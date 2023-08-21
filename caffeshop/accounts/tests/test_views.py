@@ -999,7 +999,7 @@ class TestDailySales(TestCase):
     def test_daily_sales_GET_first_date_filter(self):
         self.user.groups.add(self.manager_group)
         self.client.login(phone=self.user.phone, password=self.password)
-        first_date = timezone.now() - timezone.timedelta(hours=5)
+        first_date = timezone.now() - timezone.timedelta(days=5)
         data = {'filter': '', 'first_date': str(first_date.date())}
         response = self.client.get(reverse('daily_sales'), data=data)
         hourly_sales = response.context['query_set']
@@ -1009,9 +1009,21 @@ class TestDailySales(TestCase):
     def test_daily_sales_GET_has_date_filter(self):
         self.user.groups.add(self.manager_group)
         self.client.login(phone=self.user.phone, password=self.password)
-        first_date = timezone.now() - timezone.timedelta(hours=5)
+        first_date = timezone.now() - timezone.timedelta(days=5)
         data = {'filter': '', 'first_date': str(first_date.date()), 'second_date': str(timezone.now())}
         response = self.client.get(reverse('daily_sales'), data=data)
         hourly_sales = response.context['query_set']
         self.assertEqual(response.status_code, 200)
         self.assertEqual(float(hourly_sales[0]['total_sale']), 135.0)
+
+
+class TestMonthlySales(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        content_type = ContentType.objects.get_for_model(Order_detail)
+        order_detail_permission = Permission.objects.filter(content_type=content_type)
+
+        manager_group, created = Group.objects.get_or_create(name="Managers")
+        manager_group.permissions.add(*order_detail_permission)
+
