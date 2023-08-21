@@ -23,6 +23,8 @@ class TestOrdersModels(TestCase):
         quantity=1,
         price=10.00)
 
+        
+
     def setUp(self):
         self.order = Order.objects.create(
             payment='P',
