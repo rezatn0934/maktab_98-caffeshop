@@ -1472,3 +1472,10 @@ class TestSalesByEmployeeReport(TestCase):
         self.client.login(phone=self.user.phone, password=self.password)
         response = self.client.get(reverse('sales_by_employee_report'))
         self.assertEqual(response.status_code, 302)
+
+    def test_sales_by_employee_report_GET_has_perm_without_phone(self):
+        self.user.groups.add(self.manager_group)
+        self.client.login(phone=self.user.phone, password=self.password)
+        response = self.client.get(reverse('sales_by_employee_report'))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['query_set']), 2)
