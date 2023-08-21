@@ -848,7 +848,7 @@ class TestTopSelling(TestCase):
         manager_group.permissions.add(*order_detail_permission)
 
     def setUp(self):
-        self.order1 = baker.make(Order,payment='P')
+        self.order1 = baker.make(Order, payment='P')
         self.order2 = baker.make(Order, payment='P')
         self.order3 = baker.make(Order, payment='U')
         self.order4 = baker.make(Order, payment='P')
@@ -889,3 +889,15 @@ class TestTopSelling(TestCase):
         mot_popular_products = response.context['query_set']
         self.assertEqual(response.status_code, 200)
         self.assertEqual(mot_popular_products[0]['name'], self.product1.name)
+
+
+class TestHourlySales(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        content_type = ContentType.objects.get_for_model(Order_detail)
+        order_detail_permission = Permission.objects.filter(content_type=content_type)
+
+        manager_group, created = Group.objects.get_or_create(name="Managers")
+        manager_group.permissions.add(*order_detail_permission)
+
