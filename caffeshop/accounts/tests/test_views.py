@@ -848,7 +848,7 @@ class TestTopSelling(TestCase):
         manager_group.permissions.add(*order_detail_permission)
 
     def setUp(self):
-        self.order1 = baker.make(Order,payment='P')
+        self.order1 = baker.make(Order, payment='P')
         self.order2 = baker.make(Order, payment='P')
         self.order3 = baker.make(Order, payment='U')
         self.order4 = baker.make(Order, payment='P')
@@ -902,7 +902,7 @@ class TestHourlySales(TestCase):
         manager_group.permissions.add(*order_detail_permission)
 
     def setUp(self):
-        self.order1 = baker.make(Order,payment='P')
+        self.order1 = baker.make(Order, payment='P')
         self.order2 = baker.make(Order, payment='P')
         self.order3 = baker.make(Order, payment='U')
         self.order4 = baker.make(Order, payment='P')
@@ -930,6 +930,16 @@ class TestHourlySales(TestCase):
         self.user.groups.add(self.manager_group)
         self.client.login(phone=self.user.phone, password=self.password)
         response = self.client.get(reverse('hourly_sales'))
+        hourly_sales = response.context['query_set']
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(float(hourly_sales[0]['total_sale']), 135.0)
+
+    def test_hourly_sales_GET_has_date_filter(self):
+        self.user.groups.add(self.manager_group)
+        self.client.login(phone=self.user.phone, password=self.password)
+        first_date = timezone.now() - timezone.timedelta(hours=5)
+        data = {'filter': '', 'first_date': str(first_date.date()), 'second_date': str(timezone.now())}
+        response = self.client.get(reverse('hourly_sales'), data=data)
         hourly_sales = response.context['query_set']
         self.assertEqual(response.status_code, 200)
         self.assertEqual(float(hourly_sales[0]['total_sale']), 135.0)
