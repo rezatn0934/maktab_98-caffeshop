@@ -25,4 +25,8 @@ class TestPtoductModel(TestCase):
         self.assertEqual(Product.img_preview(self.product), mark_safe(f'<img src = "{self.product.image.url}" width = "150" height="150"/> '))
 
 
+    def test_product_representation(self):
+        self.assertEqual(str(self.product), 'Pina Colda')
+
+
 
