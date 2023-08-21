@@ -55,4 +55,8 @@ class TestCategoryModel(TestCase):
         if Category.objects.filter(id=self.category.id).exists():
             self.category.delete()
 
+    def test_category_image_preview(self):
+        category = self.category
+        self.assertEqual(Category.img_preview(self.category), mark_safe(f'<img src = "{self.category.image.url}" width = "150" height="150"/> '))
+
 
