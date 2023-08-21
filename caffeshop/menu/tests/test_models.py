@@ -29,4 +29,8 @@ class TestPtoductModel(TestCase):
         self.assertEqual(str(self.product), 'Pina Colda')
 
 
+    def test_product_deletion(self):
+        self.product.delete()
+        self.assertFalse(os.path.exists(self.product.image.path))
+
 
