@@ -1,18 +1,9 @@
-from django.test import TestCase, Client, RequestFactory 
-
-from django.urls import reverse 
-
-from orders.models import Order, Order_detail, Table 
-
-from menu.models import Product, Category 
-
-from django.contrib.sessions.middleware import SessionMiddleware 
-
-from django.contrib.auth.models import AnonymousUser 
-
-from model_bakery import baker 
-from orders.forms import OrderForm 
-
+from django.test import TestCase, Client
+from django.urls import reverse
+from orders.models import Order, Order_detail, Table
+from menu.models import Product, Category
+from model_bakery import baker
+from orders.forms import OrderForm
 from http.cookies import SimpleCookie
 import json
 
@@ -37,30 +28,30 @@ class TestOrdersView(TestCase):
 
     def test_cart_view_GET(self):
         response = self.client.get(reverse('orders:cart'))
-        self.failUnless(response.context['form'],OrderForm)
+        self.failUnless(response.context['form'], OrderForm)
         self.assertEqual(response.status_code, 200)
 
     def test_cart_view_POST_valid_data(self):
-        response=self.client.post(reverse('orders:cart'), data={'phone_number':'09152593858',
-                                                            'table':self.table.Table_number})
-        self.assertRedirects(response, reverse('orders:create_order'), status_code=302, target_status_code=302, fetch_redirect_response=True)
-
+        response = self.client.post(reverse('orders:cart'), data={'phone_number': '09152593858',
+                                                                  'table': self.table.Table_number})
+        self.assertRedirects(response, reverse('orders:create_order'), status_code=302, target_status_code=302,
+                             fetch_redirect_response=True)
 
     def test_cart_view_POST_invalid_data(self):
-        response=self.client.post(reverse('orders:cart'), data={'phone_number':'0152593858',
-                                                            'table':self.table.Table_number})
+        response = self.client.post(reverse('orders:cart'), data={'phone_number': '0152593858',
+                                                                  'table': self.table.Table_number})
         self.assertRedirects(response, reverse('orders:cart'))
 
 
 class TestOrderHistory(TestCase):
-    def setUp(self) -> None:
+    def setUp(self):
         self.table = Table.objects.create(name='nima', Table_number=55)
         self.product = baker.make(Product)
         self.client = Client()
         self.client.cookies = SimpleCookie()
-        self.client.cookies['orders'] = json.dumps({self.product.id:20})
+        self.client.cookies['orders'] = json.dumps({self.product.id: 20})
         self.session = self.client.session
-        self.session['pre_order'] = {'phone':'09152593858', 'table_number':self.table.Table_number}
+        self.session['pre_order'] = {'phone': '09152593858', 'table_number': self.table.Table_number}
         self.session.save()
         return super().setUp()
 
@@ -86,7 +77,7 @@ class TestOrderHistory(TestCase):
         order_id_session = request.session.get('order_history')
         self.assertFalse(order_id_session)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.context['message'],"You Don't have any order yet.")
+        self.assertEqual(response.context['message'], "You Don't have any order yet.")
 
 
 class OrderCancellationTestCase(TestCase):
