@@ -46,12 +46,12 @@ class CartView(View):
         else:
             messages.error(request, 'Your phone number is not valid!!')
             return redirect('orders:cart')
-
+        
 
 def create_order(request):
     pre_order = request.session['pre_order']
     if pre_order['table_number']:
-        table = Table.objects.get(id=pre_order['table_number'])
+        table = Table.objects.get(Table_number=pre_order['table_number'])
     else:
         table = None
     customer_order = Order.objects.create(phone_number=pre_order['phone'],
