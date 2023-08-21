@@ -205,6 +205,7 @@ class CreateOrderItem(PermissionRequiredMixin, CreateView):
     permission_required = ['orders.add_order_detail']
     model = Order_detail
     fields = ['product', 'quantity', 'order']
+    template_name = 'order_detail.html'
 
     def form_valid(self, form):
         order = form.cleaned_data['order'].id
