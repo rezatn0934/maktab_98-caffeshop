@@ -1343,7 +1343,15 @@ class TestSalesByCategory(TestCase):
         Table.objects.all().delete()
         self.user.delete()
 
-    def test_customer_demographic_GET_dont_has_perm(self):
+    def test_sales_by_category_GET_dont_has_perm(self):
         self.client.login(phone=self.user.phone, password=self.password)
-        response = self.client.get(reverse('customer_demographic'))
+        response = self.client.get(reverse('sales_by_category'))
         self.assertEqual(response.status_code, 302)
+
+    def test_sales_by_category_GET_has_perm_without_date(self):
+        self.user.groups.add(self.manager_group)
+        self.client.login(phone=self.user.phone, password=self.password)
+        response = self.client.get(reverse('sales_by_category'))
+        customer_sales = response.context['query_set1'][1]
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(float(customer_sales['total_sale']), 300.0)
