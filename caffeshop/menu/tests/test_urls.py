@@ -9,7 +9,6 @@ class TestUrls(SimpleTestCase):
         url = reverse("menu:menu")
         self.assertEqual(resolve(url).func.view_class, Menu)
 
-
     def test_show_product_url(self):
         url = reverse("menu:show_product", args=(1,))
         self.assertEqual(resolve(url).func.view_class, ProductView)
