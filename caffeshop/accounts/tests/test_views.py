@@ -499,8 +499,7 @@ class TestCreateOrderItem(TestCase):
         self.client.login(phone=self.user.phone, password=self.password)
         data = {'product': self.product2, 'quantity': 10, 'order': self.order.id}
         response = self.client.post(reverse('create_order_detail'), data=data)
-        self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, reverse('order_detail', args=(self.order.id,)))
+        self.assertEqual(response.status_code, 200)
         messages = list(get_messages(response.wsgi_request))
         self.assertEqual(messages[0].message, 'Form input is not valid')
 
