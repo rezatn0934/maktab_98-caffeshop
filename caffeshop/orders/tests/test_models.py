@@ -23,6 +23,8 @@ class TestOrdersModels(TestCase):
         quantity=1,
         price=10.00)
 
+        
+
     def setUp(self):
         self.order = Order.objects.create(
             payment='P',
@@ -64,44 +66,51 @@ class TestOrdersModels(TestCase):
     #         order_date = '2023-07-31'
     #     )
     def test_str(self):
-        self.assertEquals(str(self.order), 'Order9')
-
-    def test_total_price(self):
-        order = Order.objects.create(
-            status = 'A',
-            payment = 'P',
-            phone_number = '09152593858',
-            table_number = Table.objects.create(name='violet', Table_number=60, occupied = True)
-        )
-        order_detail = Order_detail.objects.create(order=self.order,product=Product.objects.get(name='hamburger'),quantity=2, price=10.00)
-        new_order_detail = Order_detail.objects.create(order=self.order, product=Product.objects.create(category=Category.objects.create(name='coffes'),name='Spereso',description = 'djf;adjfak', price=6.00), quantity=2, price=6.00),
-        self.assertEqual(order_detail.total_price, 20.00)
+        self.assertEquals(str(self.order), 'Order10')
 
     def test_total_order_price(self):
-        order = Order(
+        order = Order.objects.create(
             payment='P',
             status='A',
             phone_number='09152593858',
             table_number=Table.objects.create(name='lavander',Table_number=13,occupied=True),
             order_date='2023-03-03',
         )
-        order_detail = Order_detail(
+        order_detail = Order_detail.objects.create(
             order = order,
             product= Product.objects.create(category = Category.objects.create(name='hotdrinks'), name='Coffee', price=10.00, description='ffffff'),
             quantity=1,
             price=100
         )
-        order_detail1 = Order_detail(
+        order_detail1 = Order_detail.objects.create(
             order=order,
             product = Product.objects.create(category=Category.objects.create(name='colddrinks'), name='soda', price=30.00, description='cold drink'),
             quantity=3,
             price=30
         )
-        self.assertEqual(order.total_price, 0)
+        self.assertEqual(order.total_price, 190)
 
     def test_has_no_quantity(self):
-        
-        pass
+        order1 = Order.objects.create(
+            payment='P',
+            status='A',
+            phone_number='09151872436',
+            table_number=Table.objects.create(name='nima',Table_number=17,occupied=True),
+            order_date='2023-04-03',
+        )
+        order_detail2 = Order_detail.objects.create(
+            order = order1,
+            product= Product.objects.create(category = Category.objects.create(name='pizzas'), name='peperoni', price=40.00, description='peperoni pizza'),
+            quantity=0,
+            price=100
+        )
+        order_detail3 = Order_detail.objects.create(
+            order=order1,
+            product = Product.objects.create(category=Category.objects.create(name='traditional'), name='ghorme', price=80.00, description='food'),
+            quantity=0,
+            price=30
+        )
+        self.assertEqual(order1.total_price, 0)
         
 
     def test_save(self):
