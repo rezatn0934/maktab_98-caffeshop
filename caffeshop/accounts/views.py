@@ -475,7 +475,8 @@ def customer_demographic(request):
             if obj['phone_number'] == phone_number:
                 rank = i + 1
                 break
-
+    print('1'*100)
+    print(query_set)
     context = {'query_set': query_set, "total_spent": total_spent, "query_set2": query_set2, 'rank': rank}
     return render(request, 'analytics/customer_demographic.html', context=context)
 
