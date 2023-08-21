@@ -1402,3 +1402,8 @@ class TestOrderStatusReport(TestCase):
         Order.objects.all().delete()
         Table.objects.all().delete()
         self.user.delete()
+
+    def test_order_status_report_GET_dont_has_perm(self):
+        self.client.login(phone=self.user.phone, password=self.password)
+        response = self.client.get(reverse('order_status_report'))
+        self.assertEqual(response.status_code, 302)
