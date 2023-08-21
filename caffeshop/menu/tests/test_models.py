@@ -69,4 +69,9 @@ class TestCategoryModel(TestCase):
         self.assertFalse(os.path.exists(self.category.image.path))
 
 
- 
+    def test_category_save_new_image(self):
+        new_image = open(settings.MEDIA_ROOT / "images/test/tea.jpg",'rb').read()
+        self.category.image = SimpleUploadedFile.from_dict({'filename': 'category_pic2.png', 'content': new_image, 'content_tye': 'image/png'})
+        self.category.save()
+        self.category = Category.objects.get(id=self.category.id)
+        self.assertEqual(open(self.category.image.path, 'rb').read(), new_image)
