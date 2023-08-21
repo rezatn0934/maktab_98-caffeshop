@@ -736,3 +736,11 @@ class TestMostPopular(TestCase):
         Order.objects.all().delete()
         Table.objects.all().delete()
         self.user.delete()
+
+    def test_most_popular_GET_has_perm(self):
+        self.user.groups.add(self.manager_group)
+        self.client.login(phone=self.user.phone, password=self.password)
+        response = self.client.get(reverse('most_popular'))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(self.product2, response.context['query_set'])
