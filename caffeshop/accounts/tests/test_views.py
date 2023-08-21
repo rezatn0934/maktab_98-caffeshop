@@ -1152,3 +1152,17 @@ class TestCustomerSales(TestCase):
 
         manager_group, created = Group.objects.get_or_create(name="Managers")
         manager_group.permissions.add(*order_detail_permission)
+
+    def setUp(self):
+        customer1 = '09198470934'
+        customer2 = '09123456789'
+        self.order1 = baker.make(Order, payment='P', phone_number=customer1)
+        self.order2 = baker.make(Order, payment='P', phone_number=customer1)
+        self.order3 = baker.make(Order, payment='P', phone_number=customer2)
+        self.product1 = baker.make(Product, price=25)
+        self.product2 = baker.make(Product, price=10)
+        self.order_detail1 = baker.make(Order_detail, product=self.product1, order=self.order1, quantity=3)
+        self.order_detail2 = baker.make(Order_detail, product=self.product1, order=self.order1, quantity=3)
+        self.order_detail3 = baker.make(Order_detail, product=self.product1, order=self.order2, quantity=2)
+        self.order_detail4 = baker.make(Order_detail, product=self.product1, order=self.order2, quantity=4)
+        self.order_detail5 = baker.make(Order_detail, product=self.product2, order=self.order3, quantity=1)
