@@ -1141,3 +1141,14 @@ class TestYearlySales(TestCase):
         hourly_sales = response.context['query_set']
         self.assertEqual(response.status_code, 200)
         self.assertEqual(float(hourly_sales[0]['total_sale']), 135.0)
+
+
+class TestCustomerSales(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        content_type = ContentType.objects.get_for_model(Order_detail)
+        order_detail_permission = Permission.objects.filter(content_type=content_type)
+
+        manager_group, created = Group.objects.get_or_create(name="Managers")
+        manager_group.permissions.add(*order_detail_permission)
