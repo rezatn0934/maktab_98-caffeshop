@@ -1342,3 +1342,8 @@ class TestSalesByCategory(TestCase):
         Order.objects.all().delete()
         Table.objects.all().delete()
         self.user.delete()
+
+    def test_customer_demographic_GET_dont_has_perm(self):
+        self.client.login(phone=self.user.phone, password=self.password)
+        response = self.client.get(reverse('customer_demographic'))
+        self.assertEqual(response.status_code, 302)
