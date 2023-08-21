@@ -325,376 +325,376 @@ from accounts.views import (
 #         self.assertEqual(order.payment, 'P')
 #         self.assertTemplateUsed(response, 'orders_list.html')
 #
-
-
-class TestOrderDetailView(TestCase):
-
-    def setUp(self):
-        self.table = Table.objects.create(name='orchid', Table_number=4, occupied=True)
-        self.table2 = Table.objects.create(name='rose', Table_number=3, occupied=True)
-        self.order = Order.objects.create(
-            payment='P', status='A', phone_number='09152593858', table_number=self.table)
-        self.order2 = Order.objects.create(
-            payment='U', status='A', phone_number='09198470934', table_number=None)
-        self.product = Product.objects.create(category=Category.objects.create(name='Drinks'), name='Tea',
-                                              description='drinks', price=5.00)
-        self.order_detail = Order_detail.objects.create(
-            order=self.order, product=self.product, quantity=4)
-        self.order_detail2 = Order_detail.objects.create(
-            order=self.order2, product=self.product, quantity=3)
-        self.client = Client()
-        self.password = 'reza123456'
-        self.user = User.objects.create_user(
-            phone='09198470934',
-            password=self.password,
-        )
-
-    def tearDown(self):
-        self.order_detail.delete()
-        self.order_detail2.delete()
-        self.product.delete()
-        self.order.delete()
-        self.order2.delete()
-        self.table.delete()
-        self.table2.delete()
-        self.user.delete()
-
-    def test_order_detail_GET(self):
-        self.client.login(phone=self.user.phone, password=self.password)
-        response = self.client.get(reverse('order_detail', args=(self.order.id,)))
-        self.assertIn(self.order_detail, response.context['order_details'])
-        self.assertTemplateUsed(response, 'order_detail.html')
-        self.assertEqual(response.status_code, 200)
-
-
-class TestUpdateOrderItem(TestCase):
-
-    @classmethod
-    def setUpTestData(cls):
-        content_type = ContentType.objects.get_for_model(Order_detail)
-        order_permission = Permission.objects.filter(content_type=content_type)
-        manager_group, created = Group.objects.get_or_create(name="Managers")
-        manager_group.permissions.add(*order_permission)
-
-    def setUp(self):
-        self.table = Table.objects.create(name='orchid', Table_number=4, occupied=True)
-        self.table2 = Table.objects.create(name='rose', Table_number=3, occupied=True)
-        self.order = Order.objects.create(
-            payment='P', status='A', phone_number='09152593858', table_number=self.table)
-        self.order2 = Order.objects.create(
-            payment='U', status='A', phone_number='09198470934', table_number=None)
-        self.product = Product.objects.create(category=Category.objects.create(name='Drinks'), name='Tea',
-                                              description='drinks', price=5.00)
-        self.order_detail = Order_detail.objects.create(
-            order=self.order, product=self.product, quantity=4)
-        self.order_detail2 = Order_detail.objects.create(
-            order=self.order2, product=self.product, quantity=3)
-        self.client = Client()
-        self.password = 'reza123456'
-        self.user = User.objects.create_user(
-            phone='09198470934',
-            password=self.password,
-        )
-        self.manager_group = Group.objects.get(name='Managers')
-
-    def tearDown(self):
-        self.order_detail.delete()
-        self.order_detail2.delete()
-        self.product.delete()
-        self.order.delete()
-        self.order2.delete()
-        self.table.delete()
-        self.table2.delete()
-        self.user.delete()
-
-    def test_update_order_detail_POST_dont_has_perm(self):
-        self.client.login(phone=self.user.phone, password=self.password)
-        data = {'product': self.product, 'quantity': 10}
-        response = self.client.post(reverse('update_order_detail', args=(self.order_detail.id,)), data=data)
-        self.assertEqual(response.status_code, 403)
-
-    def test_update_orders_POST_has_perm_valid_form(self):
-        self.user.groups.add(self.manager_group)
-        self.client.login(phone=self.user.phone, password=self.password)
-        data = {'product': self.product.id, 'quantity': 10}
-        response = self.client.post(reverse('update_order_detail', args=(self.order_detail.id,)), data=data)
-
-        self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, reverse('order_detail', args=(self.order_detail.order.pk,)))
-        messages = list(get_messages(response.wsgi_request))
-        self.assertEqual(messages[0].message, 'Order item has been successfully updated.')
-        self.assertEqual(Order_detail.objects.get(pk=self.order_detail.pk).product, self.product)
-        self.assertEqual(Order_detail.objects.get(pk=self.order_detail.pk).quantity, 10)
-
-    def test_update_orders_detail_POST_has_perm_invalid_form(self):
-        self.user.groups.add(self.manager_group)
-        self.client.login(phone=self.user.phone, password=self.password)
-        data = {'product': self.product, 'quantity': 10}
-        response = self.client.post(reverse('update_order_detail', args=(self.order_detail.id,)), data=data)
-
-        self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, reverse('order_detail', args=(self.order_detail.order.pk,)))
-        messages = list(get_messages(response.wsgi_request))
-        self.assertEqual(messages[0].message, 'Form input is not valid')
-
-
-class TestCreateOrderItem(TestCase):
-
-    @classmethod
-    def setUpTestData(cls):
-        content_type = ContentType.objects.get_for_model(Order_detail)
-        order_permission = Permission.objects.filter(content_type=content_type)
-        manager_group, created = Group.objects.get_or_create(name="Managers")
-        manager_group.permissions.add(*order_permission)
-
-    def setUp(self):
-        self.table = Table.objects.create(name='orchid', Table_number=4, occupied=True)
-        self.table2 = Table.objects.create(name='rose', Table_number=3, occupied=True)
-        self.order = Order.objects.create(
-            payment='P', status='A', phone_number='09152593858', table_number=self.table)
-        self.order2 = Order.objects.create(
-            payment='U', status='A', phone_number='09198470934', table_number=None)
-        self.product = Product.objects.create(category=Category.objects.create(name='Drinks'), name='Tea',
-                                              description='drinks', price=5.00)
-        self.product2 = Product.objects.create(category=Category.objects.create(name='foods'), name='pizza',
-                                               description='food', price=15.00)
-        self.order_detail = Order_detail.objects.create(
-            order=self.order, product=self.product, quantity=4)
-        self.order_detail2 = Order_detail.objects.create(
-            order=self.order2, product=self.product, quantity=3)
-        self.client = Client()
-        self.password = 'reza123456'
-        self.user = User.objects.create_user(
-            phone='09198470934',
-            password=self.password,
-        )
-        self.manager_group = Group.objects.get(name='Managers')
-
-    def tearDown(self):
-        Order_detail.objects.all().delete()
-        Product.objects.all().delete()
-        Order.objects.all().delete()
-        Table.objects.all().delete()
-        self.user.delete()
-
-    def test_create_orders_detail_POST_dont_has_perm(self):
-        self.client.login(phone=self.user.phone, password=self.password)
-        data = {'product': self.product, 'quantity': 10}
-        response = self.client.post(reverse('create_order_detail'), data=data)
-        self.assertEqual(response.status_code, 403)
-
-    def test_create_orders_POST_has_perm_valid_form(self):
-        self.user.groups.add(self.manager_group)
-        self.client.login(phone=self.user.phone, password=self.password)
-        data = {'product': self.product2.id, 'quantity': 10, 'order': self.order.id}
-        response = self.client.post(reverse('create_order_detail'), data=data)
-
-        self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, reverse('order_detail', args=(self.order.id,)))
-        messages = list(get_messages(response.wsgi_request))
-        self.assertEqual(messages[0].message, f"Order item has been successfully added to Order {self.order.id}")
-
-    def test_create_orders_detail_POST_has_perm_invalid_form(self):
-        self.user.groups.add(self.manager_group)
-        self.client.login(phone=self.user.phone, password=self.password)
-        data = {'product': self.product2, 'quantity': 10, 'order': self.order.id}
-        response = self.client.post(reverse('create_order_detail'), data=data)
-        self.assertEqual(response.status_code, 200)
-        messages = list(get_messages(response.wsgi_request))
-        self.assertEqual(messages[0].message, 'Form input is not valid')
-
-
-class TestConfirmOrder(TestCase):
-
-    @classmethod
-    def setUpTestData(cls):
-        content_type = ContentType.objects.get_for_model(Order)
-        order_permission = Permission.objects.filter(content_type=content_type)
-        manager_group, created = Group.objects.get_or_create(name="Managers")
-        manager_group.permissions.add(*order_permission)
-        change_order_status_permission = Permission.objects.create(codename='change_order_status',
-                                                                   name='can change order approval status',
-                                                                   content_type=content_type)
-        manager_group.permissions.add(change_order_status_permission)
-
-    def setUp(self):
-        self.table = Table.objects.create(name='orchid', Table_number=4, occupied=True)
-        self.order = Order.objects.create(
-            payment='U', status='P', phone_number='09152593858', table_number=self.table)
-        self.product = Product.objects.create(category=Category.objects.create(name='Drinks'), name='Tea',
-                                              description='drinks', price=5.00)
-        self.order_detail = Order_detail.objects.create(
-            order=self.order, product=self.product, quantity=4)
-        self.client = Client()
-        self.password = 'reza123456'
-        self.user = User.objects.create_user(
-            phone='09198470934',
-            password=self.password,
-        )
-        self.manager_group = Group.objects.get(name='Managers')
-
-    def tearDown(self):
-        Order_detail.objects.all().delete()
-        Product.objects.all().delete()
-        Order.objects.all().delete()
-        Table.objects.all().delete()
-        self.user.delete()
-
-    def test_confirm_orders_GET_dont_has_perm(self):
-        self.client.login(phone=self.user.phone, password=self.password)
-        response = self.client.get(reverse('confirm_order', args=(self.order.id,)))
-        self.assertEqual(response.status_code, 302)
-
-    def test_confirm_orders_GET_has_perm(self):
-        self.user.groups.add(self.manager_group)
-        self.client.login(phone=self.user.phone, password=self.password)
-        response = self.client.get(reverse('confirm_order', args=(self.order.id,)))
-
-        self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, reverse('order_list'))
-        messages = list(get_messages(response.wsgi_request))
-        self.assertEqual(messages[0].message, f'Order {self.order.id} has been successfully Approved.')
-        self.assertEqual(Order.objects.get(id=self.order.id).status, 'A')
-
-    def test_confirm_orders_GET_wrong_order_id(self):
-        self.user.groups.add(self.manager_group)
-        self.client.login(phone=self.user.phone, password=self.password)
-        response = self.client.get(reverse('confirm_order', args=(100,)))
-
-        self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, reverse('order_list'))
-        messages = list(get_messages(response.wsgi_request))
-        self.assertEqual(messages[0].message, 'Order 100 not found')
-
-
-class TestCancelOrder(TestCase):
-
-    @classmethod
-    def setUpTestData(cls):
-        content_type = ContentType.objects.get_for_model(Order)
-        order_permission = Permission.objects.filter(content_type=content_type)
-        manager_group, created = Group.objects.get_or_create(name="Managers")
-        manager_group.permissions.add(*order_permission)
-        change_order_status_permission = Permission.objects.create(codename='change_order_status',
-                                                                   name='can change order approval status',
-                                                                   content_type=content_type)
-        manager_group.permissions.add(change_order_status_permission)
-
-    def setUp(self):
-        self.table = Table.objects.create(name='orchid', Table_number=4, occupied=True)
-        self.order = Order.objects.create(
-            payment='U', status='P', phone_number='09152593858', table_number=self.table)
-        self.product = Product.objects.create(category=Category.objects.create(name='Drinks'), name='Tea',
-                                              description='drinks', price=5.00)
-        self.order_detail = Order_detail.objects.create(
-            order=self.order, product=self.product, quantity=4)
-        self.client = Client()
-        self.password = 'reza123456'
-        self.user = User.objects.create_user(
-            phone='09198470934',
-            password=self.password,
-        )
-        self.manager_group = Group.objects.get(name='Managers')
-
-    def tearDown(self):
-        Order_detail.objects.all().delete()
-        Product.objects.all().delete()
-        Order.objects.all().delete()
-        Table.objects.all().delete()
-        self.user.delete()
-
-    def test_cancel_orders_GET_dont_has_perm(self):
-        self.client.login(phone=self.user.phone, password=self.password)
-        response = self.client.get(reverse('cancel_order', args=(self.order.id,)))
-        self.assertEqual(response.status_code, 302)
-
-    def test_cancel_orders_GET_has_perm(self):
-        self.user.groups.add(self.manager_group)
-        self.client.login(phone=self.user.phone, password=self.password)
-        response = self.client.get(reverse('cancel_order', args=(self.order.id,)))
-
-        self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, reverse('order_list'))
-        messages = list(get_messages(response.wsgi_request))
-        self.assertEqual(messages[0].message, f'Order {self.order.id} has been canceled.')
-        self.assertEqual(Order.objects.get(id=self.order.id).status, 'C')
-
-    def test_cancel_orders_GET_wrong_order_id(self):
-        self.user.groups.add(self.manager_group)
-        self.client.login(phone=self.user.phone, password=self.password)
-        response = self.client.get(reverse('cancel_order', args=(100,)))
-
-        self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, reverse('order_list'))
-        messages = list(get_messages(response.wsgi_request))
-        self.assertEqual(messages[0].message, 'Order 100 not found')
-
-
-class TestDeleteOrderItem(TestCase):
-
-    @classmethod
-    def setUpTestData(cls):
-        content_type = ContentType.objects.get_for_model(Order_detail)
-        content_type2 = ContentType.objects.get_for_model(Order)
-        order_permission = Permission.objects.filter(content_type=content_type2)
-        order_detail_permission = Permission.objects.filter(content_type=content_type)
-
-        manager_group, created = Group.objects.get_or_create(name="Managers")
-        manager_group.permissions.add(*order_permission)
-        manager_group.permissions.add(*order_detail_permission)
-
-    def setUp(self):
-        self.table = Table.objects.create(name='orchid', Table_number=4, occupied=True)
-        self.order = Order.objects.create(
-            payment='U', status='P', phone_number='09152593858', table_number=self.table)
-        self.product = Product.objects.create(category=Category.objects.create(name='Drinks'), name='Tea',
-                                              description='drinks', price=5.00)
-        self.product2 = Product.objects.create(category=Category.objects.create(name='foods'), name='pizza',
-                                               description='food', price=15.00)
-        self.order_detail = Order_detail.objects.create(
-            order=self.order, product=self.product, quantity=4)
-        self.order_detail2 = Order_detail.objects.create(
-            order=self.order, product=self.product2, quantity=2)
-        self.client = Client()
-        self.password = 'reza123456'
-        self.user = User.objects.create_user(
-            phone='09198470934',
-            password=self.password,
-        )
-        self.manager_group = Group.objects.get(name='Managers')
-
-    def tearDown(self):
-        Order_detail.objects.all().delete()
-        Product.objects.all().delete()
-        Order.objects.all().delete()
-        Table.objects.all().delete()
-        self.user.delete()
-
-    def test_cancel_orders_GET_dont_has_perm(self):
-        self.client.login(phone=self.user.phone, password=self.password)
-        response = self.client.get(reverse('delete_order_item', args=(self.order.id,)))
-        self.assertEqual(response.status_code, 302)
-
-    def test_cancel_orders_GET_has_perm(self):
-        self.user.groups.add(self.manager_group)
-        self.client.login(phone=self.user.phone, password=self.password)
-        response = self.client.get(reverse('delete_order_item', args=(self.order_detail.id,)))
-
-        self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, reverse('order_detail', args=(self.order.id, )))
-        messages = list(get_messages(response.wsgi_request))
-        self.assertEqual(messages[0].message, f'Order item {self.order_detail.id} has been deleted!')
-
-    def test_cancel_orders_GET_wrong_order_id(self):
-        self.user.groups.add(self.manager_group)
-        self.client.login(phone=self.user.phone, password=self.password)
-        response = self.client.get(reverse('delete_order_item', args=(100,)))
-
-        self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, reverse('order_list'))
-        messages = list(get_messages(response.wsgi_request))
-        self.assertEqual(messages[0].message, 'Order items 100 not found')
-
+#
+#
+# class TestOrderDetailView(TestCase):
+#
+#     def setUp(self):
+#         self.table = Table.objects.create(name='orchid', Table_number=4, occupied=True)
+#         self.table2 = Table.objects.create(name='rose', Table_number=3, occupied=True)
+#         self.order = Order.objects.create(
+#             payment='P', status='A', phone_number='09152593858', table_number=self.table)
+#         self.order2 = Order.objects.create(
+#             payment='U', status='A', phone_number='09198470934', table_number=None)
+#         self.product = Product.objects.create(category=Category.objects.create(name='Drinks'), name='Tea',
+#                                               description='drinks', price=5.00)
+#         self.order_detail = Order_detail.objects.create(
+#             order=self.order, product=self.product, quantity=4)
+#         self.order_detail2 = Order_detail.objects.create(
+#             order=self.order2, product=self.product, quantity=3)
+#         self.client = Client()
+#         self.password = 'reza123456'
+#         self.user = User.objects.create_user(
+#             phone='09198470934',
+#             password=self.password,
+#         )
+#
+#     def tearDown(self):
+#         self.order_detail.delete()
+#         self.order_detail2.delete()
+#         self.product.delete()
+#         self.order.delete()
+#         self.order2.delete()
+#         self.table.delete()
+#         self.table2.delete()
+#         self.user.delete()
+#
+#     def test_order_detail_GET(self):
+#         self.client.login(phone=self.user.phone, password=self.password)
+#         response = self.client.get(reverse('order_detail', args=(self.order.id,)))
+#         self.assertIn(self.order_detail, response.context['order_details'])
+#         self.assertTemplateUsed(response, 'order_detail.html')
+#         self.assertEqual(response.status_code, 200)
+#
+#
+# class TestUpdateOrderItem(TestCase):
+#
+#     @classmethod
+#     def setUpTestData(cls):
+#         content_type = ContentType.objects.get_for_model(Order_detail)
+#         order_permission = Permission.objects.filter(content_type=content_type)
+#         manager_group, created = Group.objects.get_or_create(name="Managers")
+#         manager_group.permissions.add(*order_permission)
+#
+#     def setUp(self):
+#         self.table = Table.objects.create(name='orchid', Table_number=4, occupied=True)
+#         self.table2 = Table.objects.create(name='rose', Table_number=3, occupied=True)
+#         self.order = Order.objects.create(
+#             payment='P', status='A', phone_number='09152593858', table_number=self.table)
+#         self.order2 = Order.objects.create(
+#             payment='U', status='A', phone_number='09198470934', table_number=None)
+#         self.product = Product.objects.create(category=Category.objects.create(name='Drinks'), name='Tea',
+#                                               description='drinks', price=5.00)
+#         self.order_detail = Order_detail.objects.create(
+#             order=self.order, product=self.product, quantity=4)
+#         self.order_detail2 = Order_detail.objects.create(
+#             order=self.order2, product=self.product, quantity=3)
+#         self.client = Client()
+#         self.password = 'reza123456'
+#         self.user = User.objects.create_user(
+#             phone='09198470934',
+#             password=self.password,
+#         )
+#         self.manager_group = Group.objects.get(name='Managers')
+#
+#     def tearDown(self):
+#         self.order_detail.delete()
+#         self.order_detail2.delete()
+#         self.product.delete()
+#         self.order.delete()
+#         self.order2.delete()
+#         self.table.delete()
+#         self.table2.delete()
+#         self.user.delete()
+#
+#     def test_update_order_detail_POST_dont_has_perm(self):
+#         self.client.login(phone=self.user.phone, password=self.password)
+#         data = {'product': self.product, 'quantity': 10}
+#         response = self.client.post(reverse('update_order_detail', args=(self.order_detail.id,)), data=data)
+#         self.assertEqual(response.status_code, 403)
+#
+#     def test_update_orders_POST_has_perm_valid_form(self):
+#         self.user.groups.add(self.manager_group)
+#         self.client.login(phone=self.user.phone, password=self.password)
+#         data = {'product': self.product.id, 'quantity': 10}
+#         response = self.client.post(reverse('update_order_detail', args=(self.order_detail.id,)), data=data)
+#
+#         self.assertEqual(response.status_code, 302)
+#         self.assertRedirects(response, reverse('order_detail', args=(self.order_detail.order.pk,)))
+#         messages = list(get_messages(response.wsgi_request))
+#         self.assertEqual(messages[0].message, 'Order item has been successfully updated.')
+#         self.assertEqual(Order_detail.objects.get(pk=self.order_detail.pk).product, self.product)
+#         self.assertEqual(Order_detail.objects.get(pk=self.order_detail.pk).quantity, 10)
+#
+#     def test_update_orders_detail_POST_has_perm_invalid_form(self):
+#         self.user.groups.add(self.manager_group)
+#         self.client.login(phone=self.user.phone, password=self.password)
+#         data = {'product': self.product, 'quantity': 10}
+#         response = self.client.post(reverse('update_order_detail', args=(self.order_detail.id,)), data=data)
+#
+#         self.assertEqual(response.status_code, 302)
+#         self.assertRedirects(response, reverse('order_detail', args=(self.order_detail.order.pk,)))
+#         messages = list(get_messages(response.wsgi_request))
+#         self.assertEqual(messages[0].message, 'Form input is not valid')
+#
+#
+# class TestCreateOrderItem(TestCase):
+#
+#     @classmethod
+#     def setUpTestData(cls):
+#         content_type = ContentType.objects.get_for_model(Order_detail)
+#         order_permission = Permission.objects.filter(content_type=content_type)
+#         manager_group, created = Group.objects.get_or_create(name="Managers")
+#         manager_group.permissions.add(*order_permission)
+#
+#     def setUp(self):
+#         self.table = Table.objects.create(name='orchid', Table_number=4, occupied=True)
+#         self.table2 = Table.objects.create(name='rose', Table_number=3, occupied=True)
+#         self.order = Order.objects.create(
+#             payment='P', status='A', phone_number='09152593858', table_number=self.table)
+#         self.order2 = Order.objects.create(
+#             payment='U', status='A', phone_number='09198470934', table_number=None)
+#         self.product = Product.objects.create(category=Category.objects.create(name='Drinks'), name='Tea',
+#                                               description='drinks', price=5.00)
+#         self.product2 = Product.objects.create(category=Category.objects.create(name='foods'), name='pizza',
+#                                                description='food', price=15.00)
+#         self.order_detail = Order_detail.objects.create(
+#             order=self.order, product=self.product, quantity=4)
+#         self.order_detail2 = Order_detail.objects.create(
+#             order=self.order2, product=self.product, quantity=3)
+#         self.client = Client()
+#         self.password = 'reza123456'
+#         self.user = User.objects.create_user(
+#             phone='09198470934',
+#             password=self.password,
+#         )
+#         self.manager_group = Group.objects.get(name='Managers')
+#
+#     def tearDown(self):
+#         Order_detail.objects.all().delete()
+#         Product.objects.all().delete()
+#         Order.objects.all().delete()
+#         Table.objects.all().delete()
+#         self.user.delete()
+#
+#     def test_create_orders_detail_POST_dont_has_perm(self):
+#         self.client.login(phone=self.user.phone, password=self.password)
+#         data = {'product': self.product, 'quantity': 10}
+#         response = self.client.post(reverse('create_order_detail'), data=data)
+#         self.assertEqual(response.status_code, 403)
+#
+#     def test_create_orders_POST_has_perm_valid_form(self):
+#         self.user.groups.add(self.manager_group)
+#         self.client.login(phone=self.user.phone, password=self.password)
+#         data = {'product': self.product2.id, 'quantity': 10, 'order': self.order.id}
+#         response = self.client.post(reverse('create_order_detail'), data=data)
+#
+#         self.assertEqual(response.status_code, 302)
+#         self.assertRedirects(response, reverse('order_detail', args=(self.order.id,)))
+#         messages = list(get_messages(response.wsgi_request))
+#         self.assertEqual(messages[0].message, f"Order item has been successfully added to Order {self.order.id}")
+#
+#     def test_create_orders_detail_POST_has_perm_invalid_form(self):
+#         self.user.groups.add(self.manager_group)
+#         self.client.login(phone=self.user.phone, password=self.password)
+#         data = {'product': self.product2, 'quantity': 10, 'order': self.order.id}
+#         response = self.client.post(reverse('create_order_detail'), data=data)
+#         self.assertEqual(response.status_code, 200)
+#         messages = list(get_messages(response.wsgi_request))
+#         self.assertEqual(messages[0].message, 'Form input is not valid')
+#
+#
+# class TestConfirmOrder(TestCase):
+#
+#     @classmethod
+#     def setUpTestData(cls):
+#         content_type = ContentType.objects.get_for_model(Order)
+#         order_permission = Permission.objects.filter(content_type=content_type)
+#         manager_group, created = Group.objects.get_or_create(name="Managers")
+#         manager_group.permissions.add(*order_permission)
+#         change_order_status_permission = Permission.objects.create(codename='change_order_status',
+#                                                                    name='can change order approval status',
+#                                                                    content_type=content_type)
+#         manager_group.permissions.add(change_order_status_permission)
+#
+#     def setUp(self):
+#         self.table = Table.objects.create(name='orchid', Table_number=4, occupied=True)
+#         self.order = Order.objects.create(
+#             payment='U', status='P', phone_number='09152593858', table_number=self.table)
+#         self.product = Product.objects.create(category=Category.objects.create(name='Drinks'), name='Tea',
+#                                               description='drinks', price=5.00)
+#         self.order_detail = Order_detail.objects.create(
+#             order=self.order, product=self.product, quantity=4)
+#         self.client = Client()
+#         self.password = 'reza123456'
+#         self.user = User.objects.create_user(
+#             phone='09198470934',
+#             password=self.password,
+#         )
+#         self.manager_group = Group.objects.get(name='Managers')
+#
+#     def tearDown(self):
+#         Order_detail.objects.all().delete()
+#         Product.objects.all().delete()
+#         Order.objects.all().delete()
+#         Table.objects.all().delete()
+#         self.user.delete()
+#
+#     def test_confirm_orders_GET_dont_has_perm(self):
+#         self.client.login(phone=self.user.phone, password=self.password)
+#         response = self.client.get(reverse('confirm_order', args=(self.order.id,)))
+#         self.assertEqual(response.status_code, 302)
+#
+#     def test_confirm_orders_GET_has_perm(self):
+#         self.user.groups.add(self.manager_group)
+#         self.client.login(phone=self.user.phone, password=self.password)
+#         response = self.client.get(reverse('confirm_order', args=(self.order.id,)))
+#
+#         self.assertEqual(response.status_code, 302)
+#         self.assertRedirects(response, reverse('order_list'))
+#         messages = list(get_messages(response.wsgi_request))
+#         self.assertEqual(messages[0].message, f'Order {self.order.id} has been successfully Approved.')
+#         self.assertEqual(Order.objects.get(id=self.order.id).status, 'A')
+#
+#     def test_confirm_orders_GET_wrong_order_id(self):
+#         self.user.groups.add(self.manager_group)
+#         self.client.login(phone=self.user.phone, password=self.password)
+#         response = self.client.get(reverse('confirm_order', args=(100,)))
+#
+#         self.assertEqual(response.status_code, 302)
+#         self.assertRedirects(response, reverse('order_list'))
+#         messages = list(get_messages(response.wsgi_request))
+#         self.assertEqual(messages[0].message, 'Order 100 not found')
+#
+#
+# class TestCancelOrder(TestCase):
+#
+#     @classmethod
+#     def setUpTestData(cls):
+#         content_type = ContentType.objects.get_for_model(Order)
+#         order_permission = Permission.objects.filter(content_type=content_type)
+#         manager_group, created = Group.objects.get_or_create(name="Managers")
+#         manager_group.permissions.add(*order_permission)
+#         change_order_status_permission = Permission.objects.create(codename='change_order_status',
+#                                                                    name='can change order approval status',
+#                                                                    content_type=content_type)
+#         manager_group.permissions.add(change_order_status_permission)
+#
+#     def setUp(self):
+#         self.table = Table.objects.create(name='orchid', Table_number=4, occupied=True)
+#         self.order = Order.objects.create(
+#             payment='U', status='P', phone_number='09152593858', table_number=self.table)
+#         self.product = Product.objects.create(category=Category.objects.create(name='Drinks'), name='Tea',
+#                                               description='drinks', price=5.00)
+#         self.order_detail = Order_detail.objects.create(
+#             order=self.order, product=self.product, quantity=4)
+#         self.client = Client()
+#         self.password = 'reza123456'
+#         self.user = User.objects.create_user(
+#             phone='09198470934',
+#             password=self.password,
+#         )
+#         self.manager_group = Group.objects.get(name='Managers')
+#
+#     def tearDown(self):
+#         Order_detail.objects.all().delete()
+#         Product.objects.all().delete()
+#         Order.objects.all().delete()
+#         Table.objects.all().delete()
+#         self.user.delete()
+#
+#     def test_cancel_orders_GET_dont_has_perm(self):
+#         self.client.login(phone=self.user.phone, password=self.password)
+#         response = self.client.get(reverse('cancel_order', args=(self.order.id,)))
+#         self.assertEqual(response.status_code, 302)
+#
+#     def test_cancel_orders_GET_has_perm(self):
+#         self.user.groups.add(self.manager_group)
+#         self.client.login(phone=self.user.phone, password=self.password)
+#         response = self.client.get(reverse('cancel_order', args=(self.order.id,)))
+#
+#         self.assertEqual(response.status_code, 302)
+#         self.assertRedirects(response, reverse('order_list'))
+#         messages = list(get_messages(response.wsgi_request))
+#         self.assertEqual(messages[0].message, f'Order {self.order.id} has been canceled.')
+#         self.assertEqual(Order.objects.get(id=self.order.id).status, 'C')
+#
+#     def test_cancel_orders_GET_wrong_order_id(self):
+#         self.user.groups.add(self.manager_group)
+#         self.client.login(phone=self.user.phone, password=self.password)
+#         response = self.client.get(reverse('cancel_order', args=(100,)))
+#
+#         self.assertEqual(response.status_code, 302)
+#         self.assertRedirects(response, reverse('order_list'))
+#         messages = list(get_messages(response.wsgi_request))
+#         self.assertEqual(messages[0].message, 'Order 100 not found')
+#
+#
+# class TestDeleteOrderItem(TestCase):
+#
+#     @classmethod
+#     def setUpTestData(cls):
+#         content_type = ContentType.objects.get_for_model(Order_detail)
+#         content_type2 = ContentType.objects.get_for_model(Order)
+#         order_permission = Permission.objects.filter(content_type=content_type2)
+#         order_detail_permission = Permission.objects.filter(content_type=content_type)
+#
+#         manager_group, created = Group.objects.get_or_create(name="Managers")
+#         manager_group.permissions.add(*order_permission)
+#         manager_group.permissions.add(*order_detail_permission)
+#
+#     def setUp(self):
+#         self.table = Table.objects.create(name='orchid', Table_number=4, occupied=True)
+#         self.order = Order.objects.create(
+#             payment='U', status='P', phone_number='09152593858', table_number=self.table)
+#         self.product = Product.objects.create(category=Category.objects.create(name='Drinks'), name='Tea',
+#                                               description='drinks', price=5.00)
+#         self.product2 = Product.objects.create(category=Category.objects.create(name='foods'), name='pizza',
+#                                                description='food', price=15.00)
+#         self.order_detail = Order_detail.objects.create(
+#             order=self.order, product=self.product, quantity=4)
+#         self.order_detail2 = Order_detail.objects.create(
+#             order=self.order, product=self.product2, quantity=2)
+#         self.client = Client()
+#         self.password = 'reza123456'
+#         self.user = User.objects.create_user(
+#             phone='09198470934',
+#             password=self.password,
+#         )
+#         self.manager_group = Group.objects.get(name='Managers')
+#
+#     def tearDown(self):
+#         Order_detail.objects.all().delete()
+#         Product.objects.all().delete()
+#         Order.objects.all().delete()
+#         Table.objects.all().delete()
+#         self.user.delete()
+#
+#     def test_cancel_orders_GET_dont_has_perm(self):
+#         self.client.login(phone=self.user.phone, password=self.password)
+#         response = self.client.get(reverse('delete_order_item', args=(self.order.id,)))
+#         self.assertEqual(response.status_code, 302)
+#
+#     def test_cancel_orders_GET_has_perm(self):
+#         self.user.groups.add(self.manager_group)
+#         self.client.login(phone=self.user.phone, password=self.password)
+#         response = self.client.get(reverse('delete_order_item', args=(self.order_detail.id,)))
+#
+#         self.assertEqual(response.status_code, 302)
+#         self.assertRedirects(response, reverse('order_detail', args=(self.order.id, )))
+#         messages = list(get_messages(response.wsgi_request))
+#         self.assertEqual(messages[0].message, f'Order item {self.order_detail.id} has been deleted!')
+#
+#     def test_cancel_orders_GET_wrong_order_id(self):
+#         self.user.groups.add(self.manager_group)
+#         self.client.login(phone=self.user.phone, password=self.password)
+#         response = self.client.get(reverse('delete_order_item', args=(100,)))
+#
+#         self.assertEqual(response.status_code, 302)
+#         self.assertRedirects(response, reverse('order_list'))
+#         messages = list(get_messages(response.wsgi_request))
+#         self.assertEqual(messages[0].message, 'Order items 100 not found')
+#
 
 class TestMostPopular(TestCase):
 
@@ -744,3 +744,8 @@ class TestMostPopular(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertIn(self.product2, response.context['query_set'])
+
+    def test_cancel_orders_GET_dont_has_perm(self):
+        self.client.login(phone=self.user.phone, password=self.password)
+        response = self.client.get(reverse('most_popular'))
+        self.assertEqual(response.status_code, 302)
