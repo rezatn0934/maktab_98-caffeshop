@@ -61,3 +61,11 @@ class TestSearchView(TestCase):
         self.assertTemplateNotUsed('home/home.html')
 
 
+    def test_search_get_valid_serach_data_in_category(self):
+        response = self.client.get(reverse('menu:search'), data={'search': 'Foo'})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['message'], None)
+        self.assertIn(self.product, response.context['search_result'])
+        self.assertTemplateUsed('menu/search.html')
+        self.assertTemplateNotUsed('menu/menu.html')
+        self.assertTemplateNotUsed('home/home.html')
