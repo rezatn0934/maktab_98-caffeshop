@@ -12,12 +12,11 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.decorators import permission_required
 from django.shortcuts import render, redirect
-from django.utils.decorators import method_decorator
 from django.utils import timezone
 from django.views import View
 
 from .authentication import PhoneAuthBackend
-from .mixins import ChartAccessMixin, chart_access_check
+from .mixins import chart_access_check
 from .form import StaffLoginForm, VerifyCodeForm
 from orders.models import Order, Order_detail
 from utils import send_otp_code, check_is_authenticated
