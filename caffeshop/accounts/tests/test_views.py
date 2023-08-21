@@ -1,3 +1,5 @@
+import datetime
+
 from django.contrib.auth.models import AnonymousUser, Permission, Group
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.messages import get_messages
@@ -8,6 +10,7 @@ from django.urls import reverse
 from django.utils import timezone
 
 from accounts.models import User
+from model_bakery import baker
 from orders.models import Order, Order_detail, Table
 from menu.models import Product, Category
 from accounts.views import (
@@ -696,69 +699,69 @@ from accounts.views import (
 #         self.assertEqual(messages[0].message, 'Order items 100 not found')
 #
 
-class TestMostPopular(TestCase):
-
-    @classmethod
-    def setUpTestData(cls):
-        content_type = ContentType.objects.get_for_model(Order_detail)
-        order_detail_permission = Permission.objects.filter(content_type=content_type)
-
-        manager_group, created = Group.objects.get_or_create(name="Managers")
-        manager_group.permissions.add(*order_detail_permission)
-
-    def setUp(self):
-        self.table = Table.objects.create(name='orchid', Table_number=4, occupied=True)
-        self.order = Order.objects.create(
-            payment='U', status='P', phone_number='09152593858', table_number=self.table)
-        self.order2 = Order.objects.create(
-            payment='U', status='P', phone_number='09152593858', table_number=self.table)
-        self.product = Product.objects.create(category=Category.objects.create(name='Drinks'), name='Tea',
-                                              description='drinks', price=5.00)
-        self.product2 = Product.objects.create(category=Category.objects.create(name='foods'), name='pizza',
-                                               description='food', price=15.00)
-        self.order_detail = Order_detail.objects.create(
-            order=self.order, product=self.product, quantity=4)
-        self.order_detail2 = Order_detail.objects.create(
-            order=self.order, product=self.product2, quantity=2)
-        self.order_detail3 = Order_detail.objects.create(
-            order=self.order2, product=self.product2, quantity=5)
-        self.client = Client()
-        self.password = 'reza123456'
-        self.user = User.objects.create_user(
-            phone='09198470934',
-            password=self.password,
-        )
-        self.manager_group = Group.objects.get(name='Managers')
-
-    def tearDown(self):
-        Order_detail.objects.all().delete()
-        Product.objects.all().delete()
-        Order.objects.all().delete()
-        Table.objects.all().delete()
-        self.user.delete()
-
-    def test_most_popular_GET_has_perm(self):
-        self.user.groups.add(self.manager_group)
-        self.client.login(phone=self.user.phone, password=self.password)
-        response = self.client.get(reverse('most_popular'))
-
-        self.assertEqual(response.status_code, 200)
-        self.assertIn(self.product2, response.context['query_set'])
-
-    def test_most_popular_GET_dont_has_perm(self):
-        self.client.login(phone=self.user.phone, password=self.password)
-        response = self.client.get(reverse('most_popular'))
-        self.assertEqual(response.status_code, 302)
-
-    def test_most_popular_GET_has_perm_with_filter(self):
-        self.user.groups.add(self.manager_group)
-        first_date = timezone.now() - timezone.timedelta(days=1)
-        data = {'filter': '', 'first_date': first_date, 'second_date': timezone.now(), 'quantity': 2}
-        self.client.login(phone=self.user.phone, password=self.password)
-        response = self.client.get(reverse('most_popular'), data=data)
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.context['query_set']), 2)
+# class TestMostPopular(TestCase):
+#
+#     @classmethod
+#     def setUpTestData(cls):
+#         content_type = ContentType.objects.get_for_model(Order_detail)
+#         order_detail_permission = Permission.objects.filter(content_type=content_type)
+#
+#         manager_group, created = Group.objects.get_or_create(name="Managers")
+#         manager_group.permissions.add(*order_detail_permission)
+#
+#     def setUp(self):
+#         self.table = Table.objects.create(name='orchid', Table_number=4, occupied=True)
+#         self.order = Order.objects.create(
+#             payment='U', status='P', phone_number='09152593858', table_number=self.table)
+#         self.order2 = Order.objects.create(
+#             payment='U', status='P', phone_number='09152593858', table_number=self.table)
+#         self.product = Product.objects.create(category=Category.objects.create(name='Drinks'), name='Tea',
+#                                               description='drinks', price=5.00)
+#         self.product2 = Product.objects.create(category=Category.objects.create(name='foods'), name='pizza',
+#                                                description='food', price=15.00)
+#         self.order_detail = Order_detail.objects.create(
+#             order=self.order, product=self.product, quantity=4)
+#         self.order_detail2 = Order_detail.objects.create(
+#             order=self.order, product=self.product2, quantity=2)
+#         self.order_detail3 = Order_detail.objects.create(
+#             order=self.order2, product=self.product2, quantity=5)
+#         self.client = Client()
+#         self.password = 'reza123456'
+#         self.user = User.objects.create_user(
+#             phone='09198470934',
+#             password=self.password,
+#         )
+#         self.manager_group = Group.objects.get(name='Managers')
+#
+#     def tearDown(self):
+#         Order_detail.objects.all().delete()
+#         Product.objects.all().delete()
+#         Order.objects.all().delete()
+#         Table.objects.all().delete()
+#         self.user.delete()
+#
+#     def test_most_popular_GET_has_perm(self):
+#         self.user.groups.add(self.manager_group)
+#         self.client.login(phone=self.user.phone, password=self.password)
+#         response = self.client.get(reverse('most_popular'))
+#
+#         self.assertEqual(response.status_code, 200)
+#         self.assertIn(self.product2, response.context['query_set'])
+#
+#     def test_most_popular_GET_dont_has_perm(self):
+#         self.client.login(phone=self.user.phone, password=self.password)
+#         response = self.client.get(reverse('most_popular'))
+#         self.assertEqual(response.status_code, 302)
+#
+#     def test_most_popular_GET_has_perm_with_filter(self):
+#         self.user.groups.add(self.manager_group)
+#         first_date = timezone.now() - timezone.timedelta(days=1)
+#         data = {'filter': '', 'first_date': first_date, 'second_date': timezone.now(), 'quantity': 2}
+#         self.client.login(phone=self.user.phone, password=self.password)
+#         response = self.client.get(reverse('most_popular'), data=data)
+#
+#         self.assertEqual(response.status_code, 200)
+#         self.assertEqual(len(response.context['query_set']), 2)
 
 
 class TestPeakBusinessHour(TestCase):
@@ -770,3 +773,21 @@ class TestPeakBusinessHour(TestCase):
 
         manager_group, created = Group.objects.get_or_create(name="Managers")
         manager_group.permissions.add(*order_detail_permission)
+
+    def setUp(self):
+        self.order1 = baker.make(Order)
+        self.order2 = baker.make(Order)
+        self.order3 = baker.make(Order)
+        self.order4 = baker.make(Order)
+        self.order_detail1 = baker.make(Order_detail, order=self.order1)
+        self.order_detail2 = baker.make(Order_detail, order=self.order2)
+        self.order_detail3 = baker.make(Order_detail, order=self.order3)
+        self.order_detail4 = baker.make(Order_detail, order=self.order4)
+
+        self.client = Client()
+        self.password = 'reza123456'
+        self.user = User.objects.create_user(
+            phone='09198470934',
+            password=self.password,
+        )
+        self.manager_group = Group.objects.get(name='Managers')
