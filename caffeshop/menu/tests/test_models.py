@@ -34,3 +34,13 @@ class TestPtoductModel(TestCase):
         self.assertFalse(os.path.exists(self.product.image.path))
 
 
+    def test_product_save_new_image(self):
+        new_image = open(settings.MEDIA_ROOT / "images/test/tea.jpg",'rb').read()
+        self.product.image = SimpleUploadedFile.from_dict({'filename': 'product_pic2.png', 'content': new_image, 'content_tye': 'image/png'})
+        self.product.save()
+        self.product = Product.objects.get(id=self.product.id)
+        self.assertEqual(open(self.product.image.path, 'rb').read(), new_image)
+
+
+
+
