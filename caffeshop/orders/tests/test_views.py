@@ -86,3 +86,17 @@ class TestOrderHistory(TestCase):
         self.assertFalse(order_id_session)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['message'],"You Don't have any order yet.")
+
+
+
+class CancelOrderByCostumer(TestCase):
+    def setUp(self):
+        self.order = Order.objects.create(status='P')
+        self.url = reverse('orders:cancel_order_by_customer', args=[self.order.pk])
+
+    def test_cancel_order_by_customer(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 302) 
+        self.order.refresh_from_db()
+        self.assertEqual(self.order.status, 'C')
+        self.assertRedirects(response, reverse('orders:order_history'))
