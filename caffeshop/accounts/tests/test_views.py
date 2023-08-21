@@ -1355,3 +1355,12 @@ class TestSalesByCategory(TestCase):
         customer_sales = response.context['query_set1'][1]
         self.assertEqual(response.status_code, 200)
         self.assertEqual(float(customer_sales['total_sale']), 300.0)
+
+    def test_sales_by_category_GET_has_perm_with_date(self):
+        self.user.groups.add(self.manager_group)
+        self.client.login(phone=self.user.phone, password=self.password)
+        data = {'filter': '', 'first_date': '2020-01-01', 'second_date': str(timezone.now())}
+        response = self.client.get(reverse('sales_by_category'), data=data)
+        customer_sales = response.context['query_set1'][1]
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(float(customer_sales['total_sale']), 300.0)
