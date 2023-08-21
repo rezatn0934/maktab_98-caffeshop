@@ -205,6 +205,7 @@ class CreateOrderItem(PermissionRequiredMixin, CreateView):
     permission_required = ['orders.add_order_detail']
     model = Order_detail
     fields = ['product', 'quantity', 'order']
+    template_name = 'order_detail.html'
 
     def form_valid(self, form):
         order = form.cleaned_data['order'].id
@@ -214,7 +215,7 @@ class CreateOrderItem(PermissionRequiredMixin, CreateView):
 
     def form_invalid(self, form):
         messages.error(self.request, 'Form input is not valid')   
-        return super().form_valid(form)
+        return super().form_invalid(form)
 
 @login_required
 @permission_required(['orders.change_order_status'])
@@ -474,7 +475,6 @@ def customer_demographic(request):
             if obj['phone_number'] == phone_number:
                 rank = i + 1
                 break
-
     context = {'query_set': query_set, "total_spent": total_spent, "query_set2": query_set2, 'rank': rank}
     return render(request, 'analytics/customer_demographic.html', context=context)
 
