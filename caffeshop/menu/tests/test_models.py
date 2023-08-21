@@ -20,4 +20,9 @@ class TestPtoductModel(TestCase):
         if Product.objects.filter(id=self.product.id).exists():
             self.product.delete()
 
+    def test_product_image_preview(self):
+        product = self.product
+        self.assertEqual(Product.img_preview(self.product), mark_safe(f'<img src = "{self.product.image.url}" width = "150" height="150"/> '))
+
+
 
