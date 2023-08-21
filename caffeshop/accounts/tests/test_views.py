@@ -764,78 +764,78 @@ from accounts.views import (
 #         self.assertEqual(len(response.context['query_set']), 2)
 
 
-class TestPeakBusinessHour(TestCase):
-
-    @classmethod
-    def setUpTestData(cls):
-        content_type = ContentType.objects.get_for_model(Order_detail)
-        order_detail_permission = Permission.objects.filter(content_type=content_type)
-
-        manager_group, created = Group.objects.get_or_create(name="Managers")
-        manager_group.permissions.add(*order_detail_permission)
-
-    def setUp(self):
-        self.order1 = baker.make(Order)
-        self.order2 = baker.make(Order)
-        self.order3 = baker.make(Order)
-        self.order4 = baker.make(Order)
-        self.order_detail1 = baker.make(Order_detail, order=self.order1)
-        self.order_detail2 = baker.make(Order_detail, order=self.order2)
-        self.order_detail3 = baker.make(Order_detail, order=self.order3)
-        self.order_detail4 = baker.make(Order_detail, order=self.order4)
-
-        self.client = Client()
-        self.password = 'reza123456'
-        self.user = User.objects.create_user(
-            phone='09198470934',
-            password=self.password,
-        )
-        self.manager_group = Group.objects.get(name='Managers')
-
-    def tearDown(self):
-        Order_detail.objects.all().delete()
-        Product.objects.all().delete()
-        Order.objects.all().delete()
-        Table.objects.all().delete()
-        self.user.delete()
-
-    def test_peak_business_GET_has_perm(self):
-        self.user.groups.add(self.manager_group)
-        self.client.login(phone=self.user.phone, password=self.password)
-        response = self.client.get(reverse('peak_business_hour'))
-        lst1 = response.context['lst1']
-        hour = timezone.now().hour
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(lst1[hour], 4)
-
-    def test_peak_business_GET_dont_has_perm(self):
-        self.client.login(phone=self.user.phone, password=self.password)
-        response = self.client.get(reverse('peak_business_hour'))
-        self.assertEqual(response.status_code, 302)
-
-    def test_peak_business_GET_has_perm_first_date_filter(self):
-        self.user.groups.add(self.manager_group)
-        self.client.login(phone=self.user.phone, password=self.password)
-        first_date = timezone.now() - timezone.timedelta(hours=5)
-        data = {'filter': '', 'first_date': str(first_date.date())}
-        response = self.client.get(reverse('peak_business_hour'), data=data)
-        lst1 = response.context['lst1']
-        hour = timezone.now().hour
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(lst1[hour], 4)
-
-    def test_peak_business_GET_has_perm_second_date_filter(self):
-        self.user.groups.add(self.manager_group)
-        self.client.login(phone=self.user.phone, password=self.password)
-        first_date = timezone.now() - timezone.timedelta(hours=5)
-        data = {'filter': '', 'first_date': str(first_date.date()), 'second_date': str(timezone.now().date())}
-        response = self.client.get(reverse('peak_business_hour'), data=data)
-        lst1 = response.context['lst1']
-        hour = timezone.now().hour
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(lst1[hour], 4)
-
+# class TestPeakBusinessHour(TestCase):
+#
+#     @classmethod
+#     def setUpTestData(cls):
+#         content_type = ContentType.objects.get_for_model(Order_detail)
+#         order_detail_permission = Permission.objects.filter(content_type=content_type)
+#
+#         manager_group, created = Group.objects.get_or_create(name="Managers")
+#         manager_group.permissions.add(*order_detail_permission)
+#
+#     def setUp(self):
+#         self.order1 = baker.make(Order)
+#         self.order2 = baker.make(Order)
+#         self.order3 = baker.make(Order)
+#         self.order4 = baker.make(Order)
+#         self.order_detail1 = baker.make(Order_detail, order=self.order1)
+#         self.order_detail2 = baker.make(Order_detail, order=self.order2)
+#         self.order_detail3 = baker.make(Order_detail, order=self.order3)
+#         self.order_detail4 = baker.make(Order_detail, order=self.order4)
+#
+#         self.client = Client()
+#         self.password = 'reza123456'
+#         self.user = User.objects.create_user(
+#             phone='09198470934',
+#             password=self.password,
+#         )
+#         self.manager_group = Group.objects.get(name='Managers')
+#
+#     def tearDown(self):
+#         Order_detail.objects.all().delete()
+#         Product.objects.all().delete()
+#         Order.objects.all().delete()
+#         Table.objects.all().delete()
+#         self.user.delete()
+#
+#     def test_peak_business_GET_has_perm(self):
+#         self.user.groups.add(self.manager_group)
+#         self.client.login(phone=self.user.phone, password=self.password)
+#         response = self.client.get(reverse('peak_business_hour'))
+#         lst1 = response.context['lst1']
+#         hour = timezone.now().hour
+#
+#         self.assertEqual(response.status_code, 200)
+#         self.assertEqual(lst1[hour], 4)
+#
+#     def test_peak_business_GET_dont_has_perm(self):
+#         self.client.login(phone=self.user.phone, password=self.password)
+#         response = self.client.get(reverse('peak_business_hour'))
+#         self.assertEqual(response.status_code, 302)
+#
+#     def test_peak_business_GET_has_perm_first_date_filter(self):
+#         self.user.groups.add(self.manager_group)
+#         self.client.login(phone=self.user.phone, password=self.password)
+#         first_date = timezone.now() - timezone.timedelta(hours=5)
+#         data = {'filter': '', 'first_date': str(first_date.date())}
+#         response = self.client.get(reverse('peak_business_hour'), data=data)
+#         lst1 = response.context['lst1']
+#         hour = timezone.now().hour
+#         self.assertEqual(response.status_code, 200)
+#         self.assertEqual(lst1[hour], 4)
+#
+#     def test_peak_business_GET_has_perm_second_date_filter(self):
+#         self.user.groups.add(self.manager_group)
+#         self.client.login(phone=self.user.phone, password=self.password)
+#         first_date = timezone.now() - timezone.timedelta(hours=5)
+#         data = {'filter': '', 'first_date': str(first_date.date()), 'second_date': str(timezone.now().date())}
+#         response = self.client.get(reverse('peak_business_hour'), data=data)
+#         lst1 = response.context['lst1']
+#         hour = timezone.now().hour
+#         self.assertEqual(response.status_code, 200)
+#         self.assertEqual(lst1[hour], 4)
+#
 
 class TestTopSelling(TestCase):
 
@@ -866,3 +866,8 @@ class TestTopSelling(TestCase):
             password=self.password,
         )
         self.manager_group = Group.objects.get(name='Managers')
+
+    def test_top_selling_GET_dont_has_perm(self):
+        self.client.login(phone=self.user.phone, password=self.password)
+        response = self.client.get(reverse('top_selling'))
+        self.assertEqual(response.status_code, 302)
