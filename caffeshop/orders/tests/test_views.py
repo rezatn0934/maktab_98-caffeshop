@@ -77,12 +77,7 @@ class TestOrderHistory(TestCase):
         response = self.client.get(reverse('orders:order_history'))
         request = response.wsgi_request
         order_id_session = request.session.get('order_history')[0]
-        print(order_id_session)
-        print()
         order_detail = Order_detail.objects.get(order=order_id_session)
-        print(order_detail.product.name)
-        print(self.product)
-        print(order_detail.quantity)
         self.assertEqual(response.status_code, 200)
 
     def test_order_not_history(self):
