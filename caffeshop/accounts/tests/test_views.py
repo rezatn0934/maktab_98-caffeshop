@@ -1189,11 +1189,11 @@ class TestCustomerSales(TestCase):
         manager_group.permissions.add(*order_detail_permission)
 
     def setUp(self):
-        customer1 = '09198470934'
-        customer2 = '09123456789'
-        self.order1 = baker.make(Order, payment='P', phone_number=customer1)
-        self.order2 = baker.make(Order, payment='P', phone_number=customer1)
-        self.order3 = baker.make(Order, payment='P', phone_number=customer2)
+        self.customer1 = '09198470934'
+        self.customer2 = '09123456789'
+        self.order1 = baker.make(Order, payment='P', phone_number=self.customer1)
+        self.order2 = baker.make(Order, payment='P', phone_number=self.customer1)
+        self.order3 = baker.make(Order, payment='P', phone_number=self.customer2)
         self.product1 = baker.make(Product, price=25)
         self.product2 = baker.make(Product, price=10)
         self.order_detail1 = baker.make(Order_detail, product=self.product1, order=self.order1, quantity=3)
@@ -1220,3 +1220,12 @@ class TestCustomerSales(TestCase):
         self.client.login(phone=self.user.phone, password=self.password)
         response = self.client.get(reverse('customer_sales'))
         self.assertEqual(response.status_code, 302)
+
+    def test_customer_sales_GET_has_perm(self):
+        self.user.groups.add(self.manager_group)
+        self.client.login(phone=self.user.phone, password=self.password)
+        response = self.client.get(reverse('customer_sales'))
+        customer_sales = response.context['query_set']
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(customer_sales[0]['phone_number'], self.customer1)
+        self.assertEqual(float(customer_sales[0]['total_sale']), 300.0)
