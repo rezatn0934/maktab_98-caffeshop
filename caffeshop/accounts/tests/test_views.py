@@ -1116,3 +1116,10 @@ class TestYearlySales(TestCase):
         response = self.client.get(reverse('yearly_sales'))
         self.assertEqual(response.status_code, 302)
 
+    def test_yearly_sales_GET_has_perm(self):
+        self.user.groups.add(self.manager_group)
+        self.client.login(phone=self.user.phone, password=self.password)
+        response = self.client.get(reverse('yearly_sales'))
+        hourly_sales = response.context['query_set']
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(float(hourly_sales[0]['total_sale']), 135.0)
