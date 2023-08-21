@@ -215,7 +215,7 @@ class CreateOrderItem(PermissionRequiredMixin, CreateView):
 
     def form_invalid(self, form):
         messages.error(self.request, 'Form input is not valid')   
-        return super().form_valid(form)
+        return super().form_invalid(form)
 
 @login_required
 @permission_required(['orders.change_order_status'])
