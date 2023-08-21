@@ -19,7 +19,6 @@ from accounts.views import (
 )
 
 
-#
 # class TestStaffLogin(TestCase):
 #     def setUp(self):
 #         self.client = Client()
@@ -312,7 +311,7 @@ from accounts.views import (
 #         self.user.groups.add(self.manager_group)
 #         self.client.login(phone=self.user.phone, password=self.password)
 #         order_date = timezone.now() - timezone.timedelta(days=1)
-#         data = {'filter': 'filter', 'first_date': str(order_date), 'second_date': timezone}
+#         data = {'filter': 'filter', 'first_date': str(order_date), 'second_date': timezone.now()}
 #         response = self.client.get(reverse('order_list'), data=data)
 #         self.assertEqual(response.status_code, 200)
 #         self.assertEqual(len(response.context['orders']), 2)
@@ -327,7 +326,6 @@ from accounts.views import (
 #         order = Order.objects.get(id=self.order2.id)
 #         self.assertEqual(order.payment, 'P')
 #         self.assertTemplateUsed(response, 'orders_list.html')
-#
 #
 #
 # class TestOrderDetailView(TestCase):
@@ -684,7 +682,7 @@ from accounts.views import (
 #         response = self.client.get(reverse('delete_order_item', args=(self.order_detail.id,)))
 #
 #         self.assertEqual(response.status_code, 302)
-#         self.assertRedirects(response, reverse('order_detail', args=(self.order.id, )))
+#         self.assertRedirects(response, reverse('order_detail', args=(self.order.id,)))
 #         messages = list(get_messages(response.wsgi_request))
 #         self.assertEqual(messages[0].message, f'Order item {self.order_detail.id} has been deleted!')
 #
@@ -698,7 +696,7 @@ from accounts.views import (
 #         messages = list(get_messages(response.wsgi_request))
 #         self.assertEqual(messages[0].message, 'Order items 100 not found')
 #
-
+#
 # class TestMostPopular(TestCase):
 #
 #     @classmethod
@@ -762,8 +760,8 @@ from accounts.views import (
 #
 #         self.assertEqual(response.status_code, 200)
 #         self.assertEqual(len(response.context['query_set']), 2)
-
-
+#
+#
 # class TestPeakBusinessHour(TestCase):
 #
 #     @classmethod
@@ -953,3 +951,15 @@ class TestHourlySales(TestCase):
         hourly_sales = response.context['query_set']
         self.assertEqual(response.status_code, 200)
         self.assertEqual(float(hourly_sales[0]['total_sale']), 135.0)
+
+
+class TestDailySales(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        content_type = ContentType.objects.get_for_model(Order_detail)
+        order_detail_permission = Permission.objects.filter(content_type=content_type)
+
+        manager_group, created = Group.objects.get_or_create(name="Managers")
+        manager_group.permissions.add(*order_detail_permission)
+
