@@ -1527,3 +1527,8 @@ class TestCustomerOrderHistory(TestCase):
         Order.objects.all().delete()
         Table.objects.all().delete()
         self.user.delete()
+
+    def test_customer_order_history_GET_dont_has_perm(self):
+        self.client.login(phone=self.user.phone, password=self.password)
+        response = self.client.get(reverse('customer_order_history'))
+        self.assertEqual(response.status_code, 302)
