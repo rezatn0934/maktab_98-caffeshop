@@ -27,7 +27,10 @@ class InfoAdmin(admin.ModelAdmin):
         return False
 
     def has_add_permission(self, request, obj=None):
-        return False
+        if models.Info.objects.all().exists():
+            return False
+        else:
+            return True
 
 
 @admin.register(models.About)
