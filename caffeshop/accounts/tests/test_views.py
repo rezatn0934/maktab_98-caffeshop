@@ -1013,9 +1013,9 @@ class TestDailySales(TestCase):
         self.user.groups.add(self.manager_group)
         self.client.login(phone=self.user.phone, password=self.password)
         response = self.client.get(reverse('daily_sales'))
-        hourly_sales = response.context['query_set']
+        daily_sales = response.context['query_set']
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(float(hourly_sales[0]['total_sale']), 135.0)
+        self.assertEqual(float(daily_sales[0]['total_sale']), 135.0)
 
     def test_daily_sales_GET_first_date_filter(self):
         self.user.groups.add(self.manager_group)
@@ -1023,9 +1023,9 @@ class TestDailySales(TestCase):
         first_date = timezone.now() - timezone.timedelta(days=5)
         data = {'filter': '', 'first_date': str(first_date.date())}
         response = self.client.get(reverse('daily_sales'), data=data)
-        hourly_sales = response.context['query_set']
+        daily_sales = response.context['query_set']
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(float(hourly_sales[0]['total_sale']), 135.0)
+        self.assertEqual(float(daily_sales[0]['total_sale']), 135.0)
 
     def test_daily_sales_GET_has_date_filter(self):
         self.user.groups.add(self.manager_group)
@@ -1033,9 +1033,9 @@ class TestDailySales(TestCase):
         first_date = timezone.now() - timezone.timedelta(days=5)
         data = {'filter': '', 'first_date': str(first_date.date()), 'second_date': str(timezone.now())}
         response = self.client.get(reverse('daily_sales'), data=data)
-        hourly_sales = response.context['query_set']
+        daily_sales = response.context['query_set']
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(float(hourly_sales[0]['total_sale']), 135.0)
+        self.assertEqual(float(daily_sales[0]['total_sale']), 135.0)
 
 
 class TestMonthlySales(TestCase):
@@ -1084,9 +1084,9 @@ class TestMonthlySales(TestCase):
         self.user.groups.add(self.manager_group)
         self.client.login(phone=self.user.phone, password=self.password)
         response = self.client.get(reverse('monthly_sales'))
-        hourly_sales = response.context['query_set']
+        monthly_sales = response.context['query_set']
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(float(hourly_sales[0]['total_sale']), 135.0)
+        self.assertEqual(float(monthly_sales[0]['total_sale']), 135.0)
 
     def test_monthly_sales_GET_first_date_filter(self):
         self.user.groups.add(self.manager_group)
@@ -1094,9 +1094,9 @@ class TestMonthlySales(TestCase):
         first_date = timezone.now() - timezone.timedelta(days=90)
         data = {'filter': '', 'first_date': str(first_date.date())}
         response = self.client.get(reverse('monthly_sales'), data=data)
-        hourly_sales = response.context['query_set']
+        monthly_sales = response.context['query_set']
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(float(hourly_sales[0]['total_sale']), 135.0)
+        self.assertEqual(float(monthly_sales[0]['total_sale']), 135.0)
 
     def test_monthly_sales_GET_has_date_filter(self):
         self.user.groups.add(self.manager_group)
@@ -1104,9 +1104,9 @@ class TestMonthlySales(TestCase):
         first_date = timezone.now() - timezone.timedelta(days=90)
         data = {'filter': '', 'first_date': str(first_date.date()), 'second_date': str(timezone.now())}
         response = self.client.get(reverse('monthly_sales'), data=data)
-        hourly_sales = response.context['query_set']
+        monthly_sales = response.context['query_set']
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(float(hourly_sales[0]['total_sale']), 135.0)
+        self.assertEqual(float(monthly_sales[0]['total_sale']), 135.0)
 
 
 class TestYearlySales(TestCase):
@@ -1155,27 +1155,27 @@ class TestYearlySales(TestCase):
         self.user.groups.add(self.manager_group)
         self.client.login(phone=self.user.phone, password=self.password)
         response = self.client.get(reverse('yearly_sales'))
-        hourly_sales = response.context['query_set']
+        yearly_sales = response.context['query_set']
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(float(hourly_sales[0]['total_sale']), 135.0)
+        self.assertEqual(float(yearly_sales[0]['total_sale']), 135.0)
 
     def test_yearly_sales_GET_first_date_filter(self):
         self.user.groups.add(self.manager_group)
         self.client.login(phone=self.user.phone, password=self.password)
         data = {'filter': '', 'first_date': '2020-01-01'}
         response = self.client.get(reverse('yearly_sales'), data=data)
-        hourly_sales = response.context['query_set']
+        yearly_sales = response.context['query_set']
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(float(hourly_sales[0]['total_sale']), 135.0)
+        self.assertEqual(float(yearly_sales[0]['total_sale']), 135.0)
 
     def test_yearly_sales_GET_has_date_filter(self):
         self.user.groups.add(self.manager_group)
         self.client.login(phone=self.user.phone, password=self.password)
         data = {'filter': '', 'first_date': '2020-01-01', 'second_date': str(timezone.now())}
         response = self.client.get(reverse('yearly_sales'), data=data)
-        hourly_sales = response.context['query_set']
+        yearly_sales = response.context['query_set']
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(float(hourly_sales[0]['total_sale']), 135.0)
+        self.assertEqual(float(yearly_sales[0]['total_sale']), 135.0)
 
 
 class TestCustomerSales(TestCase):
@@ -1352,18 +1352,18 @@ class TestSalesByCategory(TestCase):
         self.user.groups.add(self.manager_group)
         self.client.login(phone=self.user.phone, password=self.password)
         response = self.client.get(reverse('sales_by_category'))
-        customer_sales = response.context['query_set1'][1]
+        sales_by_category = response.context['query_set1'][1]
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(float(customer_sales['total_sale']), 300.0)
+        self.assertEqual(float(sales_by_category['total_sale']), 300.0)
 
     def test_sales_by_category_GET_has_perm_with_date(self):
         self.user.groups.add(self.manager_group)
         self.client.login(phone=self.user.phone, password=self.password)
         data = {'filter': '', 'first_date': '2020-01-01', 'second_date': str(timezone.now())}
         response = self.client.get(reverse('sales_by_category'), data=data)
-        customer_sales = response.context['query_set1'][1]
+        sales_by_category = response.context['query_set1'][1]
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(float(customer_sales['total_sale']), 300.0)
+        self.assertEqual(float(sales_by_category['total_sale']), 300.0)
 
 
 class TestOrderStatusReport(TestCase):
@@ -1379,8 +1379,8 @@ class TestOrderStatusReport(TestCase):
     def setUp(self):
         self.order1 = baker.make(Order, status='P')
         self.order2 = baker.make(Order, status='P')
-        self.order3 = baker.make(Order, payment='C')
-        self.order4 = baker.make(Order, payment='A')
+        self.order3 = baker.make(Order, status='C')
+        self.order4 = baker.make(Order, status='A')
         self.product1 = baker.make(Product, price=25)
         self.product2 = baker.make(Product, price=10)
         self.order_detail1 = baker.make(Order_detail, product=self.product1, order=self.order1, quantity=3)
@@ -1407,3 +1407,11 @@ class TestOrderStatusReport(TestCase):
         self.client.login(phone=self.user.phone, password=self.password)
         response = self.client.get(reverse('order_status_report'))
         self.assertEqual(response.status_code, 302)
+
+    def test_order_status_report_GET_has_perm_without_date(self):
+        self.user.groups.add(self.manager_group)
+        self.client.login(phone=self.user.phone, password=self.password)
+        response = self.client.get(reverse('order_status_report'))
+        status_count = response.context['lst1']
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(status_count[2], 2)
