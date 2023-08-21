@@ -1560,3 +1560,9 @@ class TestLogOut(TestCase):
         )
         self.client = Client()
 
+    def test_logout(self):
+        self.client.login(phone=self.user.phone, password=self.password)
+        response = self.client.get(reverse('logout'), follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'login.html')
+
