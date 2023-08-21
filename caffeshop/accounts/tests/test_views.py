@@ -983,3 +983,7 @@ class TestDailySales(TestCase):
         )
         self.manager_group = Group.objects.get(name='Managers')
 
+    def test_daily_sales_GET_dont_has_perm(self):
+        self.client.login(phone=self.user.phone, password=self.password)
+        response = self.client.get(reverse('daily_sales'))
+        self.assertEqual(response.status_code, 302)
