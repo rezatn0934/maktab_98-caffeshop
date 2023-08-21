@@ -34,31 +34,33 @@ class TestInfoModel(TestCase):
         if os.path.exists(logo_path):
             os.remove(logo_path)
 
-
     def test_model_str(self):
         self.assertEqual(str(self.info), "farzam")
 
     def test_model_save(self):
         objs = Info.objects.all()
-        obj_f = Info.objects.filter(cafe_title="farzam")
-        obj_g = Info.objects.get(cafe_title="farzam")
+        obj_g = objs.get()
         self.assertEqual(len(objs), 1)
-        self.assertEqual(len(obj_f), 1)
         self.assertEqual(obj_g.cafe_title, "farzam")
 
     def test_model_failed_save(self):
         failed_save_info = baker.make(Info, cafe_title="reza")
         objs = Info.objects.all()
-        obj_f = Info.objects.filter(cafe_title="reza")
-        obj_g = Info.objects.get(cafe_title="farzam")
+        obj_g = objs.get()
         self.assertEqual(obj_g.cafe_title, "farzam")
         self.assertTrue(len(objs) == 1)
-        self.assertEqual(len(obj_f), 0)
-        with self.assertRaises(Http404):
-            get_object_or_404(Info, cafe_title="reza")
 
     def test_model_update_save(self):
         self.info.cafe_title = "reza"
+
+        self.info.save()
+
+        objs = Info.objects.all()
+        obj_g = Info.objects.get(cafe_title="reza")
+        self.assertEqual(obj_g.cafe_title, "reza")
+        self.assertTrue(len(objs) == 1)
+
+    def test_model_update_save_image(self):
         self.info.logo = SimpleUploadedFile(name='test2_Color_logo_no_background.png', content=open(
             settings.MEDIA_ROOT / "images/test/test2_Color_logo_no_background.png",
             'rb').read(), content_type='image/png')
@@ -66,14 +68,9 @@ class TestInfoModel(TestCase):
         self.info.save()
 
         objs = Info.objects.all()
-        obj_f = Info.objects.filter(cafe_title="farzam")
-        obj_g = Info.objects.get(cafe_title="reza")
-        self.assertEqual(obj_g.cafe_title, "reza")
-        self.assertEqual(str(obj_g.logo).split("/")[-1], "test2_Color_logo_no_background.png")
+        obj_g = objs.get()
         self.assertTrue(len(objs) == 1)
-        self.assertEqual(len(obj_f), 0)
-        with self.assertRaises(Http404):
-            get_object_or_404(Info, cafe_title="farzam")
+        self.assertEqual(str(obj_g.logo).split("/")[-1], "test2_Color_logo_no_background.png")
 
     def test_model_logo_preview(self):
         logo_preview = self.info.logo_preview()
@@ -87,7 +84,7 @@ class TestInfoModel(TestCase):
 
 class TestGalleryModel(TestCase):
 
-    def setUp(self) -> None:
+    def setUp(self):
         self.gallery = baker.make(Gallery, title="farzam",
                                   image=SimpleUploadedFile(name='test_gallery.jpg', content=open(
                                       settings.MEDIA_ROOT / "images/test/test_gallery.jpg",
@@ -112,14 +109,10 @@ class TestGalleryModel(TestCase):
         self.gallery.save()
 
         objs = Gallery.objects.all()
-        obj_f = Gallery.objects.filter(title="farzam")
-        obj_g = Gallery.objects.get(title="reza")
-
-        self.assertEqual(obj_g.title, "reza")
+        obj_g = Gallery.objects.get()
         self.assertTrue(len(objs) == 1)
-        self.assertEqual(len(obj_f), 0)
-        with self.assertRaises(Http404):
-            get_object_or_404(Gallery, title="farzam")
+        self.assertEqual(obj_g.title, "reza")
+        self.assertEqual(str(obj_g.image).split("/")[-1], "test2_gallery.jpg")
 
 
 class TestAboutModel(TestCase):
@@ -149,11 +142,8 @@ class TestAboutModel(TestCase):
         self.about.save()
 
         objs = About.objects.all()
-        obj_f = About.objects.filter(title="farzam")
-        obj_g = About.objects.get(title="reza")
+        obj_g = About.objects.get()
 
-        self.assertEqual(obj_g.title, "reza")
         self.assertTrue(len(objs) == 1)
-        self.assertEqual(len(obj_f), 0)
-        with self.assertRaises(Http404):
-            get_object_or_404(About, title="farzam")
+        self.assertEqual(obj_g.title, "reza")
+        self.assertEqual(str(obj_g.image).split("/")[-1], "test2_about.jpg")

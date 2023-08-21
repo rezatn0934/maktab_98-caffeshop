@@ -82,7 +82,7 @@ Create a superuser account (admin):
 ```bash
 python manage.py createsuperuser
 ```
-Follow the prompts to set a username and password for the admin account.
+Follow the prompts to set a phone number and password for the admin account.
 
 Congratulations! The Caffe Shop Django project has been successfully set up on your machine.
 
@@ -107,9 +107,14 @@ Start the server:
 ```bash
 python manage.py runserver
 ```
-Open your web browser and navigate to http://localhost:8000/. You should see the Caffe Shop web application.
+Open your web browser and navigate to http://localhost:8000/. You should see the Caffe Shop web application landing page like this:
 
-To access the admin interface, go to http://localhost:8000/admin and log in using the superuser account created earlier.
+![fp.PNG](https://i.postimg.cc/d0g5Lx6d/fp.png)
+
+To access the admin panel, go to http://localhost:8000/admin and log in using the superuser account created earlier.
+This is how admin panel looks like after you logged in:
+
+![admin panel](https://i.postimg.cc/j2f0Dfyq/ap.png)
 
 That's it! You can now explore and interact with the Caffe Shop Django project.
 

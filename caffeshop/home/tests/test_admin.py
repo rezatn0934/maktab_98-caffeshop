@@ -14,9 +14,29 @@ from model_bakery import baker
 import os
 
 
-class ModelAdminTests(TestCase):
+class TestInfoModelAdminTests(TestCase):
 
     def setUp(self):
+        self.user = baker.make(User, is_active=True, is_staff=True, is_superuser=True)
+        self.factory = RequestFactory()
+
+    def tearDown(self):
+        self.user.delete()
+        logo_path = os.path.join(settings.MEDIA_ROOT / "images/logo", "test_White_logo_-_no_background.png")
+        if os.path.exists(logo_path):
+            os.remove(logo_path)
+
+        background_image_path = os.path.join(settings.MEDIA_ROOT / "images/HomePageBackground", "test_intro-bg.jpg")
+        if os.path.exists(background_image_path):
+            os.remove(background_image_path)
+
+    def test_has_add_permission_first_instance(self):
+        info_admin = InfoAdmin(Info, AdminSite())
+        request = self.factory
+        request.user = self.user
+        self.assertTrue(info_admin.has_add_permission(request))
+
+    def test_has_add_permission_next_instance(self):
         self.info = baker.make(Info, cafe_title="farzam",
                                logo=SimpleUploadedFile(name='test_White_logo_-_no_background.png', content=open(
                                    settings.MEDIA_ROOT / "images/test/test_White_logo_-_no_background.png",
@@ -24,9 +44,25 @@ class ModelAdminTests(TestCase):
                                background_image=SimpleUploadedFile(name='test_intro-bg.jpg', content=open(
                                    settings.MEDIA_ROOT / "images/test/test_intro-bg.jpg", 'rb').read(),
                                                                    content_type='image/jpg'))
+        info_admin = InfoAdmin(Info, AdminSite())
+        request = self.factory
+        request.user = self.user
+        self.assertFalse(info_admin.has_add_permission(request))
+        self.info.delete()
 
+    def test_has_delete_permission(self):
+        info_admin = InfoAdmin(Info, AdminSite())
+        request = self.factory
+        request.user = self.user
+        self.assertFalse(info_admin.has_delete_permission(request))
+
+
+class TestAboutModelAdminTests(TestCase):
+
+    def setUp(self):
         self.user = baker.make(User, is_active=True, is_staff=True, is_superuser=True)
-        self.about = baker.make(About, content="this is a test for truncated content methode in About admin",
+        self.about = baker.make(About, title="about",
+                                content="this is a test for truncated content methode in About admin",
                                 is_active=True)
 
         self.about1 = baker.make(About, title="about1", is_active=False,
@@ -38,30 +74,10 @@ class ModelAdminTests(TestCase):
 
     def tearDown(self):
         self.user.delete()
-        self.info.delete()
-        logo_path = os.path.join(settings.MEDIA_ROOT / "images/logo", "test_White_logo_-_no_background.png")
-        if os.path.exists(logo_path):
-            os.remove(logo_path)
-
-        background_image_path = os.path.join(settings.MEDIA_ROOT / "images/HomePageBackground", "test_intro-bg.jpg")
-        if os.path.exists(background_image_path):
-            os.remove(background_image_path)
 
         image_path = os.path.join(settings.MEDIA_ROOT / "images/about", "test_about.jpg")
         if os.path.exists(image_path):
             os.remove(image_path)
-
-    def test_has_add_permission(self):
-        info_admin = InfoAdmin(Info, AdminSite())
-        request = self.factory
-        request.user = self.user
-        self.assertFalse(info_admin.has_add_permission(request))
-
-    def test_has_delete_permission(self):
-        info_admin = InfoAdmin(Info, AdminSite())
-        request = self.factory
-        request.user = self.user
-        self.assertFalse(info_admin.has_delete_permission(request))
 
     def test_truncated_content(self):
         about_admin = AboutAdmin(About, AdminSite())
@@ -83,3 +99,4 @@ class ModelAdminTests(TestCase):
         about_admin.delete_about_image(request, qs)
         qs = About.objects.all()
         self.assertEqual(len(qs), 1)
+        self.assertEqual(qs.get().title, "about2")

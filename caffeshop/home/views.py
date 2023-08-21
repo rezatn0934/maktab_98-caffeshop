@@ -15,6 +15,7 @@ class HomeView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['gallery'] = Gallery.objects.filter(is_active=True)
-        context['products'] = Product.objects.all()
-        context['about'] = About.objects.get(is_active=True)
+        qs = About.objects.filter(is_active=True)
+        if qs.exists():
+            context['about'] = qs.first
         return context

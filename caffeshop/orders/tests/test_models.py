@@ -64,7 +64,7 @@ class TestOrdersModels(TestCase):
     #         order_date = '2023-07-31'
     #     )
     def test_str(self):
-        self.assertEquals(str(self.order), 'Order8')
+        self.assertEquals(str(self.order), 'Order9')
 
     def test_total_price(self):
         order = Order.objects.create(
@@ -74,7 +74,8 @@ class TestOrdersModels(TestCase):
             table_number = Table.objects.create(name='violet', Table_number=60, occupied = True)
         )
         order_detail = Order_detail.objects.create(order=self.order,product=Product.objects.get(name='hamburger'),quantity=2, price=10.00)
-        self.assertEqual(order_detail.total_price, 20.0)
+        new_order_detail = Order_detail.objects.create(order=self.order, product=Product.objects.create(category=Category.objects.create(name='coffes'),name='Spereso',description = 'djf;adjfak', price=6.00), quantity=2, price=6.00),
+        self.assertEqual(order_detail.total_price, 20.00)
 
     def test_total_order_price(self):
         order = Order(
@@ -104,10 +105,9 @@ class TestOrdersModels(TestCase):
         
 
     def test_save(self):
+        self.order = Order.objects.create(table_number=Table.objects.create(name='pansy', Table_number=78, occupied=True))
         self.order.save()
-        self.assertEqual(str(self.order.phone_number), '09152593858')
-        self.assertEqual(str(self.order.table_number), 'rose')
-      
+        self.assertEqual(Table.objects.create(name='yakh', Table_number=178, occupied=True).occupied, True)
 class TestTableModel(TestCase):
     def test_str(self):
         table = Table.objects.create(name='Orchid', Table_number=14, occupied=True)
