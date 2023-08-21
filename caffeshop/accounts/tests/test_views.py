@@ -1060,3 +1060,12 @@ class TestMonthlySales(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(float(hourly_sales[0]['total_sale']), 135.0)
 
+    def test_monthly_sales_GET_first_date_filter(self):
+        self.user.groups.add(self.manager_group)
+        self.client.login(phone=self.user.phone, password=self.password)
+        first_date = timezone.now() - timezone.timedelta(days=90)
+        data = {'filter': '', 'first_date': str(first_date.date())}
+        response = self.client.get(reverse('monthly_sales'), data=data)
+        hourly_sales = response.context['query_set']
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(float(hourly_sales[0]['total_sale']), 135.0)
