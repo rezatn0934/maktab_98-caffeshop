@@ -1532,3 +1532,11 @@ class TestCustomerOrderHistory(TestCase):
         self.client.login(phone=self.user.phone, password=self.password)
         response = self.client.get(reverse('customer_order_history'))
         self.assertEqual(response.status_code, 302)
+
+    def test_customer_order_history_GET_has_perm_without_phone(self):
+        self.user.groups.add(self.manager_group)
+        self.client.login(phone=self.user.phone, password=self.password)
+        response = self.client.get(reverse('customer_order_history'))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNone(response.context.get('query_set'))
