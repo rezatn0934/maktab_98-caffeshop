@@ -798,3 +798,8 @@ class TestPeakBusinessHour(TestCase):
         Order.objects.all().delete()
         Table.objects.all().delete()
         self.user.delete()
+
+    def test_peal_business_GET_dont_has_perm(self):
+        self.client.login(phone=self.user.phone, password=self.password)
+        response = self.client.get(reverse('peak_business_hour'))
+        self.assertEqual(response.status_code, 302)
