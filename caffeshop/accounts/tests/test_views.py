@@ -1229,3 +1229,13 @@ class TestCustomerSales(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(customer_sales[0]['phone_number'], self.customer1)
         self.assertEqual(float(customer_sales[0]['total_sale']), 300.0)
+
+    def test_customer_sales_GET_has_date_filter(self):
+        self.user.groups.add(self.manager_group)
+        self.client.login(phone=self.user.phone, password=self.password)
+        data = {'filter': '', 'first_date': '2020-01-01', 'second_date': str(timezone.now())}
+        response = self.client.get(reverse('customer_sales'), data=data)
+        customer_sales = response.context['query_set']
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(customer_sales[0]['phone_number'], self.customer1)
+        self.assertEqual(float(customer_sales[0]['total_sale']), 300.0)
