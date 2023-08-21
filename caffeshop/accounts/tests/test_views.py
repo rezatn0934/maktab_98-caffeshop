@@ -824,3 +824,14 @@ class TestPeakBusinessHour(TestCase):
         hour = timezone.now().hour
         self.assertEqual(response.status_code, 200)
         self.assertEqual(lst1[hour], 4)
+
+    def test_peak_business_GET_has_perm_second_date_filter(self):
+        self.user.groups.add(self.manager_group)
+        self.client.login(phone=self.user.phone, password=self.password)
+        first_date = timezone.now() - timezone.timedelta(hours=5)
+        data = {'filter': '', 'first_date': str(first_date.date()), 'second_date': str(timezone.now().date())}
+        response = self.client.get(reverse('peak_business_hour'), data=data)
+        lst1 = response.context['lst1']
+        hour = timezone.now().hour
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(lst1[hour], 4)
