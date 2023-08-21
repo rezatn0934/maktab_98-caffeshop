@@ -799,6 +799,16 @@ class TestPeakBusinessHour(TestCase):
         Table.objects.all().delete()
         self.user.delete()
 
+    def test_peal_business_GET_has_perm(self):
+        self.user.groups.add(self.manager_group)
+        self.client.login(phone=self.user.phone, password=self.password)
+        response = self.client.get(reverse('peak_business_hour'))
+        lst1 = response.context['lst1']
+        hour = timezone.now().hour
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(lst1[hour], 4)
+
     def test_peal_business_GET_dont_has_perm(self):
         self.client.login(phone=self.user.phone, password=self.password)
         response = self.client.get(reverse('peak_business_hour'))
