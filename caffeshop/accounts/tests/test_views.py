@@ -1548,3 +1548,15 @@ class TestCustomerOrderHistory(TestCase):
         response = self.client.get(reverse('customer_order_history'), data=data)
         self.assertEqual(response.status_code, 200)
         self.assertTrue(response.context.get('query_set'))
+
+
+class TestLogOut(TestCase):
+
+    def setUp(self):
+        self.password = 'reza123456'
+        self.user = User.objects.create_user(
+            phone='09198470934',
+            password=self.password,
+        )
+        self.client = Client()
+
