@@ -78,7 +78,7 @@ class Order_detail(models.Model):
             self.save()
 
     def __str__(self):
-        return f"order: {self.order}"
+        return f"Order Details ID: {self.id}"
 
 
 class Table(models.Model):
