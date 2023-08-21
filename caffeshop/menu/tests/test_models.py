@@ -43,4 +43,16 @@ class TestPtoductModel(TestCase):
 
 
 
+class TestCategoryModel(TestCase):
+
+    def setUp(self):
+        self.image = open(settings.MEDIA_ROOT / "images/test/pina_colada.png",'rb').read()
+        self.category = baker.make(Category,
+         image=SimpleUploadedFile.from_dict({'filename': 'category_pic.png', 'content': self.image, 'content_tye': 'image/png'}),
+         name='Pina Colda')
+
+    def tearDown(self):
+        if Category.objects.filter(id=self.category.id).exists():
+            self.category.delete()
+
 
