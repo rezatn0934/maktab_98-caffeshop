@@ -745,7 +745,17 @@ class TestMostPopular(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn(self.product2, response.context['query_set'])
 
-    def test_cancel_orders_GET_dont_has_perm(self):
+    def test_most_popular_GET_dont_has_perm(self):
         self.client.login(phone=self.user.phone, password=self.password)
         response = self.client.get(reverse('most_popular'))
         self.assertEqual(response.status_code, 302)
+
+    def test_most_popular_GET_has_perm_with_filter(self):
+        self.user.groups.add(self.manager_group)
+        first_date = timezone.now() - timezone.timedelta(days=1)
+        data = {'filter': '', 'first_date': first_date, 'second_date': timezone.now(), 'quantity': 2}
+        self.client.login(phone=self.user.phone, password=self.password)
+        response = self.client.get(reverse('most_popular'), data=data)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['query_set']), 2)
