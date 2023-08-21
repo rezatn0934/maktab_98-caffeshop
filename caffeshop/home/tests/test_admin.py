@@ -61,7 +61,8 @@ class TestAboutModelAdminTests(TestCase):
 
     def setUp(self):
         self.user = baker.make(User, is_active=True, is_staff=True, is_superuser=True)
-        self.about = baker.make(About, content="this is a test for truncated content methode in About admin",
+        self.about = baker.make(About, title="about",
+                                content="this is a test for truncated content methode in About admin",
                                 is_active=True)
 
         self.about1 = baker.make(About, title="about1", is_active=False,
@@ -98,3 +99,4 @@ class TestAboutModelAdminTests(TestCase):
         about_admin.delete_about_image(request, qs)
         qs = About.objects.all()
         self.assertEqual(len(qs), 1)
+        self.assertEqual(qs.get().title, "about2")
