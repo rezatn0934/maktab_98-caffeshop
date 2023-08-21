@@ -1505,12 +1505,12 @@ class TestCustomerOrderHistory(TestCase):
             phone='09198470934',
             password=self.password,
         )
-        customer1 = '09198470931'
-        customer2 = '09121211212'
-        self.order1 = baker.make(Order, payment='P', phone_number=customer1)
-        self.order2 = baker.make(Order, payment='P', phone_number=customer1)
-        self.order3 = baker.make(Order, payment='P', phone_number=customer1)
-        self.order4 = baker.make(Order, payment='P', phone_number=customer2)
+        self.customer1 = '09198470931'
+        self.customer2 = '09121211212'
+        self.order1 = baker.make(Order, payment='P', phone_number=self.customer1)
+        self.order2 = baker.make(Order, payment='P', phone_number=self.customer1)
+        self.order3 = baker.make(Order, payment='P', phone_number=self.customer1)
+        self.order4 = baker.make(Order, payment='P', phone_number=self.customer2)
         self.product1 = baker.make(Product, price=25)
         self.product2 = baker.make(Product, price=10)
         self.order_detail1 = baker.make(Order_detail, product=self.product1, order=self.order1, quantity=3)
@@ -1540,3 +1540,11 @@ class TestCustomerOrderHistory(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertIsNone(response.context.get('query_set'))
+
+    def test_customer_order_history_GET_has_perm_with_phone(self):
+        self.user.groups.add(self.manager_group)
+        self.client.login(phone=self.user.phone, password=self.password)
+        data = {'phone_number': self.customer1}
+        response = self.client.get(reverse('customer_order_history'), data=data)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.context.get('query_set'))
