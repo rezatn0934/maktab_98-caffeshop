@@ -871,3 +871,11 @@ class TestTopSelling(TestCase):
         self.client.login(phone=self.user.phone, password=self.password)
         response = self.client.get(reverse('top_selling'))
         self.assertEqual(response.status_code, 302)
+
+    def test_top_selling_GET_has_perm(self):
+        self.user.groups.add(self.manager_group)
+        self.client.login(phone=self.user.phone, password=self.password)
+        response = self.client.get(reverse('top_selling'))
+        mot_popular_products = response.context['query_set']
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(mot_popular_products[0], self.product1)
