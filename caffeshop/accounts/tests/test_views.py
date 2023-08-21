@@ -865,6 +865,13 @@ class TestTopSelling(TestCase):
         )
         self.manager_group = Group.objects.get(name='Managers')
 
+    def tearDown(self):
+        Order_detail.objects.all().delete()
+        Product.objects.all().delete()
+        Order.objects.all().delete()
+        Table.objects.all().delete()
+        self.user.delete()
+
     def test_top_selling_GET_dont_has_perm(self):
         self.client.login(phone=self.user.phone, password=self.password)
         response = self.client.get(reverse('top_selling'))
