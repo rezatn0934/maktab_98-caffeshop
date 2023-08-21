@@ -60,3 +60,8 @@ class TestCategoryModel(TestCase):
         self.assertEqual(Category.img_preview(self.category), mark_safe(f'<img src = "{self.category.image.url}" width = "150" height="150"/> '))
 
 
+    def test_category_representation(self):
+        self.assertEqual(str(self.category), 'Pina Colda')
+
+
+
