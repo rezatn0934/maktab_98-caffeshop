@@ -64,4 +64,9 @@ class TestCategoryModel(TestCase):
         self.assertEqual(str(self.category), 'Pina Colda')
 
 
+    def test_category_deletion(self):
+        self.category.delete()
+        self.assertFalse(os.path.exists(self.category.image.path))
 
+
+ 
