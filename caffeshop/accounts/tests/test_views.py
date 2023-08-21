@@ -1146,7 +1146,6 @@ class TestYearlySales(TestCase):
         Table.objects.all().delete()
         self.user.delete()
 
-
     def test_yearly_sales_GET_dont_has_perm(self):
         self.client.login(phone=self.user.phone, password=self.password)
         response = self.client.get(reverse('yearly_sales'))
@@ -1202,3 +1201,17 @@ class TestCustomerSales(TestCase):
         self.order_detail3 = baker.make(Order_detail, product=self.product1, order=self.order2, quantity=2)
         self.order_detail4 = baker.make(Order_detail, product=self.product1, order=self.order2, quantity=4)
         self.order_detail5 = baker.make(Order_detail, product=self.product2, order=self.order3, quantity=1)
+        self.client = Client()
+        self.password = 'reza123456'
+        self.user = User.objects.create_user(
+            phone='09198470934',
+            password=self.password,
+        )
+        self.manager_group = Group.objects.get(name='Managers')
+
+    def tearDown(self):
+        Order_detail.objects.all().delete()
+        Product.objects.all().delete()
+        Order.objects.all().delete()
+        Table.objects.all().delete()
+        self.user.delete()
