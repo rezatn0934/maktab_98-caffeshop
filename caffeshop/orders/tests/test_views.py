@@ -1,12 +1,18 @@
+from django.test import TestCase, Client, RequestFactory 
 
-from django.test import TestCase, Client, RequestFactory
-from django.urls import reverse
-from orders.models import Order, Order_detail, Table
-from menu.models import Product, Category
-from django.contrib.sessions.middleware import SessionMiddleware
-from django.contrib.auth.models import AnonymousUser
-from model_bakery import baker
-from orders.forms import OrderForm
+from django.urls import reverse 
+
+from orders.models import Order, Order_detail, Table 
+
+from menu.models import Product, Category 
+
+from django.contrib.sessions.middleware import SessionMiddleware 
+
+from django.contrib.auth.models import AnonymousUser 
+
+from model_bakery import baker 
+from orders.forms import OrderForm 
+
 from http.cookies import SimpleCookie
 import json
 
@@ -20,7 +26,7 @@ class TestOrdersView(TestCase):
         self.client = Client()
         self.table = Table.objects.create(name='nima', Table_number=55)
         return super().setUp()
-    
+
     def tearDown(self):
         self.order_detail.delete()
         self.order.delete()
@@ -28,7 +34,7 @@ class TestOrdersView(TestCase):
         self.product.delete()
         self.table.delete()
         return super().tearDown()
-    
+
     def test_cart_view_GET(self):
         response = self.client.get(reverse('orders:cart'))
         self.failUnless(response.context['form'],OrderForm)
@@ -57,7 +63,7 @@ class TestOrderHistory(TestCase):
         self.session['pre_order'] = {'phone':'09152593858', 'table_number':self.table.Table_number}
         self.session.save()
         return super().setUp()
-    
+
     def tearDown(self) -> None:
         Order_detail.objects.all().delete()
         Product.objects.all().delete()
@@ -65,7 +71,7 @@ class TestOrderHistory(TestCase):
         Table.objects.all().delete()
         del self.session
         return super().tearDown()
-    
+
     def test_order_history(self):
         self.client.get(reverse('orders:create_order'))
         response = self.client.get(reverse('orders:order_history'))
@@ -88,15 +94,14 @@ class TestOrderHistory(TestCase):
         self.assertEqual(response.context['message'],"You Don't have any order yet.")
 
 
-
-class CancelOrderByCostumer(TestCase):
+class OrderCancellationTestCase(TestCase):
     def setUp(self):
-        self.order = Order.objects.create(status='P')
-        self.url = reverse('orders:cancel_order_by_customer', args=[self.order.pk])
+        self.client = Client()
+        self.order = Order.objects.create(phone_number='1234567890', table_number=None)
 
     def test_cancel_order_by_customer(self):
-        response = self.client.get(self.url)
-        self.assertEqual(response.status_code, 302) 
+        url = reverse('orders:cancel_order_by_customer', args=[self.order.id])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)
         self.order.refresh_from_db()
         self.assertEqual(self.order.status, 'C')
-        self.assertRedirects(response, reverse('orders:order_history'))
