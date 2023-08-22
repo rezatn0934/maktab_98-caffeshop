@@ -116,6 +116,8 @@ class Orders(LoginRequiredMixin, PermissionRequiredMixin, FilterMixin, View):
         context, orders = self.check_search(request=request, context=context, orders=orders)
         context, orders = self.check_filter(request=request, context=context, orders=orders)
 
+        self.check_paid(request=request)
+
 
         paginator = Paginator(orders, 5)
         page_number = request.GET.get('page', 1)
