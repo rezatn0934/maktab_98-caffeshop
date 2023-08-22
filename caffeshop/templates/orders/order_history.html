@@ -80,3 +80,11 @@
         {% endif %}
     </div>
 {% endblock %}
+{% block footerlink %}
+    <script>
+
+        window.onload = function(){
+            localStorage.removeItem('orders');
+        }
+    </script>
+{% endblock %}
