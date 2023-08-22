@@ -1566,17 +1566,9 @@ class TestProductHour(TestCase):
             phone='09198470934',
             password=self.password,
         )
-        self.order1 = baker.make(Order, payment='P')
-        self.order2 = baker.make(Order, payment='P')
-        self.order3 = baker.make(Order, payment='P')
-        self.order4 = baker.make(Order, payment='P')
-        self.product1 = baker.make(Product, price=25)
-        self.product2 = baker.make(Product, price=10)
-        self.order_detail1 = baker.make(Order_detail, product=self.product1, order=self.order1, quantity=3)
-        self.order_detail2 = baker.make(Order_detail, product=self.product1, order=self.order2, quantity=3)
-        self.order_detail3 = baker.make(Order_detail, product=self.product1, order=self.order3, quantity=2)
-        self.order_detail4 = baker.make(Order_detail, product=self.product1, order=self.order4, quantity=4)
-        self.order_detail5 = baker.make(Order_detail, product=self.product2, order=self.order4, quantity=1)
+        self.order = baker.make(Order, payment='P')
+        self.product = baker.make(Product, price=25)
+        self.order_detail = baker.make(Order_detail, product=self.product, order=self.order, quantity=1)
         self.client = Client()
         self.manager_group = Group.objects.get(name='Managers')
 
@@ -1585,6 +1577,13 @@ class TestProductHour(TestCase):
         response = self.client.get(reverse('product_hour'))
         self.assertEqual(response.status_code, 302)
 
+    def test_product_hour_GET_has_perm_without_phone(self):
+        self.user.groups.add(self.manager_group)
+        self.client.login(phone=self.user.phone, password=self.password)
+        response = self.client.get(reverse('product_hour'))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context.get('query_set')), 1)
 
 
 
