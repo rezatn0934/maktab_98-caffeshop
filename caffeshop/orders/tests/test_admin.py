@@ -47,3 +47,8 @@ class TestOrderDetailAdmin(TestCase):
     def tearDown(self):
         self.order_detail1.delete()
         self.order1.delete()
+
+    def test_order_detail_get_order_id(self):
+        order_detail_admin = OrderDetailAdmin(Order_detail, AdminSite())
+        given_query_set = order_detail_admin.order_id(self.order_detail1)
+        self.assertEqual(given_query_set, self.order1.id)
