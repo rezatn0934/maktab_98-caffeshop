@@ -91,6 +91,23 @@ class TestOrderHistory(TestCase):
         order_id_session = request.session.get('order_history')[0]
         order_detail = Order_detail.objects.get(order=order_id_session)
         self.assertEqual(response.status_code, 200)
+        self.failUnless(order_detail)
+
+    def test_order_has_tow_history(self):
+        self.client.get(reverse('orders:create_order'))
+        self.client.get(reverse('orders:order_history'))
+        self.client.cookies['orders'] = json.dumps({self.product.id: 20})
+        self.session = self.client.session
+        self.session['pre_order'] = {'phone': '09152593858', 'table_number': self.table.Table_number}
+        self.session.save()
+        self.client.get(reverse('orders:create_order'))
+        response = self.client.get(reverse('orders:order_history'))
+
+        request = response.wsgi_request
+        order_id_session = request.session.get('order_history')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(order_id_session), 2)
 
     def test_order_not_history(self):
         response = self.client.get(reverse('orders:order_history'))

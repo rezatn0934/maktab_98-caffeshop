@@ -1315,7 +1315,6 @@ class TestSalesByCategory(TestCase):
         manager_group.permissions.add(*order_detail_permission)
 
     def setUp(self):
-
         self.order1 = baker.make(Order, payment='P')
         self.order2 = baker.make(Order, payment='P')
         self.order3 = baker.make(Order, payment='P')
@@ -1606,9 +1605,9 @@ class TestProductHour(TestCase):
         order2 = baker.make(Order, payment='P')
         order2.order_date = hour
         order2.save()
-        product1 = baker.make(Product, price=25)
-        product2 = baker.make(Product, price=25)
-        product3 = baker.make(Product, price=25)
+        product1 = baker.make(Product, name='tea', price=25)
+        product2 = baker.make(Product, name='beef', price=25)
+        product3 = baker.make(Product, name='coffee', price=25)
         baker.make(Order_detail, product=product1, order=order1, quantity=15)
         baker.make(Order_detail, product=product2, order=order2, quantity=5)
         baker.make(Order_detail, product=product3, order=order2, quantity=30)
@@ -1634,4 +1633,3 @@ class TestLogOut(TestCase):
         response = self.client.get(reverse('logout'), follow=True)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'login.html')
-
