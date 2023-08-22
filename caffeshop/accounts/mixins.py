@@ -23,3 +23,25 @@ class FilterMixin:
             'sort': sort,
         }
         return (context, orders)
+
+    def check_search(self, orders, context, request):
+
+        if 'search' in request.GET:
+            filter_item = request.GET.get('filter1')
+            field = request.GET.get('flexRadioDefault')
+
+            if field == 'table_number':
+                if filter_item:
+                    orders = orders.filter(Q(table_number__Table_number__icontains=filter_item) |
+                                           Q(table_number__name__icontains=filter_item))
+                else:
+                    orders = orders.filter(table_number=None)
+                context['flexRadioDefault'] = field
+                context['filter1'] = filter_item
+                context['search'] = 'search'
+            elif field == 'phone_number':
+                orders = orders.filter(phone_number__icontains=filter_item)
+                context['flexRadioDefault'] = field
+                context['filter1'] = filter_item
+                context['search'] = 'search'
+        return (context, orders)
