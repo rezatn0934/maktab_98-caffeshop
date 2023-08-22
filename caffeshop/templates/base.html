@@ -137,7 +137,7 @@
                 </ul>
             </div>
             <div class="mr-5" style="width: fit-content; margin-left: 20px;">
-                <a role="button" href="{% url 'orders:cart' %}" class="btn btn-custom btn-cart mt-0"
+                <a role="button" href="{% url 'orders:cart' %}"  onclick="updateCookie()" class="btn btn-custom btn-cart mt-0"
                    type="button">
                     <i class="bi-cart-fill me-1"></i>
 
@@ -264,12 +264,13 @@
 
     function setOrderItemsNumber(orders){ // gets order object as argument and sets number of order items in cookie
         let number_of_order_items = 0;    // also it changes the number in cart button
-        let ordersQuantities = Object.values(orders);
-        for (const quantity of ordersQuantities){
-          number_of_order_items += +quantity;
+        // let ordersQuantities = Object.values(orders);
+        for (product in orders){
+          number_of_order_items += +orders[product]['quantity'];
         }
-        setCookie('number_of_order_items', number_of_order_items, 10);
-        document.getElementById("cart-nav-btn-num").innerText = number_of_order_items
+        // setCookie('number_of_order_items', number_of_order_items, 10);
+        localStorage.setItem('number_of_order_items', number_of_order_items);
+        document.getElementById("cart-nav-btn-num").innerText = number_of_order_items;
 
     }
 
