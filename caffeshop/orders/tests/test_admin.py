@@ -38,3 +38,9 @@ class TestOrderAdmin(TestCase):
         self.assertEqual(3, given_query_set.get().customer_count)
 
 
+class TestOrderDetailAdmin(TestCase):
+
+    def setUp(self):
+        self.order1 = baker.make(Order)
+        self.order_detail1 = baker.make(Order_detail, order=self.order1)
+
