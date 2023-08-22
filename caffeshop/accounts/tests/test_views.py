@@ -1577,7 +1577,7 @@ class TestProductHour(TestCase):
         response = self.client.get(reverse('product_hour'))
         self.assertEqual(response.status_code, 302)
 
-    def test_product_hour_GET_has_perm_without_phone(self):
+    def test_product_hour_GET_has_perm_with_one_order(self):
         self.user.groups.add(self.manager_group)
         self.client.login(phone=self.user.phone, password=self.password)
         response = self.client.get(reverse('product_hour'))
