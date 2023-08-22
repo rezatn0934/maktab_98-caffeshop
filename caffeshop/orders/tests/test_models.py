@@ -62,7 +62,7 @@ class TestOrdersModels(TestCase):
         self.assertEqual(order_items[1].product.name, 'hamburger')
 
     def test_str(self):
-        self.assertEquals(str(self.order), 'Order223')
+        self.assertEquals(str(self.order), f'Order{self.order.id}')
 
     def test_total_order_price(self):
         order = Order.objects.create(
@@ -141,4 +141,4 @@ class TestOrderDetailsModel(TestCase):
             quantity=1,
         )
 
-        self.assertEquals(str(self.order_item1), 'Order Details ID: 248')
+        self.assertEquals(str(self.order_item1), f'Order Details ID: {self.order_item1.id}')
