@@ -1599,18 +1599,19 @@ class TestProductHour(TestCase):
         self.assertEqual(len(response.context.get('query_set')), 2)
 
     def test_product_hour_GET_has_perm_with_two_order_in_one_hour(self):
-        hour1 = timezone.now() - timezone.timedelta(hours=5)
-        # hour2 = timezone.now() - timezone.timedelta(hours=5)
+        hour = timezone.now() - timezone.timedelta(hours=5)
         order1 = baker.make(Order, payment='P')
-        order1.order_date = hour1
+        order1.order_date = hour
         order1.save()
         order2 = baker.make(Order, payment='P')
-        order2.order_date = hour1
+        order2.order_date = hour
         order2.save()
         product1 = baker.make(Product, price=25)
         product2 = baker.make(Product, price=25)
-        baker.make(Order_detail, product=product1, order=order1, quantity=3)
-        baker.make(Order_detail, product=product2, order=order2, quantity=10)
+        product3 = baker.make(Product, price=25)
+        baker.make(Order_detail, product=product1, order=order1, quantity=15)
+        baker.make(Order_detail, product=product2, order=order2, quantity=5)
+        baker.make(Order_detail, product=product3, order=order2, quantity=30)
         self.user.groups.add(self.manager_group)
         self.client.login(phone=self.user.phone, password=self.password)
         response = self.client.get(reverse('product_hour'))
