@@ -95,18 +95,17 @@ class About(ImageMixin, models.Model):
         if self.pk:
             old_instance = About.objects.get(pk=self.pk)
             self.change_image(old_instance, "image")
-
-        objects = About.objects.all()
-        if objects:
-            objects.update(is_active=False)
-        self.is_active = True
         super().save(*args, **kwargs)
+        if self.is_active:
+            objects = About.objects.exclude(id=self.pk)
+            if objects:
+                objects.update(is_active=False)
 
     def delete(self, *args, **kwargs):
-        if self.image:
-            self.delete_image("image")
-
-        super().delete(*args, **kwargs)
+        if not self.is_active:
+            if self.image:
+                self.delete_image("image")
+            super().delete(*args, **kwargs)
 
     def __str__(self):
         return self.title

@@ -1315,7 +1315,6 @@ class TestSalesByCategory(TestCase):
         manager_group.permissions.add(*order_detail_permission)
 
     def setUp(self):
-
         self.order1 = baker.make(Order, payment='P')
         self.order2 = baker.make(Order, payment='P')
         self.order3 = baker.make(Order, payment='P')
@@ -1550,6 +1549,75 @@ class TestCustomerOrderHistory(TestCase):
         self.assertTrue(response.context.get('query_set'))
 
 
+class TestProductHour(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        content_type = ContentType.objects.get_for_model(Order_detail)
+        order_detail_permission = Permission.objects.filter(content_type=content_type)
+
+        manager_group, created = Group.objects.get_or_create(name="Managers")
+        manager_group.permissions.add(*order_detail_permission)
+
+    def setUp(self):
+        self.password = 'reza123456'
+        self.user = User.objects.create_user(
+            phone='09198470934',
+            password=self.password,
+        )
+        self.order = baker.make(Order, payment='P')
+        self.product = baker.make(Product, price=25)
+        self.order_detail = baker.make(Order_detail, product=self.product, order=self.order, quantity=1)
+        self.client = Client()
+        self.manager_group = Group.objects.get(name='Managers')
+
+    def test_product_hour_GET_dont_has_perm(self):
+        self.client.login(phone=self.user.phone, password=self.password)
+        response = self.client.get(reverse('product_hour'))
+        self.assertEqual(response.status_code, 302)
+
+    def test_product_hour_GET_has_perm_with_one_order(self):
+        self.user.groups.add(self.manager_group)
+        self.client.login(phone=self.user.phone, password=self.password)
+        response = self.client.get(reverse('product_hour'))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context.get('query_set')), 1)
+
+    def test_product_hour_GET_has_perm_with_one_order_in_each_one_hour(self):
+        order = baker.make(Order, payment='P')
+        order.order_date = timezone.now() - timezone.timedelta(hours=2)
+        order.save()
+        product = baker.make(Product, price=25)
+        baker.make(Order_detail, product=product, order=order, quantity=1)
+        self.user.groups.add(self.manager_group)
+        self.client.login(phone=self.user.phone, password=self.password)
+        response = self.client.get(reverse('product_hour'))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context.get('query_set')), 2)
+
+    def test_product_hour_GET_has_perm_with_two_order_in_one_hour(self):
+        hour = timezone.now() - timezone.timedelta(hours=5)
+        order1 = baker.make(Order, payment='P')
+        order1.order_date = hour
+        order1.save()
+        order2 = baker.make(Order, payment='P')
+        order2.order_date = hour
+        order2.save()
+        product1 = baker.make(Product, name='tea', price=25)
+        product2 = baker.make(Product, name='beef', price=25)
+        product3 = baker.make(Product, name='coffee', price=25)
+        baker.make(Order_detail, product=product1, order=order1, quantity=15)
+        baker.make(Order_detail, product=product2, order=order2, quantity=5)
+        baker.make(Order_detail, product=product3, order=order2, quantity=30)
+        self.user.groups.add(self.manager_group)
+        self.client.login(phone=self.user.phone, password=self.password)
+        response = self.client.get(reverse('product_hour'))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context.get('query_set')), 2)
+
+
 class TestLogOut(TestCase):
 
     def setUp(self):
@@ -1565,4 +1633,3 @@ class TestLogOut(TestCase):
         response = self.client.get(reverse('logout'), follow=True)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'login.html')
-

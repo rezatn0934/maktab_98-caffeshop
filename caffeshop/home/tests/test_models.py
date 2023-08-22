@@ -21,7 +21,7 @@ class TestInfoModel(TestCase):
                                                                    content_type='image/jpg'))
 
     def tearDown(self):
-        self.info.delete()
+
         logo_path = os.path.join(settings.MEDIA_ROOT / "images/logo", "test_White_logo_-_no_background.png")
         if os.path.exists(logo_path):
             os.remove(logo_path)
@@ -49,6 +49,15 @@ class TestInfoModel(TestCase):
         obj_g = objs.get()
         self.assertEqual(obj_g.cafe_title, "farzam")
         self.assertTrue(len(objs) == 1)
+
+    def test_delete(self):
+        b_length = len(Info.objects.all())
+
+        self.info.delete()
+
+        a_length = len(Info.objects.all())
+        self.assertEqual(b_length, a_length)
+        self.assertEqual(Info.objects.first().cafe_title, self.info.cafe_title)
 
     def test_model_update_save(self):
         self.info.cafe_title = "reza"
@@ -96,6 +105,17 @@ class TestGalleryModel(TestCase):
     def test_model_str(self):
         self.assertEqual(str(self.gallery), "farzam")
 
+    def test_delete(self):
+        gallery = baker.make(Gallery, title="test_delete",
+                             image=SimpleUploadedFile(name='test3_gallery.jpg', content=open(
+                                 settings.MEDIA_ROOT / "images/test/test3_gallery.jpg",
+                                 'rb').read(), content_type='image/jpg'))
+        gallery.delete()
+        self.assertFalse(Gallery.objects.filter(title="test_delete").exists())
+
+        image_path = os.path.join(settings.MEDIA_ROOT / "images/gallery", "test3_gallery.jpg")
+        self.assertFalse(os.path.exists(image_path))
+
     def test_model_image_preview(self):
         image_preview = self.gallery.img_preview()
         self.assertEqual(mark_safe(f'<img src = "{self.gallery.image.url}" width = "150" height="150"/> '),
@@ -125,6 +145,12 @@ class TestAboutModel(TestCase):
 
     def tearDown(self):
         self.about.delete()
+        image_path = os.path.join(settings.MEDIA_ROOT / "images/about", "test_about.jpg")
+        if os.path.exists(image_path):
+            os.remove(image_path)
+        image_path2 = os.path.join(settings.MEDIA_ROOT / "images/about", "test2_about.jpg")
+        if os.path.exists(image_path2):
+            os.remove(image_path2)
 
     def test_model_str(self):
         self.assertEqual(str(self.about), "farzam")
@@ -147,3 +173,27 @@ class TestAboutModel(TestCase):
         self.assertTrue(len(objs) == 1)
         self.assertEqual(obj_g.title, "reza")
         self.assertEqual(str(obj_g.image).split("/")[-1], "test2_about.jpg")
+
+    def test_delete(self):
+        about = baker.make(About, title="test_delete",
+                           image=SimpleUploadedFile(name='test3_about.jpg', content=open(
+                               settings.MEDIA_ROOT / "images/test/test3_about.jpg",
+                               'rb').read(), content_type='image/jpg'), is_active=False)
+        about.delete()
+        self.assertFalse(About.objects.filter(title="test_delete").exists())
+
+        image_path = os.path.join(settings.MEDIA_ROOT / "images/about", "test3_about.jpg")
+        self.assertFalse(os.path.exists(image_path))
+
+    def test_delete_fail(self):
+        about = baker.make(About, title="test_delete_fail",
+                           image=SimpleUploadedFile(name='test4_about.jpg', content=open(
+                               settings.MEDIA_ROOT / "images/test/test4_about.jpg",
+                               'rb').read(), content_type='image/jpg'), is_active=True)
+        about.delete()
+        self.assertTrue(About.objects.filter(title="test_delete_fail").exists())
+
+        image_path = os.path.join(settings.MEDIA_ROOT / "images/about", "test4_about.jpg")
+        self.assertTrue(os.path.exists(image_path))
+        os.remove(image_path)
+
