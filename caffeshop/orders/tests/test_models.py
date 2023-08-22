@@ -141,4 +141,4 @@ class TestOrderDetailsModel(TestCase):
             quantity=1,
         )
 
-        self.assertEquals(str(self.order_item1), 'Order Details ID: 247')
+        self.assertEquals(str(self.order_item1), 'Order Details ID: 248')
