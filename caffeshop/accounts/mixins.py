@@ -58,3 +58,12 @@ class FilterMixin:
                 context['first_date'] = first_date
                 context['second_date'] = second_date
         return (context, orders)
+
+    def check_paid(self, request):
+        if 'paid' in request.GET:
+            paid_order = Order.objects.filter(id=request.GET['paid'])
+
+            if paid_order:
+                order = paid_order.get(id=request.GET['paid'])
+                order.payment = 'P'
+                order.save()
