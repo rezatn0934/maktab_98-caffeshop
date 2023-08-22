@@ -4,8 +4,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth import login, logout
 from django.views.generic.edit import UpdateView, CreateView
 from django.views.generic.detail import DetailView
-from django.views.generic.list import ListView
-from django.urls import reverse, reverse_lazy
+from django.urls import reverse_lazy
 from django.core.paginator import Paginator
 from django.contrib import messages
 
@@ -16,7 +15,7 @@ from django.utils import timezone
 from django.views import View
 
 from .authentication import PhoneAuthBackend
-from .mixins import chart_access_check
+from .mixins import chart_access_check, FilterMixin
 from .form import StaffLoginForm, VerifyCodeForm
 from orders.models import Order, Order_detail
 from utils import send_otp_code, check_is_authenticated
@@ -109,67 +108,23 @@ class Dashboard(LoginRequiredMixin, View):
         return render(request, "dashboard.html", {"total_sale": total_sale, 'query_set': query_set})
 
 
-class Orders(LoginRequiredMixin, PermissionRequiredMixin, View):
+class Orders(LoginRequiredMixin, PermissionRequiredMixin, FilterMixin, View):
     permission_required = ['orders.view_order']
 
     def get(self, request):
-        sort = request.GET.get('sort', 'title')
-        orderp = request.GET.get('orderp')
-        if sort == 'id' or sort == 'phone_number' or sort == 'order_date' or \
-                sort == 'table_number' or sort == 'status' or sort == 'payment':
-            sort_param = sort if orderp == 'asc' else '-' + sort
-            orders = Order.objects.all().order_by(sort_param)
-        else:
-            orders = Order.objects.all().order_by('-order_date')
-        context = {
-            'orderp': 'desc' if orderp == 'asc' else 'asc',
-            'sort': sort,
-        }
+        context, orders = self.check_sort(request)
+        context, orders = self.check_search(request=request, context=context, orders=orders)
+        context, orders = self.check_filter(request=request, context=context, orders=orders)
 
-        if 'search' in request.GET:
-            filter_item = request.GET.get('filter1')
-            field = request.GET.get('flexRadioDefault')
+        self.check_paid(request=request)
 
-            if field == 'table_number':
-                if filter_item:
-                    orders = orders.filter(Q(table_number__Table_number__icontains=filter_item) |
-                                           Q(table_number__name__icontains=filter_item))
-                else:
-                    orders = orders.filter(table_number=None)
-                context['flexRadioDefault'] = field
-                context['filter1'] = filter_item
-                context['search'] = 'search'
-            elif field == 'phone_number':
-                orders = orders.filter(phone_number__icontains=filter_item)
-                context['flexRadioDefault'] = field
-                context['filter1'] = filter_item
-                context['search'] = 'search'
 
-        if 'filter' in request.GET:
-            first_date = request.GET.get('first_date')
-            if first_date:
-                second_date = request.GET.get('second_date')
-                if not second_date:
-                    second_date = (datetime.datetime.now() + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
-                orders = orders.filter(order_date__range=(first_date, second_date))
-                context['filter'] = 'filter'
-                context['first_date'] = first_date
-                context['second_date'] = second_date
-
-        if 'paid' in request.GET:
-            paid_order = Order.objects.filter(id=request.GET['paid'])
-
-            if paid_order:
-                order = paid_order.get(id=request.GET['paid'])
-                order.payment = 'P'
-                order.save()
         paginator = Paginator(orders, 5)
         page_number = request.GET.get('page', 1)
         orders = paginator.get_page(page_number)
         context['orders'] = orders
         context['page'] = page_number
         return render(request, 'orders_list.html', context)
-
 
 class OrderDetailView(LoginRequiredMixin, DetailView):
     model = Order
