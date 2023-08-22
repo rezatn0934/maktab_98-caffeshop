@@ -1585,6 +1585,18 @@ class TestProductHour(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context.get('query_set')), 1)
 
+    def test_product_hour_GET_has_perm_with_one_order_in_each_one_hour(self):
+        order = baker.make(Order, payment='P')
+        order.order_date = timezone.now() - timezone.timedelta(hours=2)
+        order.save()
+        product = baker.make(Product, price=25)
+        baker.make(Order_detail, product=product, order=order, quantity=1)
+        self.user.groups.add(self.manager_group)
+        self.client.login(phone=self.user.phone, password=self.password)
+        response = self.client.get(reverse('product_hour'))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context.get('query_set')), 2)
 
 
 class TestLogOut(TestCase):
