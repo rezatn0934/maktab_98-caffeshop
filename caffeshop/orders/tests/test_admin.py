@@ -30,3 +30,11 @@ class TestOrderAdmin(TestCase):
         order = query_set.get()
         given_link = order_admin.customer_count(order)
         self.assertEqual(expected_link, given_link)
+
+    def test_order_get_query_set(self):
+        order_admin = OrderAdmin(Order, AdminSite())
+        given_query_set = order_admin.get_queryset(self.client.request)
+        self.assertTrue(hasattr(given_query_set.get(), 'customer_count'))
+        self.assertEqual(3, given_query_set.get().customer_count)
+
+
