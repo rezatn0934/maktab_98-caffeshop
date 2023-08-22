@@ -109,22 +109,11 @@ class Dashboard(LoginRequiredMixin, View):
         return render(request, "dashboard.html", {"total_sale": total_sale, 'query_set': query_set})
 
 
-class Orders(LoginRequiredMixin, PermissionRequiredMixin, View):
+class Orders(LoginRequiredMixin, PermissionRequiredMixin, FilterMixin, View):
     permission_required = ['orders.view_order']
 
     def get(self, request):
-        sort = request.GET.get('sort', 'title')
-        orderp = request.GET.get('orderp')
-        if sort == 'id' or sort == 'phone_number' or sort == 'order_date' or \
-                sort == 'table_number' or sort == 'status' or sort == 'payment':
-            sort_param = sort if orderp == 'asc' else '-' + sort
-            orders = Order.objects.all().order_by(sort_param)
-        else:
-            orders = Order.objects.all().order_by('-order_date')
-        context = {
-            'orderp': 'desc' if orderp == 'asc' else 'asc',
-            'sort': sort,
-        }
+        context, orders = self.check_sort(request)
 
         if 'search' in request.GET:
             filter_item = request.GET.get('filter1')
@@ -145,31 +134,12 @@ class Orders(LoginRequiredMixin, PermissionRequiredMixin, View):
                 context['filter1'] = filter_item
                 context['search'] = 'search'
 
-        if 'filter' in request.GET:
-            first_date = request.GET.get('first_date')
-            if first_date:
-                second_date = request.GET.get('second_date')
-                if not second_date:
-                    second_date = (datetime.datetime.now() + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
-                orders = orders.filter(order_date__range=(first_date, second_date))
-                context['filter'] = 'filter'
-                context['first_date'] = first_date
-                context['second_date'] = second_date
-
-        if 'paid' in request.GET:
-            paid_order = Order.objects.filter(id=request.GET['paid'])
-
-            if paid_order:
-                order = paid_order.get(id=request.GET['paid'])
-                order.payment = 'P'
-                order.save()
         paginator = Paginator(orders, 5)
         page_number = request.GET.get('page', 1)
         orders = paginator.get_page(page_number)
         context['orders'] = orders
         context['page'] = page_number
         return render(request, 'orders_list.html', context)
-
 
 class OrderDetailView(LoginRequiredMixin, DetailView):
     model = Order
