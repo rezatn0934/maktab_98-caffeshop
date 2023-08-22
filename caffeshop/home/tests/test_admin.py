@@ -66,8 +66,8 @@ class TestAboutModelAdminTests(TestCase):
                                 is_active=True)
 
         self.about1 = baker.make(About, title="about1", is_active=False,
-                                 image=SimpleUploadedFile(name='test_about.jpg', content=open(
-                                     settings.MEDIA_ROOT / "images/test/test_about.jpg",
+                                 image=SimpleUploadedFile(name='test2_about.jpg', content=open(
+                                     settings.MEDIA_ROOT / "images/test/test2_about.jpg",
                                      'rb').read(), content_type='image/jpg'))
         self.about2 = baker.make(About, title="about2", is_active=False)
         self.factory = RequestFactory()
@@ -75,9 +75,9 @@ class TestAboutModelAdminTests(TestCase):
     def tearDown(self):
         self.user.delete()
 
-        image_path = os.path.join(settings.MEDIA_ROOT / "images/about", "test_about.jpg")
-        if os.path.exists(image_path):
-            os.remove(image_path)
+        image_path2 = os.path.join(settings.MEDIA_ROOT / "images/about", "test2_about.jpg")
+        if os.path.exists(image_path2):
+            os.remove(image_path2)
 
     def test_truncated_content(self):
         about_admin = AboutAdmin(About, AdminSite())
@@ -99,4 +99,4 @@ class TestAboutModelAdminTests(TestCase):
         about_admin.delete_about_image(request, qs)
         qs = About.objects.all()
         self.assertEqual(len(qs), 1)
-        self.assertEqual(qs.get().title, "about2")
+        self.assertEqual(qs.get().title, "about")
