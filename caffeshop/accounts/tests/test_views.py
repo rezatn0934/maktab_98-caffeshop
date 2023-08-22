@@ -1560,6 +1560,26 @@ class TestProductHour(TestCase):
         manager_group, created = Group.objects.get_or_create(name="Managers")
         manager_group.permissions.add(*order_detail_permission)
 
+    def setUp(self):
+        self.password = 'reza123456'
+        self.user = User.objects.create_user(
+            phone='09198470934',
+            password=self.password,
+        )
+        self.order1 = baker.make(Order, payment='P')
+        self.order2 = baker.make(Order, payment='P')
+        self.order3 = baker.make(Order, payment='P')
+        self.order4 = baker.make(Order, payment='P')
+        self.product1 = baker.make(Product, price=25)
+        self.product2 = baker.make(Product, price=10)
+        self.order_detail1 = baker.make(Order_detail, product=self.product1, order=self.order1, quantity=3)
+        self.order_detail2 = baker.make(Order_detail, product=self.product1, order=self.order2, quantity=3)
+        self.order_detail3 = baker.make(Order_detail, product=self.product1, order=self.order3, quantity=2)
+        self.order_detail4 = baker.make(Order_detail, product=self.product1, order=self.order4, quantity=4)
+        self.order_detail5 = baker.make(Order_detail, product=self.product2, order=self.order4, quantity=1)
+        self.client = Client()
+        self.manager_group = Group.objects.get(name='Managers')
+
 
 class TestLogOut(TestCase):
 
