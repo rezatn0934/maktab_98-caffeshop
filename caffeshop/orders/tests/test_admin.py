@@ -14,3 +14,9 @@ class TestOrderAdmin(TestCase):
         self.order_detail1 = baker.make(Order_detail, order=self.order1)
         self.order_detail2 = baker.make(Order_detail, order=self.order1)
         self.order_detail3 = baker.make(Order_detail, order=self.order1)
+
+    def tearDown(self):
+        self.order_detail1.delete()
+        self.order_detail2.delete()
+        self.order_detail3.delete()
+        self.order1.delete()
