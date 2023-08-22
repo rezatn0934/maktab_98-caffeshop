@@ -44,3 +44,6 @@ class TestOrderDetailAdmin(TestCase):
         self.order1 = baker.make(Order)
         self.order_detail1 = baker.make(Order_detail, order=self.order1)
 
+    def tearDown(self):
+        self.order_detail1.delete()
+        self.order1.delete()
