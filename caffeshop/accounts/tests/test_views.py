@@ -1550,6 +1550,17 @@ class TestCustomerOrderHistory(TestCase):
         self.assertTrue(response.context.get('query_set'))
 
 
+class TestProductHour(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        content_type = ContentType.objects.get_for_model(Order_detail)
+        order_detail_permission = Permission.objects.filter(content_type=content_type)
+
+        manager_group, created = Group.objects.get_or_create(name="Managers")
+        manager_group.permissions.add(*order_detail_permission)
+
+
 class TestLogOut(TestCase):
 
     def setUp(self):
