@@ -5,6 +5,7 @@ from menu.models import Category, Product
 from model_bakery import baker
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.conf import settings
+import os
 
 
 class TestHomeView(TestCase):
@@ -29,6 +30,9 @@ class TestHomeView(TestCase):
         self.gallery.delete()
         self.category.delete()
         self.about.delete()
+        image_path = os.path.join(settings.MEDIA_ROOT / "images/about", "test_about.jpg")
+        if os.path.exists(image_path):
+            os.remove(image_path)
 
     def test_home_GET(self):
         response = self.client.get(reverse("home"))
