@@ -274,6 +274,20 @@
 
     }
 
+    function getLocalStorageObject(item_name){ // it gets the object name that is stored in cookie and retrive it
+        let stringitem = localStorage.getItem(item_name);
+        if (!stringitem){ stringitem = ''; }
+        stringitem = stringitem.replaceAll('\\054', ',');
+        stringitem = stringitem.replaceAll("\'", "\"");
+        if (stringitem.charAt(0) == "\"" & stringitem.charAt(1) == "{" ){
+            stringitem = stringitem.slice(1, -1);
+        }
+        if (!stringitem){
+            stringitem = JSON.stringify({})
+        }
+        let items = JSON.parse(stringitem);
+        return items;
+    }
     function getCookieObject(item_name){ // it gets the object name that is stored in cookie and retrive it
         let stringitem = getCookie(item_name);
         stringitem = stringitem.replaceAll('\\054', ',');
