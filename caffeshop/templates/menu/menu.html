@@ -6,6 +6,10 @@
 {% block order_number %} {{ request.COOKIES.number_of_order_items }} {% endblock %}
 {% block link %}
   <style>
+    .img-responsive{
+      object-fit: cover;
+    }
+
 {% if categories %}
     {% for category in categories %}
         {% if not category.parent_category %}
