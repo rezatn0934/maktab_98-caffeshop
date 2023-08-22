@@ -40,8 +40,13 @@
             {% if request.COOKIES.number_of_order_items == 0 %}
                 pointer-events: none;
             {% endif %}
+            color:black !important;
+            background-color: rgb(139, 215, 62);
         }
 
+        #back-to-shop{
+            text-decoration: none;
+        }
         ::-webkit-input-placeholder{
             font-size: 0.8rem !important;
 
@@ -91,34 +96,34 @@
                             <div class="table">
                                 <table>
                                     <tbody class="col-sm-12">
-                                    {% for product , quantity , total in order_items %}
+                                    {% for product_id, product_name, quantity , price,  total_price, image_url, detail_url in order_items %}
                                         <form id="cart-item-form-{{forloop.counter}}">
                                             <tr id="box-{{forloop.counter}}" class="cake-top row justify-content-between d-flex align-items-center">
                                                 <td class="cakes col-sm-3">
-                                                    <div class="product-img  ">
-                                                        <img class="p-img" src="{{ product.image.url }}">
+                                                    <div class="product-img">
+                                                        <img class="p-img" src="{{ image_url }}">
                                                     </div>
                                                 </td>
                                                 <td class="product-text col-sm-2">
                                                     <div class="product-text">
-                                                        <p class="my-5" >{{ product.name }}</p>
+                                                        <p class="my-5" >{{ product_name }}</p>
                                                     </div>
                                                 </td>
                                                 <td class="quantity col-sm-3 col-md-2">
                                                     <div class="product-right">
-                                                        <input type="number" class="form-control input-small" min="1" type="number"
+                                                        <input type="number" class="form-control input-small" min="1"
                                                                id="quantity" name="quantity" value="{{ quantity }}">
                                                     </div>
                                                 </td>
                                                 <td class="price i-p col-md-1 col-sm-2 px-sm-2 py-2">
-                                                    <span  value="{{ product.price }}" class="item-price">$ {{ product.price }}</span>
+                                                    <span  value="{{ price }}" class="item-price">$ {{ price }}</span>
                                                 </td>
                                                 <td class="price itp col-md-1 col-sm-2 px-sm-2 py-2">
-                                                    <span  class="itp" id="total-count-{{forloop.counter}}">$ {{ total }}</span>
+                                                    <span  class="itp" id="total-count-{{forloop.counter}}">$ {{ total_price }}</span>
                                                 </td>
                                                 <td class="top-remove col-sm-12 col-md-2 text-center mx-1 ">
                                                     <div class="row px-1 justify-content-around">
-                                                        <input name="product" value="{{ product.id }}" type="hidden">
+                                                        <input name="product" value="{{ product_id }}" type="hidden">
                                                         <button name="update" value="True" type="button" onclick="return orderUpdate(this.form,  'box-{{forloop.counter}}')"
                                                             form="cart-item-form-{{forloop.counter}}"   
                                                             class="col-sm-4 btn btn-f btn-outline-warning m-auto  d-flex justify-content-center">
@@ -149,10 +154,10 @@
                                                     </div>
                                                 </div>
                                                 <div class="col-sm-5">
-                                                    <h1 class="mx-1">Total ${{ order_total_price }}</h1>
+                                                    <h1 class="mx-1">Total $<span id="order-tp">{{ order_total_price }}</span></h1>
                                                     <div class="row justify-content-around">
-                                                        <button type="button" class="shop btn btn-dark col-sm-4 p-1 mx-2" ><a style="text-decoration: none;" href="{% url 'menu:menu' %}">Back to Shop</a></button>
-                                                        <button class="col-sm-5 check p-1 mx-1 heart2 btn btn-success" id="checkout1" style="color:black !important; background-color: rgb(139, 215, 62);" type="submit" form="table-reserve-form">
+                                                        <button type="button" class="shop btn btn-dark col-sm-4 p-1 mx-2" ><a id="back-to-shop"  href="{% url 'menu:menu' %}">Back to Shop</a></button>
+                                                        <button class="col-sm-5 check p-1 mx-1 heart2 btn btn-success" id="checkout1"  type="submit" form="table-reserve-form">
                                                              Continue to Checkout
                                                         </button>
                                                     </div>
@@ -180,28 +185,37 @@
         event.preventDefault();
         let formData = new FormData(formElement);
         let product = formData.get('product');
-        let quantity = formData.get('quantity');
-        let orders = getCookieObject('orders');
+        let quantity = +formData.get('quantity');
+        // let orders = getCookieObject('orders');
+        let orders = getLocalStorageObject('orders');
         let itemBox = document.getElementById(box_id);
         let price = itemBox.querySelector('td.i-p span.item-price').innerText.slice(1);
-        itemBox.querySelector('td.itp span.itp').innerText = '$' + ' ' + (price * +quantity);
-        orders[product] = +quantity;
-        setCookie('orders', JSON.stringify(orders), 60);
+        itemBox.querySelector('td.itp span.itp').innerText = '$' + ' ' + (price * quantity);
+        orders[product]['quantity'] = quantity;
+        // setCookie('orders', JSON.stringify(orders), 60);
+        localStorage.setItem('orders', JSON.stringify(orders));
         setOrderItemsNumber(orders);
+        setOrdersTotalPrice();
         return false;
     }
     function deleteOrderItem(formElement, box_id){
         event.preventDefault();
         let formData = new FormData(formElement);
         let product = formData.get('product');
-        let orders = getCookieObject('orders');
+        // let orders = getCookieObject('orders');
+        let orders = getLocalStorageObject('orders');
         delete orders[product];
-        setCookie('orders', JSON.stringify(orders), 60);
+        // setCookie('orders', JSON.stringify(orders), 60);
+        localStorage.setItem('orders', JSON.stringify(orders));
         setOrderItemsNumber(orders);
         document.getElementById(box_id).style.setProperty("display", "none", "important");
+        setOrdersTotalPrice();
         return false;
     }
     </script>
+
+
+
     <script>
         
         function myFunction(phone, tablet) {
@@ -248,6 +262,5 @@
         var phone = window.matchMedia("(max-width: 416px)");
         var tablet = window.matchMedia("(max-width: 416px)");
         myFunction(phone, tablet) // Call listener function at run time
-        x.addListener(myFunction) // Attach listener function on state changes
         </script>
   {% endblock %}
