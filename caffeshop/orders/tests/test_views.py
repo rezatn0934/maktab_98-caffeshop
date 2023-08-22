@@ -54,7 +54,7 @@ class TestOrdersView(TestCase):
 
     def test_cart_view_POST_valid_data_and_table(self):
         response = self.client.post(reverse('orders:cart'), data={'phone_number': '09152593858',
-                                                                  'table_number': self.table})
+                                                                  'table_number': self.table.id})
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, reverse('orders:create_order'), fetch_redirect_response=False)
 
