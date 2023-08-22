@@ -314,6 +314,12 @@
 </script>
 
 
+<script>
+    window.onload = function(){
+        let orders = getLocalStorageObject('orders');
+        setOrderItemsNumber(orders);
+    }
+</script>
 {% block footerlink %} {% endblock %}
 </body>
 </html>
