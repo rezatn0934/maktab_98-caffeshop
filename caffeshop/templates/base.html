@@ -303,6 +303,17 @@
     }
 
 </script>
+
+<script>
+    function updateCookie(){
+        let ordersFromLocalStorage = localStorage.getItem('orders');
+        setCookie('orders', ordersFromLocalStorage, 60);
+        return true;
+
+    }
+</script>
+
+
 {% block footerlink %} {% endblock %}
 </body>
 </html>
