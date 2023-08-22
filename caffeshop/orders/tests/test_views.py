@@ -9,6 +9,7 @@ from orders.forms import OrderForm
 from http.cookies import SimpleCookie
 import json
 
+
 class TestOrdersView(TestCase):
     def setUp(self):
         self.image = open(settings.MEDIA_ROOT / "images/test/pina_colada.png", 'rb').read()
@@ -47,9 +48,15 @@ class TestOrdersView(TestCase):
 
     def test_cart_view_POST_valid_data(self):
         response = self.client.post(reverse('orders:cart'), data={'phone_number': '09152593858',
-                                                                  'table': self.table.Table_number})
+                                                                  'table_number': ''})
         self.assertRedirects(response, reverse('orders:create_order'), status_code=302, target_status_code=302,
                              fetch_redirect_response=True)
+
+    def test_cart_view_POST_valid_data_and_table(self):
+        response = self.client.post(reverse('orders:cart'), data={'phone_number': '09152593858',
+                                                                  'table_number': self.table})
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse('orders:create_order'), fetch_redirect_response=False)
 
     def test_cart_view_POST_invalid_data(self):
         response = self.client.post(reverse('orders:cart'), data={'phone_number': '0152593858',
