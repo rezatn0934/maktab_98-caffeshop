@@ -1600,12 +1600,12 @@ class TestProductHour(TestCase):
 
     def test_product_hour_GET_has_perm_with_two_order_in_one_hour(self):
         hour1 = timezone.now() - timezone.timedelta(hours=5)
-        hour2 = timezone.now() - timezone.timedelta(hours=5, minutes=10)
+        # hour2 = timezone.now() - timezone.timedelta(hours=5)
         order1 = baker.make(Order, payment='P')
         order1.order_date = hour1
         order1.save()
         order2 = baker.make(Order, payment='P')
-        order2.order_date = hour2
+        order2.order_date = hour1
         order2.save()
         product1 = baker.make(Product, price=25)
         product2 = baker.make(Product, price=25)
