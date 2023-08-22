@@ -22,7 +22,8 @@ class TestOrdersView(TestCase):
         self.order_detail = Order_detail.objects.create(order=self.order, product=self.product, quantity=10)
         self.client = Client()
         self.client.cookies = SimpleCookie()
-        self.client.cookies['orders'] = json.dumps({self.product.id: 20})
+        self.client.cookies['orders'] = json.dumps(
+            {self.product.id: {"price": float(self.product.price), "quantity": 10, "total_price": float(self.product.price) * 10}})
         self.table = Table.objects.create(name='nima', Table_number=55)
         return super().setUp()
 
@@ -70,7 +71,8 @@ class TestOrderHistory(TestCase):
         self.product = baker.make(Product)
         self.client = Client()
         self.client.cookies = SimpleCookie()
-        self.client.cookies['orders'] = json.dumps({self.product.id: 20})
+        self.client.cookies['orders'] = json.dumps(
+            {self.product.id: {"price": float(self.product.price), "quantity": 10, "total_price": float(self.product.price) * 10}})
         self.session = self.client.session
         self.session['pre_order'] = {'phone': '09152593858', 'table_number': self.table.Table_number}
         self.session.save()
@@ -96,7 +98,10 @@ class TestOrderHistory(TestCase):
     def test_order_has_tow_history(self):
         self.client.get(reverse('orders:create_order'))
         self.client.get(reverse('orders:order_history'))
-        self.client.cookies['orders'] = json.dumps({self.product.id: 20})
+        self.client.cookies['orders'] = json.dumps(
+            {self.product.id: {"price": float(self.product.price), "quantity": 10,
+                               "total_price": float(self.product.price) * 10}})
+
         self.session = self.client.session
         self.session['pre_order'] = {'phone': '09152593858', 'table_number': self.table.Table_number}
         self.session.save()
