@@ -190,7 +190,13 @@
     }
     
 </script>
-
+<script>
+    updateCookie();
+    setOrdersTotalPrice();
+    window.onbeforeunload = function(){
+        updateCookie();
+    }
+</script>
 <script>
     function orderUpdate(formElement, box_id){
         event.preventDefault();
