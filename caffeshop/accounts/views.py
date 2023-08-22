@@ -114,6 +114,7 @@ class Orders(LoginRequiredMixin, PermissionRequiredMixin, FilterMixin, View):
     def get(self, request):
         context, orders = self.check_sort(request)
         context, orders = self.check_search(request=request, context=context, orders=orders)
+        context, orders = self.check_filter(request=request, context=context, orders=orders)
 
 
         paginator = Paginator(orders, 5)
