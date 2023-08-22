@@ -45,3 +45,16 @@ class FilterMixin:
                 context['filter1'] = filter_item
                 context['search'] = 'search'
         return (context, orders)
+
+    def check_filter(self, orders, context, request):
+        if 'filter' in request.GET:
+            first_date = request.GET.get('first_date')
+            if first_date:
+                second_date = request.GET.get('second_date')
+                if not second_date:
+                    second_date = (datetime.now() + timedelta(days=1)).strftime('%Y-%m-%d')
+                orders = orders.filter(order_date__range=(first_date, second_date))
+                context['filter'] = 'filter'
+                context['first_date'] = first_date
+                context['second_date'] = second_date
+        return (context, orders)
