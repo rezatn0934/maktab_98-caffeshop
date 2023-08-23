@@ -436,7 +436,7 @@ def customer_demographic(request):
 @login_required
 @user_passes_test(chart_access_check)
 def sales_by_category(request):
-    first_date = request.GET.get('first_date') or '1970-01-01'
+    first_date = request.GET.get('first_date') or datetime.date(timezone.now().date().year, 1, 1)
     second_date = request.GET.get('second_date') or timezone.now()
     query_set = Order_detail.objects.filter(order__payment='P').annotate(date=F('order__order_date')) \
         .filter(date__range=[first_date, second_date]) \
@@ -452,7 +452,7 @@ def sales_by_category(request):
 @user_passes_test(chart_access_check)
 def order_status_report(request):
     lst2 = None
-    first_date = "1970-01-01"
+    first_date = datetime.date(timezone.now().date().year, 1, 1)
     second_date = timezone.now()
     first_date2 = None
 
@@ -498,7 +498,7 @@ def order_status_report(request):
 @login_required
 @user_passes_test(chart_access_check)
 def sales_by_employee_report(request):
-    first_date = request.GET.get('first_date') or '1970-01-01'
+    first_date = request.GET.get('first_date') or datetime.date(timezone.now().date().year, 1, 1)
     second_date = request.GET.get('second_date') or timezone.now()
 
     if request.GET.get('phone_number'):
@@ -526,7 +526,7 @@ def customer_order_history(request):
     context = {}
 
     if phone_number := request.GET.get('phone_number'):
-        first_date = request.GET.get('first_date') or '1970-01-01'
+        first_date = request.GET.get('first_date') or datetime.date(timezone.now().date().year, 1, 1)
         second_date = request.GET.get('second_date') or timezone.now()
         query_set = Order.objects.filter(order_date__range=[first_date, second_date]) \
             .filter(phone_number=phone_number) \
@@ -541,7 +541,7 @@ def customer_order_history(request):
 @login_required
 @user_passes_test(chart_access_check)
 def product_hour(request):
-    first_date = request.GET.get('first_date') or '1970-01-01'
+    first_date = request.GET.get('first_date') or datetime.date(timezone.now().date().year, 1, 1)
     second_date = request.GET.get('second_date') or timezone.now()
 
     query_set = Order.objects.filter(payment='P', order_date__range=[first_date, second_date]).annotate(
