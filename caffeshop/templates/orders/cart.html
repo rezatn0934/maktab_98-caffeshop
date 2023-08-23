@@ -16,6 +16,8 @@
 
         .product-text {
             font-size: min(1.1rem, 1.8vw) !important;
+            font-family: cursive;
+            display: table-caption;
             margin: 5px;
             height: auto;
             width: auto;
@@ -157,7 +159,7 @@
                                                     <h1 class="mx-1">Total $<span id="order-tp">{{ order_total_price }}</span></h1>
                                                     <div class="row justify-content-around">
                                                         <button type="button" class="shop btn btn-dark col-sm-4 p-1 mx-2" ><a id="back-to-shop"  href="{% url 'menu:menu' %}">Back to Shop</a></button>
-                                                        <button class="col-sm-5 check p-1 mx-1 heart2 btn btn-success" id="checkout1"  type="submit" form="table-reserve-form">
+                                                        <button class="col-sm-5 check p-1 mx-1 heart2 btn btn-success" id="checkout1" onclick="updateCookie()"  type="submit" form="table-reserve-form">
                                                              Continue to Checkout
                                                         </button>
                                                     </div>
@@ -191,15 +193,16 @@
     
 </script>
 <script>
-    updateCookie();
     setOrdersTotalPrice();
-    window.onbeforeunload = function(){
-        updateCookie();
+    function setAttributes(el, attrs) {
+        for(var key in attrs) {
+            el.setAttribute(key, attrs[key]);
+        }
     }
 </script>
 <script>
     function orderUpdate(formElement, box_id){
-        event.preventDefault();
+        // event.preventDefault();
         let formData = new FormData(formElement);
         let product = formData.get('product');
         let quantity = +formData.get('quantity');
@@ -216,7 +219,7 @@
         return false;
     }
     function deleteOrderItem(formElement, box_id){
-        event.preventDefault();
+        // event.preventDefault();
         let formData = new FormData(formElement);
         let product = formData.get('product');
         // let orders = getCookieObject('orders');
@@ -229,11 +232,11 @@
         setOrdersTotalPrice();
         return false;
     }
-    </script>
+</script>
 
 
-
-    <script>
+        
+<script>     
         
         function myFunction(phone, tablet) {
             let priceEl = document.querySelectorAll('td.price, button.btn-f');
