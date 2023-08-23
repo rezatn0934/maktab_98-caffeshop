@@ -7,7 +7,7 @@ from menu.models import Product
 from .models import Order, Order_detail, Table
 from .forms import OrderForm
 from utils import check_availability
-from .cart import just_available_product, orders_from_cookie, get_order_info
+from .cart import just_available_product, orders_from_cookie
 
 import datetime
 import json
@@ -17,17 +17,11 @@ import json
 class CartView(View):
 
     def get(self, request):
-        orders = orders_from_cookie(request)
         form = OrderForm()
-        order_items, updated_orders = get_order_info(request, orders)
         if user_phone := request.session.get('user_phone'):
             form = OrderForm(initial={'phone_number': user_phone})
-        order_total_price = sum(map(lambda item: int(item[4]), order_items))
-        context = {'order_items': order_items,
-                   'order_total_price': order_total_price,
-                   'form': form}
+        context = {'form': form}
         response = render(request, 'orders/cart.html', context=context)
-        response.set_cookie('orders', updated_orders )
         return response
 
     def post(self, request):
