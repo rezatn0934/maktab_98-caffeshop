@@ -87,7 +87,11 @@ class TestCreateOrder(TestCase):
         self.session['pre_order'] = {'phone': '09152593858', 'table_number': self.table.Table_number}
         self.session.save()
 
+    def test_inactive_product(self):
+        response = self.client.get(reverse('orders:create_order'))
 
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse('orders:cart'))
 
 
 class TestOrderHistory(TestCase):
