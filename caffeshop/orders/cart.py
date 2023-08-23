@@ -11,17 +11,6 @@ def orders_from_cookie(request):
     return json.loads(orders)
 
 
-def get_order_info(request, orders):
-    updated_orders = orders.copy()
-    order_items = []
-    for product_id, info in orders.items():
-        order_items.append((product_id, info.get('name'), info.get('quantity'),
-                            info.get('price'), (int(info.get('quantity')) * int(info.get('price'))), info.get('image_url'), info.get('detail_url')))
-
-    request.COOKIES['number_of_order_items'] = sum([int(order_info['quantity']) for order_info in updated_orders.values()])    
-    return order_items, updated_orders
-
-
 def just_available_product(request, orders):
     updated_orders = orders.copy()
     order_items = []
