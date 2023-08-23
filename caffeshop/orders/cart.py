@@ -31,7 +31,6 @@ def just_available_product(request, orders):
             obj = qs.get(id=product_id)
             message, obj = check_availability(obj)
             if obj:
-                tp = obj.price * int(info.get('quantity'))
                 order_items.append((obj, info.get('quantity')))
             else:
                 updated_orders.pop(product_id)
