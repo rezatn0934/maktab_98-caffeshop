@@ -61,7 +61,7 @@
         const data = {
             labels: dataLabels,
             datasets: [{
-                label: 'Daily Sale',
+                label: 'Sale($)',
                 data: [{%for data in query_set %}{{ data.total_sale }}, {%endfor%}],
                 borderWidth: 1,
                 backgroundColor: [
@@ -81,7 +81,7 @@
                 plugins: {
                     title: {
                         display: true,
-                        text: "Customer Sales"
+                        text: "Daily Sales"
                     },
                     legend: {
                         display: false
