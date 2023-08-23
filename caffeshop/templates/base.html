@@ -27,7 +27,7 @@
 
     <!-- bootstrap 5.3
         ================================================== -->
-    <script src="https://https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <!-- <script src="https://https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script> -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
@@ -270,7 +270,15 @@
         }
         // setCookie('number_of_order_items', number_of_order_items, 10);
         localStorage.setItem('number_of_order_items', number_of_order_items);
-        document.getElementById("cart-nav-btn-num").innerText = number_of_order_items;
+        let cartButtonNum = document.getElementById("cart-nav-btn-num")
+        cartButtonNum.innerText = number_of_order_items;
+        if (number_of_order_items == 0){
+            cartButtonNum.innerText = '';
+            cartButtonNum.backgroundColor = 'inherit';
+        }
+        else{
+            cartButtonNum.backgroundColor = 'rgba(234, 15, 179, 0.196)';
+        }
 
     }
 

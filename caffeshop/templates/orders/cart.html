@@ -16,6 +16,8 @@
 
         .product-text {
             font-size: min(1.1rem, 1.8vw) !important;
+            font-family: cursive;
+            display: table-caption;
             margin: 5px;
             height: auto;
             width: auto;
@@ -157,7 +159,7 @@
                                                     <h1 class="mx-1">Total $<span id="order-tp">{{ order_total_price }}</span></h1>
                                                     <div class="row justify-content-around">
                                                         <button type="button" class="shop btn btn-dark col-sm-4 p-1 mx-2" ><a id="back-to-shop"  href="{% url 'menu:menu' %}">Back to Shop</a></button>
-                                                        <button class="col-sm-5 check p-1 mx-1 heart2 btn btn-success" id="checkout1"  type="submit" form="table-reserve-form">
+                                                        <button class="col-sm-5 check p-1 mx-1 heart2 btn btn-success" id="checkout1" onclick="updateCookie()"  type="submit" form="table-reserve-form">
                                                              Continue to Checkout
                                                         </button>
                                                     </div>
@@ -191,15 +193,16 @@
     
 </script>
 <script>
-    updateCookie();
     setOrdersTotalPrice();
-    window.onbeforeunload = function(){
-        updateCookie();
+    function setAttributes(el, attrs) {
+        for(var key in attrs) {
+            el.setAttribute(key, attrs[key]);
+        }
     }
 </script>
 <script>
     function orderUpdate(formElement, box_id){
-        event.preventDefault();
+        // event.preventDefault();
         let formData = new FormData(formElement);
         let product = formData.get('product');
         let quantity = +formData.get('quantity');
@@ -216,7 +219,7 @@
         return false;
     }
     function deleteOrderItem(formElement, box_id){
-        event.preventDefault();
+        // event.preventDefault();
         let formData = new FormData(formElement);
         let product = formData.get('product');
         // let orders = getCookieObject('orders');
@@ -229,55 +232,149 @@
         setOrdersTotalPrice();
         return false;
     }
-    </script>
+</script>
 
+<script>
+    function loadOrdersTable(orders){
+        const tableBody = document.querySelector('table tbody');
+        let counter = 1;
+        for (product in orders){
+            let form = document.createElement("form");
+            let tr = document.createElement('tr');
+            let tdImage = document.createElement('td');
+            let tdText = document.createElement('td');
+            let tdQuantity = document.createElement('td');
+            let tdPrice = document.createElement('td');
+            let tdToalPrice = document.createElement('td');
+            let tdButtons = document.createElement('td');
+            let divText = document.createElement('div');
+            let divButton = document.createElement('div');
+            let image = document.createElement('img');
+            let spanPrice = document.createElement('span');
+            let spanTotalPrice = document.createElement('span');
+            let pText = document.createElement('p');
+            let inputQuantity = document.createElement('input');
+            let inputProductFormHidden = document.createElement('input');
+            let buttonUpdate = document.createElement('button');
+            let buttonRemove = document.createElement('button');
+            let iUpdateIcon = document.createElement('i');
+            let iRemoveIcon = document.createElement('i');
+            
+            tableBody.appendChild(form);
+            tableBody.appendChild(tr);
+            tr.appendChild(tdImage);
+            tr.appendChild(tdText);
+            tr.appendChild(tdQuantity);
+            tr.appendChild(tdPrice);
+            tr.appendChild(tdToalPrice); tr.appendChild(tdButtons);
+            tdImage.appendChild(image);
+            tdText.appendChild(divText); divText.appendChild(pText);
+            tdQuantity.appendChild(inputQuantity);
+            tdPrice.appendChild(spanPrice);
+            tdToalPrice.appendChild(spanTotalPrice);
+            tdButtons.appendChild(divButton);
+            divButton.appendChild(inputProductFormHidden);
+            divButton.appendChild(buttonUpdate); buttonUpdate.appendChild(iUpdateIcon);
+            divButton.appendChild(buttonRemove); buttonRemove.appendChild(iRemoveIcon)
 
+            
+            form.id="cart-item-form-" + counter;
+            
+            tr.id = "box-" + counter;
+            tr.classList.add('cake-top', 'row', 'justify-content-between', 'd-flex', 'align-items-center');
+            
+            tdImage.classList.add('cakes', 'col-sm-3');
+            tdText.classList.add("product-text", "col-sm-2");
+            tdQuantity.classList.add("quantity", "col-sm-3", "col-md-2");
+            tdPrice.classList.add("price", "i-p", "col-md-1", "col-sm-2", "px-sm-2", "py-2");
+            tdToalPrice.classList.add("price", "itp", "col-md-1", "col-sm-2", "px-sm-2", "py-2");
+            tdButtons.classList.add("top-remove", "col-sm-12", "col-md-2", "text-center", "mx-1");
 
-    <script>
-        
-        function myFunction(phone, tablet) {
-            let priceEl = document.querySelectorAll('td.price, button.btn-f');
-            let productTextEl = document.querySelectorAll('td.product-text p');
-            let quantityEl = document.querySelectorAll('td.quantity');
-            let qElInput = document.querySelectorAll('td.quantity input');
-            let btnF = document.querySelectorAll('button.btn-f');
-            let trEl = document.querySelectorAll('tr, td.top-remove div');
-          if (phone.matches) { // If media query matches
+            divText.classList.add("product-text");
+            divButton.classList.add("row", "px-1", "justify-content-around");
 
-            priceEl.forEach((Item) => {
-                             Item.style.setProperty("width", "5em", "important");
-            });
-            btnF.forEach((Item) => {
-                             Item.style.setProperty("width", "5em", "important")
-                             Item.classList.add('mx-1');
-            });
-            productTextEl.forEach((Item) => {
-                             Item.classList.add('text-center');
-                             Item.classList.remove('my-5');
-            });
-            quantityEl.forEach((Item) => {
-                             Item.style.setProperty("width", "14em", "important");
-            });
-            qElInput.forEach((Item) => {
-                             Item.style.setProperty("text-align", "center", "important");
-            });
-            trEl.forEach((Item) => {
-                             Item.classList.remove('justify-content-between');
-                             Item.classList.remove('justify-content-around');
-                             Item.classList.add('justify-content-center');
-            });
-            // alert('phone-size')
-          }
-           else if (tablet.matches) {
-            // alert('tablet-size')
+            image.className = "p-img"; image.src = orders[product]['image_url'];
+
+            spanPrice.classList.add('item-price'); spanPrice.value = orders[product]['price'];
+            spanPrice.innerText ="$ " + orders[product]['price'];
+            spanTotalPrice.classList.add('itp');
+            spanTotalPrice.innerText ="$ " + orders[product]['total_price'];
+            spanTotalPrice.id = "total-count-" + counter;
+
+            inputQuantity.classList.add("form-control", "input-small");
+            setAttributes(inputQuantity, {"type": "number", "id": "quantity", "form": form.id, "name": "quantity", "value": orders[product]['quantity'], "min": "1"});
+            setAttributes(inputProductFormHidden, {'type': 'hidden', 'name': 'product', 'form': form.id, 'value': product});
+
+            pText.className = "my-5"; pText.innerText = orders[product]['name'];
+
+            buttonUpdate.classList.add("col-sm-4", "btn", "btn-f", "btn-outline-warning", "m-auto",  "d-flex", "justify-content-center");
+            setAttributes(buttonUpdate, {'name': 'update', 'value': 'True', 'type': 'button', 'form': form.id})
+            buttonUpdate.addEventListener('click',function(){orderUpdate(this.form, tr.id);} );
+            buttonRemove.classList.add("col-sm-4", "btn", "btn-f", "btn-outline-danger", "mx-1",  "d-flex", "justify-content-center");
+            setAttributes(buttonRemove, {'name': 'remove', 'value': 'True', 'type': 'button', 'form': form.id})
+            buttonRemove.addEventListener('click', function(){deleteOrderItem(this.form, tr.id);} );
+            
+            iUpdateIcon.classList.add('bi', 'bi-arrow-repeat');
+            
+            iRemoveIcon.classList.add('bi', 'bi-trash');
+            counter += 1;
+            
         }
-          else {
-            // alert('pc-size')
-          }
+    }
+</script>
+<script>
+    updateCookie();
+    setOrdersTotalPrice();
+    let orders = getLocalStorageObject('orders');
+    loadOrdersTable(orders);
+    // window.onbeforeunload = function(){
+    //     updateCookie();
+    // }
+</script>
+<script>     
+    function myFunction(phone, tablet) {
+        let priceEl = document.querySelectorAll('td.price, button.btn-f');
+        let productTextEl = document.querySelectorAll('td.product-text p');
+        let quantityEl = document.querySelectorAll('td.quantity');
+        let qElInput = document.querySelectorAll('td.quantity input');
+        let btnF = document.querySelectorAll('button.btn-f');
+        let trEl = document.querySelectorAll('tr, td.top-remove div');
+        if (phone.matches) { // If media query matches
+
+        priceEl.forEach((Item) => {
+                            Item.style.setProperty("width", "5em", "important");
+        });
+        btnF.forEach((Item) => {
+                            Item.style.setProperty("width", "5em", "important")
+                            Item.classList.add('mx-1');
+        });
+        productTextEl.forEach((Item) => {
+                            Item.classList.add('text-center');
+                            Item.classList.remove('my-5');
+        });
+        quantityEl.forEach((Item) => {
+                            Item.style.setProperty("width", "14em", "important");
+        });
+        qElInput.forEach((Item) => {
+                            Item.style.setProperty("text-align", "center", "important");
+        });
+        trEl.forEach((Item) => {
+                            Item.classList.remove('justify-content-between');
+                            Item.classList.remove('justify-content-around');
+                            Item.classList.add('justify-content-center');
+        });
+        // alert('phone-size')
         }
-        
-        var phone = window.matchMedia("(max-width: 416px)");
-        var tablet = window.matchMedia("(max-width: 416px)");
-        myFunction(phone, tablet) // Call listener function at run time
-        </script>
-  {% endblock %}
+        else if (tablet.matches) {
+        // alert('tablet-size')
+    }
+        else {
+        // alert('pc-size')
+        }
+    }
+    
+    var phone = window.matchMedia("(max-width: 416px)");
+    var tablet = window.matchMedia("(max-width: 416px)");
+    myFunction(phone, tablet) // Call listener function at run time
+</script>
+{% endblock %}
