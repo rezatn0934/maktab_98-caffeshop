@@ -64,7 +64,7 @@ class TestJustAvailableProduct(TestCase):
     def test_unavailable_products(self):
         order = {self.product1.id: {"price": float(self.product1.price), "quantity": 10,
                                     "total_price": float(self.product1.price) * 10}}
-        self.session = self.client.session
+        self.client.cookies['orders'] = json.dumps(order)
         self.session['pre_order'] = {'phone': '09152593858', 'table_number': self.table1.Table_number}
         self.session.save()
         response = self.client.get(reverse("orders:create_order"))
@@ -72,4 +72,7 @@ class TestJustAvailableProduct(TestCase):
         request = response.wsgi_request
         order_items, updated_orders = just_available_product(request, order)
         self.assertEqual(len(order_items), 0)
+        self.assertEqual(request.COOKIES['number_of_order_items'], 0)
         self.assertEqual(updated_orders, {})
+        messages = list(get_messages(response.wsgi_request))
+        self.assertEqual(messages[0].message, 'Product is not active!!')
