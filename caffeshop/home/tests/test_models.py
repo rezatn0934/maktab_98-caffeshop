@@ -1,8 +1,6 @@
 from django.test import TestCase
 from home.models import About, Gallery, Info
 from model_bakery import baker
-from django.shortcuts import get_object_or_404
-from django.http import Http404
 from django.utils.html import mark_safe
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.conf import settings
