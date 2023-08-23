@@ -68,6 +68,28 @@ class TestOrdersView(TestCase):
         self.assertRedirects(response, reverse('orders:cart'))
 
 
+class TestCreateOrder(TestCase):
+    def setUp(self):
+        self.image = open(settings.MEDIA_ROOT / "images/test/pina_colada.png", 'rb').read()
+        self.product = baker.make(Product,
+                                  image=SimpleUploadedFile.from_dict(
+                                      {'filename': 'product_pic.png', 'content': self.image,
+                                       'content_tye': 'image/png'}),
+                                  name='Pina Colda',
+                                  is_active=False)
+        self.table = Table.objects.create(name='nima', Table_number=55)
+        self.client = Client()
+        self.client.cookies = SimpleCookie()
+        self.client.cookies['orders'] = json.dumps(
+            {self.product.id: {"price": float(self.product.price), "quantity": 10,
+                               "total_price": float(self.product.price) * 10}})
+        self.session = self.client.session
+        self.session['pre_order'] = {'phone': '09152593858', 'table_number': self.table.Table_number}
+        self.session.save()
+
+
+
+
 class TestOrderHistory(TestCase):
     def setUp(self):
         self.table = Table.objects.create(name='nima', Table_number=55)
