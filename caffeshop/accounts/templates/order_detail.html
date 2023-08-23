@@ -143,9 +143,11 @@
                                                     <div class="col-md-3 ">
                                                         <input id="quantity" class="form-control" style=" border-radius: 4px;" type="number" min="1"
                                                                value=1 name="quantity">
+                                                    </div>
                                                 </td>
                                                 <td class="py-4"></td>
                                                 <td>
+                                                <div class="col-md-3 ">
                                                     <button type="submit" class="btn btn-success" name="create" {% if not perms.orders.add_order_detail %}disabled{% endif %}>
                                                         <i class="bi bi-plus-square"></i>
                                                     </button>
@@ -186,7 +188,7 @@
 {% endblock %}
 {% block footerlink %}
 <script>
-        
+
     function myFunction(phone, tablet) {
         let tableEl = document.querySelector('table');
       if (phone.matches) { // If media query matches
@@ -201,7 +203,7 @@
         // alert('pc-size')
       }
     }
-    
+
     var phone = window.matchMedia("(max-width: 416px)");
     var tablet = window.matchMedia("(max-width: 912px)");
     myFunction(phone, tablet) // Call listener function at run time
