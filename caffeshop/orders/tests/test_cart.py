@@ -1,13 +1,16 @@
-from django.test import TestCase, Client
-from orders.models import Table
-from menu.models import Product, Category
-from orders.cart import just_available_product
-from model_bakery import baker
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.conf import settings
-import os
+from django.contrib.messages import get_messages
+from django.test import TestCase, Client
 from django.urls import reverse
 
+from menu.models import Product, Category
+from model_bakery import baker
+from orders.models import Table
+from orders.cart import just_available_product
+
+import os
+import json
 
 class TestJustAvailableProduct(TestCase):
     def setUp(self):
@@ -27,6 +30,8 @@ class TestJustAvailableProduct(TestCase):
         self.parent_category = Category.objects.create(name='Food')
         self.category = Category.objects.create(name='fastfood', parent_category=self.parent_category)
         self.client = Client()
+        self.session = self.client.session
+
 
     def tearDown(self):
         Product.objects.all().delete()
@@ -40,21 +45,26 @@ class TestJustAvailableProduct(TestCase):
 
     def test_not_exist_products(self):
         order = {"100000000": {"price": float(self.product.price), "quantity": 10,
-                               "total_price": float(self.product.price) * 10}}
-        self.session = self.client.session
-        self.session['pre_order'] = {'phone': '09152593858', 'table_number': self.table.Table_number}
+                               "total_price": float(self.product.price) * 10},
+                 }
+        self.client.cookies['orders'] = json.dumps(order)
+        self.session['pre_order'] = {'phone': '09198470934', 'table_number': self.table.Table_number}
         self.session.save()
         response = self.client.get(reverse("orders:create_order"))
 
         request = response.wsgi_request
         order_items, updated_orders = just_available_product(request, order)
+
         self.assertEqual(len(order_items), 0)
+        self.assertEqual(request.COOKIES['number_of_order_items'], 0)
         self.assertEqual(updated_orders, {})
+        messages = list(get_messages(response.wsgi_request))
+        self.assertEqual(messages[0].message, 'Product 100000000 is not available!!')
 
     def test_unavailable_products(self):
         order = {self.product1.id: {"price": float(self.product1.price), "quantity": 10,
                                     "total_price": float(self.product1.price) * 10}}
-        self.session = self.client.session
+        self.client.cookies['orders'] = json.dumps(order)
         self.session['pre_order'] = {'phone': '09152593858', 'table_number': self.table1.Table_number}
         self.session.save()
         response = self.client.get(reverse("orders:create_order"))
@@ -62,4 +72,7 @@ class TestJustAvailableProduct(TestCase):
         request = response.wsgi_request
         order_items, updated_orders = just_available_product(request, order)
         self.assertEqual(len(order_items), 0)
+        self.assertEqual(request.COOKIES['number_of_order_items'], 0)
         self.assertEqual(updated_orders, {})
+        messages = list(get_messages(response.wsgi_request))
+        self.assertEqual(messages[0].message, 'Product is not active!!')
