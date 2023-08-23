@@ -8,6 +8,7 @@ from model_bakery import baker
 from orders.forms import OrderForm
 from http.cookies import SimpleCookie
 import json
+import os
 
 
 class TestOrdersView(TestCase):
@@ -23,16 +24,18 @@ class TestOrdersView(TestCase):
         self.client = Client()
         self.client.cookies = SimpleCookie()
         self.client.cookies['orders'] = json.dumps(
-            {self.product.id: {"price": float(self.product.price), "quantity": 10, "total_price": float(self.product.price) * 10}})
+            {self.product.id: {"price": float(self.product.price), "quantity": 10,
+                               "total_price": float(self.product.price) * 10}})
         self.table = Table.objects.create(name='nima', Table_number=55)
-        return super().setUp()
 
     def tearDown(self):
         Order_detail.objects.all().delete()
         Product.objects.all().delete()
         Order.objects.all().delete()
         Table.objects.all().delete()
-        return super().tearDown()
+        image_path = os.path.join(settings.MEDIA_ROOT / "images/product", "product_pic.png")
+        if os.path.exists(image_path):
+            os.remove(image_path)
 
     def test_cart_view_GET(self):
         response = self.client.get(reverse('orders:cart'))
@@ -72,7 +75,8 @@ class TestOrderHistory(TestCase):
         self.client = Client()
         self.client.cookies = SimpleCookie()
         self.client.cookies['orders'] = json.dumps(
-            {self.product.id: {"price": float(self.product.price), "quantity": 10, "total_price": float(self.product.price) * 10}})
+            {self.product.id: {"price": float(self.product.price), "quantity": 10,
+                               "total_price": float(self.product.price) * 10}})
         self.session = self.client.session
         self.session['pre_order'] = {'phone': '09152593858', 'table_number': self.table.Table_number}
         self.session.save()

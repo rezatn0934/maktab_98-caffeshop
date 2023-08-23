@@ -1,33 +1,65 @@
 from django.test import TestCase, Client
-from django.contrib.messages import get_messages
-from orders.models import Product, Category
-from utils import check_availability 
+from orders.models import Table
+from menu.models import Product, Category
 from orders.cart import just_available_product
 from model_bakery import baker
+from django.core.files.uploadedfile import SimpleUploadedFile
+from django.conf import settings
+import os
+from django.urls import reverse
+
 
 class TestJustAvailableProduct(TestCase):
     def setUp(self):
+        self.table = Table.objects.create(name='farzam', Table_number=1)
+        self.table1 = Table.objects.create(name='reza', Table_number=2)
+        self.image = open(settings.MEDIA_ROOT / "images/test/pina_colada.png", 'rb').read()
+        self.product = baker.make(Product,
+                                  image=SimpleUploadedFile.from_dict(
+                                      {'filename': 'product_pic.png', 'content': self.image,
+                                       'content_tye': 'image/png'}),
+                                  name='Pina Colda', is_active=True)
+        self.product1 = baker.make(Product,
+                                   image=SimpleUploadedFile.from_dict(
+                                       {'filename': 'product_pic1.png', 'content': self.image,
+                                        'content_tye': 'image/png'}),
+                                   name='test', is_active=False)
         self.parent_category = Category.objects.create(name='Food')
         self.category = Category.objects.create(name='fastfood', parent_category=self.parent_category)
-        self.product1 = Product.objects.create(name='pizza', price=10, category=self.category)
-        self.product2 = Product.objects.create(name='rice', price=20, category=self.category)
-        self.orders = {str(self.product1.id): '2', str(self.product2.id): '3'}
         self.client = Client()
 
-    # def test_returns_correct_order_items_and_updated_orders(self):
-    #     order_items, updated_orders = just_available_product(self.client, self.orders)
-    #     self.assertEqual(len(order_items), 1)
-    #     self.assertEqual(order_items[0][0], self.product1)
-    #     self.assertEqual(order_items[0][1], 2)
-    #     self.assertEqual(order_items[0][2], 20)
-    #     self.assertEqual(updated_orders, {str(self.product1.id): '2'})
+    def tearDown(self):
+        Product.objects.all().delete()
 
-    # def test_does_not_return_unavailable_products(self):
-    #     order_items, updated_orders = just_available_product(self.client.request(), self.orders)
-    #     self.assertNotIn(self.product2, [item[0] for item in order_items])
-    #     self.assertNotIn(str(self.product2.id), updated_orders.keys())
+        image_path = os.path.join(settings.MEDIA_ROOT / "images/product", "product_pic.png")
+        if os.path.exists(image_path):
+            os.remove(image_path)
+        image_path1 = os.path.join(settings.MEDIA_ROOT / "images/product", "product_pic1.png")
+        if os.path.exists(image_path1):
+            os.remove(image_path1)
 
-    # # def test_shows_error_message_for_unavailable_products(self):
-    # #     messages = get_messages(self.client)
-    # #     order_items, updated_orders = just_available_product(self.client, self.orders)
-    # #     self.assertIn('Product 2 is not available!!', [str(m) for m in messages])
+    def test_not_exist_products(self):
+        order = {"100000000": {"price": float(self.product.price), "quantity": 10,
+                               "total_price": float(self.product.price) * 10}}
+        self.session = self.client.session
+        self.session['pre_order'] = {'phone': '09152593858', 'table_number': self.table.Table_number}
+        self.session.save()
+        response = self.client.get(reverse("orders:create_order"))
+
+        request = response.wsgi_request
+        order_items, updated_orders = just_available_product(request, order)
+        self.assertEqual(len(order_items), 0)
+        self.assertEqual(updated_orders, {})
+
+    def test_unavailable_products(self):
+        order = {self.product1.id: {"price": float(self.product1.price), "quantity": 10,
+                                    "total_price": float(self.product1.price) * 10}}
+        self.session = self.client.session
+        self.session['pre_order'] = {'phone': '09152593858', 'table_number': self.table1.Table_number}
+        self.session.save()
+        response = self.client.get(reverse("orders:create_order"))
+
+        request = response.wsgi_request
+        order_items, updated_orders = just_available_product(request, order)
+        self.assertEqual(len(order_items), 0)
+        self.assertEqual(updated_orders, {})
