@@ -96,7 +96,7 @@ class Verify(View):
 class Dashboard(LoginRequiredMixin, View):
 
     def get(self, request):
-        total_sale = Order.objects.aggregate(
+        total_sale = Order.objects.filter(payment="P").aggregate(
             total_sale=Sum(
                 F('order_detail__quantity') *
                 F('order_detail__price')
