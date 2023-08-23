@@ -16,6 +16,8 @@
 
         .product-text {
             font-size: min(1.1rem, 1.8vw) !important;
+            font-family: cursive;
+            display: table-caption;
             margin: 5px;
             height: auto;
             width: auto;
@@ -24,6 +26,10 @@
         .price.span {
             font-size: min(0.856rem, 1.8vw) !important;
             text-align: center;
+        }
+
+        td.price{
+            white-space: nowrap;
         }
 
         td.cakes img {
@@ -36,11 +42,17 @@
             {% if request.COOKIES.number_of_order_items == 0 %}
                 pointer-events: none;
             {% endif %}
+            color:black !important;
+            background-color: rgb(139, 215, 62);
+        }
+
+        #back-to-shop{
+            text-decoration: none;
         }
         ::-webkit-input-placeholder{
-    font-size: 0.8rem !important;
+            font-size: 0.8rem !important;
 
-}
+        }
      
         label {
         text-align: left;
@@ -86,34 +98,34 @@
                             <div class="table">
                                 <table>
                                     <tbody class="col-sm-12">
-                                    {% for product , quantity , total in order_items %}
+                                    {% for product_id, product_name, quantity , price,  total_price, image_url, detail_url in order_items %}
                                         <form id="cart-item-form-{{forloop.counter}}">
                                             <tr id="box-{{forloop.counter}}" class="cake-top row justify-content-between d-flex align-items-center">
                                                 <td class="cakes col-sm-3">
-                                                    <div class="product-img  ">
-                                                        <img class="p-img" src="{{ product.image.url }}">
+                                                    <div class="product-img">
+                                                        <img class="p-img" src="{{ image_url }}">
                                                     </div>
                                                 </td>
                                                 <td class="product-text col-sm-2">
                                                     <div class="product-text">
-                                                        <p class="my-5" >{{ product.name }}</p>
+                                                        <p class="my-5" >{{ product_name }}</p>
                                                     </div>
                                                 </td>
                                                 <td class="quantity col-sm-3 col-md-2">
                                                     <div class="product-right">
-                                                        <input type="number" class="form-control input-small" min="1" type="number"
+                                                        <input type="number" class="form-control input-small" min="1"
                                                                id="quantity" name="quantity" value="{{ quantity }}">
                                                     </div>
                                                 </td>
                                                 <td class="price i-p col-md-1 col-sm-2 px-sm-2 py-2">
-                                                    <span  value="{{ product.price }}" class="item-price">$ {{ product.price }}</span>
+                                                    <span  value="{{ price }}" class="item-price">$ {{ price }}</span>
                                                 </td>
                                                 <td class="price itp col-md-1 col-sm-2 px-sm-2 py-2">
-                                                    <span  class="itp" id="total-count-{{forloop.counter}}">$ {{ total }}</span>
+                                                    <span  class="itp" id="total-count-{{forloop.counter}}">$ {{ total_price }}</span>
                                                 </td>
                                                 <td class="top-remove col-sm-12 col-md-2 text-center mx-1 ">
                                                     <div class="row px-1 justify-content-around">
-                                                        <input name="product" value="{{ product.id }}" type="hidden">
+                                                        <input name="product" value="{{ product_id }}" type="hidden">
                                                         <button name="update" value="True" type="button" onclick="return orderUpdate(this.form,  'box-{{forloop.counter}}')"
                                                             form="cart-item-form-{{forloop.counter}}"   
                                                             class="col-sm-4 btn btn-f btn-outline-warning m-auto  d-flex justify-content-center">
@@ -144,10 +156,10 @@
                                                     </div>
                                                 </div>
                                                 <div class="col-sm-5">
-                                                    <h1 class="mx-1">Total ${{ order_total_price }}</h1>
+                                                    <h1 class="mx-1">Total $<span id="order-tp">{{ order_total_price }}</span></h1>
                                                     <div class="row justify-content-around">
-                                                        <button type="button" class="shop btn btn-dark col-sm-4 p-1 mx-2" ><a style="text-decoration: none;" href="{% url 'menu:menu' %}">Back to Shop</a></button>
-                                                        <button class="col-sm-5 check p-1 mx-1 heart2 btn btn-success" id="checkout1" style="color:black !important; background-color: rgb(139, 215, 62);" type="submit" form="table-reserve-form">
+                                                        <button type="button" class="shop btn btn-dark col-sm-4 p-1 mx-2" ><a id="back-to-shop"  href="{% url 'menu:menu' %}">Back to Shop</a></button>
+                                                        <button class="col-sm-5 check p-1 mx-1 heart2 btn btn-success" id="checkout1" onclick="updateCookie()"  type="submit" form="table-reserve-form">
                                                              Continue to Checkout
                                                         </button>
                                                     </div>
@@ -169,80 +181,200 @@
 {% endblock %}
 
 {% block footerlink %}
-
+<script>
+    function setOrdersTotalPrice(){
+        let orders = getLocalStorageObject('orders');
+        let total_price = 0;
+        for (product in orders){
+            total_price += (+orders[product]['quantity'] * +orders[product]['price']);
+        }
+        document.getElementById('order-tp').innerText = total_price
+    }
+    
+</script>
+<script>
+    setOrdersTotalPrice();
+    function setAttributes(el, attrs) {
+        for(var key in attrs) {
+            el.setAttribute(key, attrs[key]);
+        }
+    }
+</script>
 <script>
     function orderUpdate(formElement, box_id){
-        event.preventDefault();
+        // event.preventDefault();
         let formData = new FormData(formElement);
         let product = formData.get('product');
-        let quantity = formData.get('quantity');
-        let orders = getCookieObject('orders');
+        let quantity = +formData.get('quantity');
+        // let orders = getCookieObject('orders');
+        let orders = getLocalStorageObject('orders');
         let itemBox = document.getElementById(box_id);
         let price = itemBox.querySelector('td.i-p span.item-price').innerText.slice(1);
-        itemBox.querySelector('td.itp span.itp').innerText = '$' + ' ' + (price * +quantity);
-        orders[product] = +quantity;
-        setCookie('orders', JSON.stringify(orders), 60);
+        itemBox.querySelector('td.itp span.itp').innerText = '$' + ' ' + (price * quantity);
+        orders[product]['quantity'] = quantity;
+        // setCookie('orders', JSON.stringify(orders), 60);
+        localStorage.setItem('orders', JSON.stringify(orders));
         setOrderItemsNumber(orders);
+        setOrdersTotalPrice();
         return false;
     }
     function deleteOrderItem(formElement, box_id){
-        event.preventDefault();
+        // event.preventDefault();
         let formData = new FormData(formElement);
         let product = formData.get('product');
-        let orders = getCookieObject('orders');
+        // let orders = getCookieObject('orders');
+        let orders = getLocalStorageObject('orders');
         delete orders[product];
-        setCookie('orders', JSON.stringify(orders), 60);
+        // setCookie('orders', JSON.stringify(orders), 60);
+        localStorage.setItem('orders', JSON.stringify(orders));
         setOrderItemsNumber(orders);
         document.getElementById(box_id).style.setProperty("display", "none", "important");
+        setOrdersTotalPrice();
         return false;
     }
-    </script>
-    <script>
-        
-        function myFunction(phone, tablet) {
-            let priceEl = document.querySelectorAll('td.price, button.btn-f');
-            let productTextEl = document.querySelectorAll('td.product-text p');
-            let quantityEl = document.querySelectorAll('td.quantity');
-            let qElInput = document.querySelectorAll('td.quantity input');
-            let btnF = document.querySelectorAll('button.btn-f');
-            let trEl = document.querySelectorAll('tr, td.top-remove div');
-          if (phone.matches) { // If media query matches
+</script>
 
-            priceEl.forEach((Item) => {
-                             Item.style.setProperty("width", "5em", "important");
-            });
-            btnF.forEach((Item) => {
-                             Item.style.setProperty("width", "5em", "important")
-                             Item.classList.add('mx-1');
-            });
-            productTextEl.forEach((Item) => {
-                             Item.classList.add('text-center');
-                             Item.classList.remove('my-5');
-            });
-            quantityEl.forEach((Item) => {
-                             Item.style.setProperty("width", "14em", "important");
-            });
-            qElInput.forEach((Item) => {
-                             Item.style.setProperty("text-align", "center", "important");
-            });
-            trEl.forEach((Item) => {
-                             Item.classList.remove('justify-content-between');
-                             Item.classList.remove('justify-content-around');
-                             Item.classList.add('justify-content-center');
-            });
-            // alert('phone-size')
-          }
-           else if (tablet.matches) {
-            // alert('tablet-size')
+<script>
+    function loadOrdersTable(orders){
+        const tableBody = document.querySelector('table tbody');
+        let counter = 1;
+        for (product in orders){
+            let form = document.createElement("form");
+            let tr = document.createElement('tr');
+            let tdImage = document.createElement('td');
+            let tdText = document.createElement('td');
+            let tdQuantity = document.createElement('td');
+            let tdPrice = document.createElement('td');
+            let tdToalPrice = document.createElement('td');
+            let tdButtons = document.createElement('td');
+            let divText = document.createElement('div');
+            let divButton = document.createElement('div');
+            let image = document.createElement('img');
+            let spanPrice = document.createElement('span');
+            let spanTotalPrice = document.createElement('span');
+            let pText = document.createElement('p');
+            let inputQuantity = document.createElement('input');
+            let inputProductFormHidden = document.createElement('input');
+            let buttonUpdate = document.createElement('button');
+            let buttonRemove = document.createElement('button');
+            let iUpdateIcon = document.createElement('i');
+            let iRemoveIcon = document.createElement('i');
+            
+            tableBody.appendChild(form);
+            tableBody.appendChild(tr);
+            tr.appendChild(tdImage);
+            tr.appendChild(tdText);
+            tr.appendChild(tdQuantity);
+            tr.appendChild(tdPrice);
+            tr.appendChild(tdToalPrice); tr.appendChild(tdButtons);
+            tdImage.appendChild(image);
+            tdText.appendChild(divText); divText.appendChild(pText);
+            tdQuantity.appendChild(inputQuantity);
+            tdPrice.appendChild(spanPrice);
+            tdToalPrice.appendChild(spanTotalPrice);
+            tdButtons.appendChild(divButton);
+            divButton.appendChild(inputProductFormHidden);
+            divButton.appendChild(buttonUpdate); buttonUpdate.appendChild(iUpdateIcon);
+            divButton.appendChild(buttonRemove); buttonRemove.appendChild(iRemoveIcon)
+
+            
+            form.id="cart-item-form-" + counter;
+            
+            tr.id = "box-" + counter;
+            tr.classList.add('cake-top', 'row', 'justify-content-between', 'd-flex', 'align-items-center');
+            
+            tdImage.classList.add('cakes', 'col-sm-3');
+            tdText.classList.add("product-text", "col-sm-2");
+            tdQuantity.classList.add("quantity", "col-sm-3", "col-md-2");
+            tdPrice.classList.add("price", "i-p", "col-md-1", "col-sm-2", "px-sm-2", "py-2");
+            tdToalPrice.classList.add("price", "itp", "col-md-1", "col-sm-2", "px-sm-2", "py-2");
+            tdButtons.classList.add("top-remove", "col-sm-12", "col-md-2", "text-center", "mx-1");
+
+            divText.classList.add("product-text");
+            divButton.classList.add("row", "px-1", "justify-content-around");
+
+            image.className = "p-img"; image.src = orders[product]['image_url'];
+
+            spanPrice.classList.add('item-price'); spanPrice.value = orders[product]['price'];
+            spanPrice.innerText ="$ " + orders[product]['price'];
+            spanTotalPrice.classList.add('itp');
+            spanTotalPrice.innerText ="$ " + orders[product]['total_price'];
+            spanTotalPrice.id = "total-count-" + counter;
+
+            inputQuantity.classList.add("form-control", "input-small");
+            setAttributes(inputQuantity, {"type": "number", "id": "quantity", "form": form.id, "name": "quantity", "value": orders[product]['quantity'], "min": "1"});
+            setAttributes(inputProductFormHidden, {'type': 'hidden', 'name': 'product', 'form': form.id, 'value': product});
+
+            pText.className = "my-5"; pText.innerText = orders[product]['name'];
+
+            buttonUpdate.classList.add("col-sm-4", "btn", "btn-f", "btn-outline-warning", "m-auto",  "d-flex", "justify-content-center");
+            setAttributes(buttonUpdate, {'name': 'update', 'value': 'True', 'type': 'button', 'form': form.id})
+            buttonUpdate.addEventListener('click',function(){orderUpdate(this.form, tr.id);} );
+            buttonRemove.classList.add("col-sm-4", "btn", "btn-f", "btn-outline-danger", "mx-1",  "d-flex", "justify-content-center");
+            setAttributes(buttonRemove, {'name': 'remove', 'value': 'True', 'type': 'button', 'form': form.id})
+            buttonRemove.addEventListener('click', function(){deleteOrderItem(this.form, tr.id);} );
+            
+            iUpdateIcon.classList.add('bi', 'bi-arrow-repeat');
+            
+            iRemoveIcon.classList.add('bi', 'bi-trash');
+            counter += 1;
+            
         }
-          else {
-            // alert('pc-size')
-          }
+    }
+</script>
+<script>
+    updateCookie();
+    setOrdersTotalPrice();
+    let orders = getLocalStorageObject('orders');
+    loadOrdersTable(orders);
+    // window.onbeforeunload = function(){
+    //     updateCookie();
+    // }
+</script>
+<script>     
+    function myFunction(phone, tablet) {
+        let priceEl = document.querySelectorAll('td.price, button.btn-f');
+        let productTextEl = document.querySelectorAll('td.product-text p');
+        let quantityEl = document.querySelectorAll('td.quantity');
+        let qElInput = document.querySelectorAll('td.quantity input');
+        let btnF = document.querySelectorAll('button.btn-f');
+        let trEl = document.querySelectorAll('tr, td.top-remove div');
+        if (phone.matches) { // If media query matches
+
+        priceEl.forEach((Item) => {
+                            Item.style.setProperty("width", "5em", "important");
+        });
+        btnF.forEach((Item) => {
+                            Item.style.setProperty("width", "5em", "important")
+                            Item.classList.add('mx-1');
+        });
+        productTextEl.forEach((Item) => {
+                            Item.classList.add('text-center');
+                            Item.classList.remove('my-5');
+        });
+        quantityEl.forEach((Item) => {
+                            Item.style.setProperty("width", "14em", "important");
+        });
+        qElInput.forEach((Item) => {
+                            Item.style.setProperty("text-align", "center", "important");
+        });
+        trEl.forEach((Item) => {
+                            Item.classList.remove('justify-content-between');
+                            Item.classList.remove('justify-content-around');
+                            Item.classList.add('justify-content-center');
+        });
+        // alert('phone-size')
         }
-        
-        var phone = window.matchMedia("(max-width: 416px)");
-        var tablet = window.matchMedia("(max-width: 416px)");
-        myFunction(phone, tablet) // Call listener function at run time
-        x.addListener(myFunction) // Attach listener function on state changes
-        </script>
-  {% endblock %}
+        else if (tablet.matches) {
+        // alert('tablet-size')
+    }
+        else {
+        // alert('pc-size')
+        }
+    }
+    
+    var phone = window.matchMedia("(max-width: 416px)");
+    var tablet = window.matchMedia("(max-width: 416px)");
+    myFunction(phone, tablet) // Call listener function at run time
+</script>
+{% endblock %}

@@ -155,7 +155,8 @@
                                             <td>{{ order.get_payment_display }}</td>
                                             <td>
                                                 {% if order.get_status_display == 'Approved' and order.get_payment_display == 'Unpaid' %}
-                                                    <a href="?paid={{ order.id }}&{% if page %}page={{ page }}&{% endif %}{% if filter1 %}filter1={{ filter1 }}&{% endif %}{% if first_date %}first_date={{ first_date }}&{% endif %}{% if second_date %}second_date={{ second_date }}&{% endif %}{% if search %}search=search&{% endif %}{% if flexRadioDefault %}flexRadioDefault={{ flexRadioDefault }}&{% endif %}{% if filter %}filter=filter&{% endif %}{% if sort %}sort={{ sort }}&{% endif %}orderp={% if orderp == 'asc' %} {{ 'desc' }} {% elif orderp == 'desc' %}{{ 'asc' }}{% endif %}">
+                                                    <a href="?paid={{ order.id }}&{% if page %}page={{ page }}&{% endif %}{% if filter1 %}filter1={{ filter1 }}&{% endif %}{% if first_date %}first_date={{ first_date }}&{% endif %}{% if second_date %}second_date={{ second_date }}&{% endif %}{% if search %}search=search&{% endif %}{% if flexRadioDefault %}flexRadioDefault={{ flexRadioDefault }}&{% endif %}{% if filter %}filter=filter&{% endif %}{% if sort %}sort={{ sort }}&{% endif %}orderp={% if orderp == 'asc' %} {{ 'desc' }} {% elif orderp == 'desc' %}{{ 'asc' }}{% endif %}"
+                                                    {% if not perms.orders.change_payment_status %}disabled{% endif %}>
                                                         <button class="btn btn-primary"><i
                                                                 class="bi bi-credit-card"></i></button>
                                                     </a>

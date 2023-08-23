@@ -17,17 +17,11 @@ import json
 class CartView(View):
 
     def get(self, request):
-        orders = orders_from_cookie(request)
         form = OrderForm()
-        order_items, updated_orders = just_available_product(request, orders)
         if user_phone := request.session.get('user_phone'):
             form = OrderForm(initial={'phone_number': user_phone})
-        order_total_price = sum(map(lambda item: int(item[2]), order_items))
-        context = {'order_items': order_items,
-                   'order_total_price': order_total_price,
-                   'form': form}
+        context = {'form': form}
         response = render(request, 'orders/cart.html', context=context)
-        response.set_cookie('orders', updated_orders )
         return response
 
     def post(self, request):
@@ -46,20 +40,22 @@ class CartView(View):
         else:
             messages.error(request, 'Your phone number is not valid!!')
             return redirect('orders:cart')
-
+        
 
 def create_order(request):
     pre_order = request.session['pre_order']
     if pre_order['table_number']:
-        table = Table.objects.get(id=pre_order['table_number'])
+        table = Table.objects.get(Table_number=pre_order['table_number'])
     else:
         table = None
     customer_order = Order.objects.create(phone_number=pre_order['phone'],
                                           table_number=table)
     orders = orders_from_cookie(request)
-    for product_id, quantity in orders.items():
-        product = Product.objects.get(id=product_id)
-        Order_detail.objects.create(order=customer_order, product=product, quantity=int(quantity),
+    order_items, updated_orders = just_available_product(request, orders)
+    if orders.items() != updated_orders.items():
+        return redirect('orders:cart')
+    for product, quantity in order_items:
+        Order_detail.objects.create(order=customer_order, product=product, quantity=quantity,
                                     price=product.price)
     customer_order.save()
     messages.success(request, "Order has been created successfully.")

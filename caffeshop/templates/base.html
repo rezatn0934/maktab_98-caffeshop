@@ -27,7 +27,7 @@
 
     <!-- bootstrap 5.3
         ================================================== -->
-    <script src="https://https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <!-- <script src="https://https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script> -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
@@ -67,12 +67,12 @@
     <nav id="menu" class="navbar  navbar-default fixed-top navbar-expand-lg mx-0 px-0">
 
         <!-- Brand and toggle get grouped for better mobile display -->
-        <div class="container-fluid">
+        <div class="d-flex flex-wrap align-items-center w-100 px-4">
             <!-- <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#bs-example-navbar-collapse-1"> <span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </button> -->
             {% if info.logo %}
-                <a class="navbar-brand" href="{% url 'home' %}">{{ info.logo_preview }}</a>
+                <a class=" me-auto  navbar-brand" href="{% url 'home' %}">{{ info.logo_preview }}</a>
             {% else %}
-                <a class="navbar-brand page-scroll" href="{% url 'home' %}">Touché</a>
+                <a class=" me-auto  navbar-brand page-scroll" href="{% url 'home' %}">Touché</a>
             {% endif %}
 
             <button class="navbar-toggler" style="color: rgba(255, 255, 255, 0); background-color: rgba(141, 254, 43, 0.507);" type="button"
@@ -136,16 +136,16 @@
                                 href="{% url 'home' %}#call-reservation">Contact</a></li>
                 </ul>
             </div>
-            <form class="float-end" style="min-width: 138px; margin-left: 20px;">
-                <a role="button" href="{% url 'orders:cart' %}" class="btn btn-customm btn-cart mx-sm-3  my-2"
-                   type="submit">
+            <div class="mr-5" style="width: fit-content; margin-left: 20px;">
+                <a role="button" href="{% url 'orders:cart' %}"  onclick="updateCookie()" class="btn btn-custom btn-cart mt-0"
+                   type="button">
                     <i class="bi-cart-fill me-1"></i>
-                    Cart
+
                     <span id="cart-nav-btn-num" class="badge text-white ms-1 rounded-pill"
                           style="background-color: rgba(234, 15, 179, 0.196);">{% block order_number %}
                         {{ request.COOKIES.number_of_order_items }}  {% endblock %}</span>
                 </a>
-            </form>
+            </div>
             {% block cartbox %}{% endblock %}
 
             <!-- /.navbar-collapse -->
@@ -258,21 +258,44 @@
         let expires = "expires="+ d.toUTCString();
         document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
     }
-    function eraseCookie(name) {   
-        document.cookie = name+'=; Max-Age=-99999999;';  
+    function eraseCookie(name) {
+        document.cookie = name+'=; Max-Age=-99999999;';
     }
 
     function setOrderItemsNumber(orders){ // gets order object as argument and sets number of order items in cookie
         let number_of_order_items = 0;    // also it changes the number in cart button
-        let ordersQuantities = Object.values(orders);
-        for (const quantity of ordersQuantities){
-          number_of_order_items += +quantity;
+        // let ordersQuantities = Object.values(orders);
+        for (product in orders){
+          number_of_order_items += +orders[product]['quantity'];
         }
-        setCookie('number_of_order_items', number_of_order_items, 10);
-        document.getElementById("cart-nav-btn-num").innerText = number_of_order_items
+        // setCookie('number_of_order_items', number_of_order_items, 10);
+        localStorage.setItem('number_of_order_items', number_of_order_items);
+        let cartButtonNum = document.getElementById("cart-nav-btn-num")
+        cartButtonNum.innerText = number_of_order_items;
+        if (number_of_order_items == 0){
+            cartButtonNum.innerText = '';
+            cartButtonNum.backgroundColor = 'inherit';
+        }
+        else{
+            cartButtonNum.backgroundColor = 'rgba(234, 15, 179, 0.196)';
+        }
 
     }
 
+    function getLocalStorageObject(item_name){ // it gets the object name that is stored in cookie and retrive it
+        let stringitem = localStorage.getItem(item_name);
+        if (!stringitem){ stringitem = ''; }
+        stringitem = stringitem.replaceAll('\\054', ',');
+        stringitem = stringitem.replaceAll("\'", "\"");
+        if (stringitem.charAt(0) == "\"" & stringitem.charAt(1) == "{" ){
+            stringitem = stringitem.slice(1, -1);
+        }
+        if (!stringitem){
+            stringitem = JSON.stringify({})
+        }
+        let items = JSON.parse(stringitem);
+        return items;
+    }
     function getCookieObject(item_name){ // it gets the object name that is stored in cookie and retrive it
         let stringitem = getCookie(item_name);
         stringitem = stringitem.replaceAll('\\054', ',');
@@ -287,6 +310,23 @@
         return items;
     }
 
+</script>
+
+<script>
+    function updateCookie(){
+        let ordersFromLocalStorage = localStorage.getItem('orders');
+        setCookie('orders', ordersFromLocalStorage, 60);
+        return true;
+
+    }
+</script>
+
+
+<script>
+    window.onload = function(){
+        let orders = getLocalStorageObject('orders');
+        setOrderItemsNumber(orders);
+    }
 </script>
 {% block footerlink %} {% endblock %}
 </body>

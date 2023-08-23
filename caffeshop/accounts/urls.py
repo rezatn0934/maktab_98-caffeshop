@@ -1,4 +1,6 @@
+from django.contrib.auth.decorators import login_required
 from django.urls import path, include
+
 from . import views
 
 urlpatterns = [
@@ -25,8 +27,9 @@ urlpatterns = [
 
 
     path('orders/', views.Orders.as_view(), name='order_list'),
-    path('orders/<int:pk>', views.OrderDetailView.as_view(), name='order_detail'),
-    path('create_order_item/<int:pk>', views.CreateOrderItem.as_view(), name='create_order_detail'),
+    path('orders/<int:pk>', login_required(views.OrderDetailView.as_view()), name='order_detail'),
+    path('update_order_item/<int:pk>', login_required(views.UpdateOrderItem.as_view()), name='update_order_detail'),
+    path('create_order_item/', login_required(views.CreateOrderItem.as_view()), name='create_order_detail'),
     path('delete_order_item/<int:pk>', views.delete_order_detail, name='delete_order_item'),
     path('confirm_order/<int:pk>', views.confirm_order, name='confirm_order'),
     path('cancel_order/<int:pk>', views.cancel_order, name='cancel_order'),

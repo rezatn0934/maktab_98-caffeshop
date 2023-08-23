@@ -1,16 +1,21 @@
-from django.contrib import messages
-from django.contrib.auth import login, logout
-from django.contrib.auth.decorators import login_required
-from django.core.paginator import Paginator
-from django.db.models import Q, F, Sum, Count, DateField, DateTimeField, CharField
 from django.db.models.functions import TruncMonth, TruncDay, TruncHour, ExtractHour, Substr, Cast
+from django.db.models import Q, F, Sum, Count, DateField, DateTimeField, CharField
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth import login, logout
+from django.views.generic.edit import UpdateView, CreateView
+from django.views.generic.detail import DetailView
+from django.urls import reverse_lazy
+from django.core.paginator import Paginator
+from django.contrib import messages
 
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.auth.decorators import permission_required
 from django.shortcuts import render, redirect
-from django.utils.decorators import method_decorator
 from django.utils import timezone
 from django.views import View
 
 from .authentication import PhoneAuthBackend
+from .mixins import chart_access_check, FilterMixin
 from .form import StaffLoginForm, VerifyCodeForm
 from orders.models import Order, Order_detail
 from utils import send_otp_code, check_is_authenticated
@@ -42,7 +47,7 @@ class StaffLogin(View):
         else:
             message = "Wrong input, Phone number Should Start 11 digits Like 09*********"
 
-        context = {"message": message, "form": self.form()}
+        context = {"message": message, "form": form}
         return render(request, self.html_temp, context=context)
 
 
@@ -77,9 +82,10 @@ class Verify(View):
                 messages.success(request, 'You have been logged in successfully')
                 return redirect("dashboard")
             except Exception as e:
-                message = e
-                if message == "Login First":
-                    return redirect("login")
+                message = str(e)
+                if message == "Login First" or message == "Phone Number Does Not Exist":
+                    context = {"message": message, "form": StaffLoginForm}
+                    return render(request, "login.html", context=context)
         else:
             message = "Wrong Input"
 
@@ -87,11 +93,10 @@ class Verify(View):
         return render(request, self.html_temp, context=context)
 
 
-class Dashboard(View):
+class Dashboard(LoginRequiredMixin, View):
 
-    @method_decorator(login_required)
     def get(self, request):
-        total_sale = Order.objects.aggregate(
+        total_sale = Order.objects.filter(payment="P").aggregate(
             total_sale=Sum(
                 F('order_detail__quantity') *
                 F('order_detail__price')
@@ -103,104 +108,70 @@ class Dashboard(View):
         return render(request, "dashboard.html", {"total_sale": total_sale, 'query_set': query_set})
 
 
-class Orders(View):
+class Orders(LoginRequiredMixin, PermissionRequiredMixin, FilterMixin, View):
+    permission_required = ['orders.view_order']
 
-    @method_decorator(login_required)
     def get(self, request):
-        sort = request.GET.get('sort', 'title')
-        orderp = request.GET.get('orderp')
-        if sort == 'id' or sort == 'phone_number' or sort == 'order_date' or \
-                sort == 'table_number' or sort == 'status' or sort == 'payment':
-            sort_param = sort if orderp == 'asc' else '-' + sort
-            orders = Order.objects.all().order_by(sort_param)
-        else:
-            orders = Order.objects.all().order_by('-order_date')
-        context = {
-            'orderp': 'desc' if orderp == 'asc' else 'asc',
-            'sort': sort,
-        }
+        context, orders = self.check_sort(request)
+        context, orders = self.check_search(request=request, context=context, orders=orders)
+        context, orders = self.check_filter(request=request, context=context, orders=orders)
 
-        if 'search' in request.GET:
-            filter_item = request.GET.get('filter1')
-            field = request.GET.get('flexRadioDefault')
+        self.check_paid(request=request)
 
-            if field == 'table_number':
-                if filter_item:
-                    orders = orders.filter(Q(table_number__Table_number__icontains=filter_item) |
-                                           Q(table_number__name__icontains=filter_item))
-                else:
-                    orders = orders.filter(table_number=None)
-                context['flexRadioDefault'] = field
-                context['filter1'] = filter_item
-                context['search'] = 'search'
-            elif field == 'phone_number':
-                orders = orders.filter(phone_number__icontains=filter_item)
-                context['flexRadioDefault'] = field
-                context['filter1'] = filter_item
-                context['search'] = 'search'
-
-        if 'filter' in request.GET:
-            first_date = request.GET.get('first_date')
-            if first_date:
-                second_date = request.GET.get('second_date')
-                if not second_date:
-                    second_date = (datetime.datetime.now() + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
-                orders = orders.filter(order_date__range=(first_date, second_date))
-                context['filter'] = 'filter'
-                context['first_date'] = first_date
-                context['second_date'] = second_date
-
-        if 'paid' in request.GET:
-            paid_order = Order.objects.filter(id=request.GET['paid'])
-
-            if paid_order:
-                order = paid_order.get(id=request.GET['paid'])
-                order.payment = 'P'
-                order.save()
-        paginator = Paginator(orders, 5)
+        paginator = Paginator(orders, 15)
         page_number = request.GET.get('page', 1)
         orders = paginator.get_page(page_number)
         context['orders'] = orders
         context['page'] = page_number
         return render(request, 'orders_list.html', context)
 
+class OrderDetailView(LoginRequiredMixin, DetailView):
+    model = Order
+    template_name = 'order_detail.html'
+    context_object_name= "order"
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['order_details'] = Order_detail.objects.filter(order=self.kwargs['pk'])
+        context['products'] = Product.objects.filter(is_active=True)
+        return context
 
-class OrderDetailView(View):
 
-    @method_decorator(login_required)
-    def get(self, request, pk):
-        order = Order.objects.filter(id=pk)
-        products = Product.objects.filter(is_active=True)
-        if order:
-            order = order.get(id=pk)
-            order_details = Order_detail.objects.filter(order=pk)
-            context = {
-                'order': order,
-                'order_details': order_details,
-                'products': products
-            }
-            return render(request, 'order_detail.html', context)
-        else:
-            messages.error(request, f'Order {pk} not found')
-            return redirect('order_list')
+class UpdateOrderItem(PermissionRequiredMixin, UpdateView, DetailView):
+    permission_required = ['orders.add_order_detail']
+    model = Order_detail
+    fields = ['product', 'quantity']
 
-    @method_decorator(login_required)
-    def post(self, request, pk):
-        order_detail = Order_detail.objects.get(id=pk)
-        if request.POST.get('s_product') and request.POST.get('quantity'):
-            product = Product.objects.get(id=request.POST.get('s_product'))
-            order_detail.product = product
-            order_detail.price = product.price
-            order_detail.quantity = request.POST.get('quantity')
-            order_detail.save()
-            messages.success(request, 'Order item has been successfully updated.')
-            return redirect('order_detail', order_detail.order.id)
-        else:
-            messages.error(request, 'Form input is not valid')
-            return redirect('order_detail', order_detail.order.id)
+    def form_valid(self, form):
+        messages.success(self.request, 'Order item has been successfully updated.')
+        return super().form_valid(form)
 
+    def form_invalid(self, form):
+        messages.error(self.request, 'Form input is not valid')
+        return redirect(reverse_lazy('order_detail', args=[self.get_object().order.id]))
+
+    def get_success_url(self):
+        return reverse_lazy('order_detail', args=[self.get_object().order.id])
+      
+      
+class CreateOrderItem(PermissionRequiredMixin, CreateView):
+    permission_required = ['orders.add_order_detail']
+    model = Order_detail
+    fields = ['product', 'quantity', 'order']
+    template_name = 'order_detail.html'
+
+    def form_valid(self, form):
+        order = form.cleaned_data['order'].id
+        messages.success(self.request, f"Order item has been successfully added to Order {order}")
+        self.success_url = reverse_lazy('order_detail', args=[order])
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.error(self.request, 'Form input is not valid')   
+        return super().form_invalid(form)
 
 @login_required
+@permission_required(['orders.change_order_status'])
 def confirm_order(request, pk):
     if request.method == 'GET':
         order = Order.objects.filter(id=pk)
@@ -213,10 +184,11 @@ def confirm_order(request, pk):
             return redirect('order_list')
         else:
             messages.error(request, f'Order {pk} not found')
-            return redirect('order_detail', pk)
+            return redirect('order_list')
 
 
 @login_required
+@permission_required('orders.change_order_status')
 def cancel_order(request, pk):
     if request.method == 'GET':
         order = Order.objects.filter(id=pk)
@@ -229,10 +201,11 @@ def cancel_order(request, pk):
             return redirect('order_list')
         else:
             messages.error(request, f'Order {pk} not found')
-            return redirect('order_detail', pk)
+            return redirect('order_list')
 
 
 @login_required
+@permission_required(['orders.change_order_detail'])
 def delete_order_detail(request, pk):
     if request.method == 'GET':
         order_detail = Order_detail.objects.filter(id=pk)
@@ -240,30 +213,15 @@ def delete_order_detail(request, pk):
             order_detail = order_detail.get(id=pk)
             order = order_detail.order
             order_detail.delete()
-            messages.warning(request, f'Order item {pk} has been canceled!')
+            messages.warning(request, f'Order item {pk} has been deleted!')
             return redirect('order_detail', order.id)
         else:
             messages.error(request, f'Order items {pk} not found')
             return redirect('order_list')
 
 
-class CreateOrderItem(View):
-    @method_decorator(login_required)
-    def post(self, request, pk):
-        if request.POST.get('s_product') and request.POST.get('quantity'):
-            product = Product.objects.get(id=request.POST.get('s_product'))
-            quantity = request.POST.get('quantity')
-            order = Order.objects.get(id=pk)
-            order_detail = Order_detail.objects.create(order=order, product=product, quantity=quantity,
-                                                       price=product.price)
-            messages.success(request, f'Order item {order_detail.id} has benn successfully added to Order {pk}')
-        else:
-            messages.error(request, "You didn't provide valid inputs")
-
-        return redirect('order_detail', pk)
-
-
 @login_required
+@user_passes_test(chart_access_check)
 def most_popular(request):
     if 'filter' in request.GET:
         first_date = request.GET.get('first_date')
@@ -287,6 +245,7 @@ def most_popular(request):
 
 
 @login_required
+@user_passes_test(chart_access_check)
 def peak_business_hour(request):
     lst2 = None
     first_date2 = None
@@ -322,6 +281,7 @@ def peak_business_hour(request):
 
 
 @login_required
+@user_passes_test(chart_access_check)
 def top_selling(request):
     if 'filter' in request.GET:
         first_date = request.GET.get('first_date')
@@ -342,6 +302,7 @@ def top_selling(request):
 
 
 @login_required
+@user_passes_test(chart_access_check)
 def hourly_sales(request):
     if 'filter' in request.GET:
         first_date = request.GET.get('first_date')
@@ -361,6 +322,7 @@ def hourly_sales(request):
 
 
 @login_required
+@user_passes_test(chart_access_check)
 def daily_sales(request):
     if 'filter' in request.GET:
         first_date = request.GET.get('first_date')
@@ -380,6 +342,7 @@ def daily_sales(request):
 
 
 @login_required
+@user_passes_test(chart_access_check)
 def monthly_sales(request):
     if 'filter' in request.GET:
         first_date = request.GET.get('first_date')
@@ -399,6 +362,7 @@ def monthly_sales(request):
 
 
 @login_required
+@user_passes_test(chart_access_check)
 def yearly_sales(request):
     if 'filter' in request.GET:
         first_date = request.GET.get('first_date')
@@ -416,6 +380,7 @@ def yearly_sales(request):
 
 
 @login_required
+@user_passes_test(chart_access_check)
 def customer_sales(request):
     limit = 5
     if 'filter' in request.GET:
@@ -436,6 +401,7 @@ def customer_sales(request):
 
 
 @login_required
+@user_passes_test(chart_access_check)
 def customer_demographic(request):
     query_set = None
     query_set2 = None
@@ -462,14 +428,14 @@ def customer_demographic(request):
             if obj['phone_number'] == phone_number:
                 rank = i + 1
                 break
-
     context = {'query_set': query_set, "total_spent": total_spent, "query_set2": query_set2, 'rank': rank}
     return render(request, 'analytics/customer_demographic.html', context=context)
 
 
 @login_required
+@user_passes_test(chart_access_check)
 def sales_by_category(request):
-    first_date = request.GET.get('first_date') or '1970-01-01'
+    first_date = request.GET.get('first_date') or datetime.date(timezone.now().date().year, 1, 1)
     second_date = request.GET.get('second_date') or timezone.now()
     query_set = Order_detail.objects.filter(order__payment='P').annotate(date=F('order__order_date')) \
         .filter(date__range=[first_date, second_date]) \
@@ -482,9 +448,10 @@ def sales_by_category(request):
 
 
 @login_required
+@user_passes_test(chart_access_check)
 def order_status_report(request):
     lst2 = None
-    first_date = "1970-01-01"
+    first_date = datetime.date(timezone.now().date().year, 1, 1)
     second_date = timezone.now()
     first_date2 = None
 
@@ -528,8 +495,9 @@ def order_status_report(request):
 
 
 @login_required
+@user_passes_test(chart_access_check)
 def sales_by_employee_report(request):
-    first_date = request.GET.get('first_date') or '1970-01-01'
+    first_date = request.GET.get('first_date') or datetime.date(timezone.now().date().year, 1, 1)
     second_date = request.GET.get('second_date') or timezone.now()
 
     if request.GET.get('phone_number'):
@@ -552,11 +520,12 @@ def sales_by_employee_report(request):
 
 
 @login_required
+@user_passes_test(chart_access_check)
 def customer_order_history(request):
     context = {}
 
     if phone_number := request.GET.get('phone_number'):
-        first_date = request.GET.get('first_date') or '1970-01-01'
+        first_date = request.GET.get('first_date') or datetime.date(timezone.now().date().year, 1, 1)
         second_date = request.GET.get('second_date') or timezone.now()
         query_set = Order.objects.filter(order_date__range=[first_date, second_date]) \
             .filter(phone_number=phone_number) \
@@ -569,8 +538,9 @@ def customer_order_history(request):
 
 
 @login_required
+@user_passes_test(chart_access_check)
 def product_hour(request):
-    first_date = request.GET.get('first_date') or '1970-01-01'
+    first_date = request.GET.get('first_date') or datetime.date(timezone.now().date().year, 1, 1)
     second_date = request.GET.get('second_date') or timezone.now()
 
     query_set = Order.objects.filter(payment='P', order_date__range=[first_date, second_date]).annotate(

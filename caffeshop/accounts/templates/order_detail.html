@@ -52,9 +52,8 @@
                                     </thead>
                                     <tbody class="text-left">
                                     {% for order_detail in order_details %}
-                                        <form action="{% url 'order_detail' order_detail.id %}" method="POST">
+                                        <form action="{% url 'update_order_detail' order_detail.id %}" method="POST">
                                             {% csrf_token %}
-                                            <input type="radio" style="display: none;" name="s_product" value="{{ order_detail.product.id }}" checked>
                                             <tr class="justify-content-center align-items-center" style="width: inherit !important;">
                                                 <th scope="row" class="py-4">{{ order_detail.id }}</th>
                                                 <td>
@@ -76,7 +75,7 @@
                                                                     <input type="radio" onclick="reply_click('btn{{forloop.parentloop.counter}}', '{{product.name}}')"
                                                                           id="s{{forloop.parentloop.counter}}-{{forloop.counter}}-{{ product.id }}"
                                                                           value="{{ product.id }}"
-                                                                          style="margin-left:20px" name="s_product">
+                                                                          style="margin-left:20px" name="product" {% if order_detail.product.id == product.id %} checked {% endif %}>
 
                                                                 </li>
                                                             {% endfor %}
@@ -93,7 +92,7 @@
                                                 </td>
                                                 <td>
                                                     {% if order.get_payment_display == 'Unpaid' and not order.get_status_display == 'Canceled' %}
-                                                        <button type="submit" class="btn btn-primary" name="update">
+                                                        <button type="submit" class="btn btn-primary" name="update" {% if not perms.orders.change_order_detail %}disabled{% endif %}>
                                                             <i class="bi bi-pencil"></i>
                                                         </button>
                                                     {% endif %}
@@ -101,7 +100,7 @@
                                                 <td>
                                                     {% if order.get_payment_display == 'Unpaid' and not order.get_status_display == 'Canceled' %}
                                                         <a href="{% url 'delete_order_item' order_detail.id %}">
-                                                            <button type="button" class="btn btn-danger" name="delete">
+                                                            <button type="button" class="btn btn-danger" name="delete" {% if not perms.orders.delete_order_detail %}disabled{% endif %}>
                                                                 <i class="bi bi-trash"></i>
                                                             </button>
                                                         </a>
@@ -111,8 +110,9 @@
                                         </form>
                                         {% endfor %}
                                     {% if order.get_payment_display == 'Unpaid' and not order.get_status_display == 'Canceled' %}
-                                    <form action="{% url 'create_order_detail' order.id %}" method="POST">
+                                    <form action="{% url 'create_order_detail'%}" method="POST">
                                         {% csrf_token %}
+                                            <input name="order" type="hidden" value="{{order.id}}">
                                             <tr class="justify-content-center align-items-center" style="width: inherit !important; background-color: #b9ffe9 !important;">
                                                 <th scope="row" class="py-4">Add item</th>
                                                 <td>
@@ -133,7 +133,7 @@
                                                                     <input type="radio" onclick="reply_click('btn_new_orderitem', '{{product.name}}')"
                                                                           id="s{{forloop.parentloop.counter}}-{{forloop.counter}}-{{ product.id }}"
                                                                           value="{{ product.id }}"
-                                                                          style="margin-left:20px" name="s_product">
+                                                                          style="margin-left:20px" name="product">
                                                                 </li>
                                                                 {% endfor %}
                                                         </ul>
@@ -143,10 +143,12 @@
                                                     <div class="col-md-3 ">
                                                         <input id="quantity" class="form-control" style=" border-radius: 4px;" type="number" min="1"
                                                                value=1 name="quantity">
+                                                    </div>
                                                 </td>
                                                 <td class="py-4"></td>
                                                 <td>
-                                                    <button type="submit" class="btn btn-success" name="create">
+                                                <div class="col-md-3 ">
+                                                    <button type="submit" class="btn btn-success" name="create" {% if not perms.orders.add_order_detail %}disabled{% endif %}>
                                                         <i class="bi bi-plus-square"></i>
                                                     </button>
                                                 </div>
@@ -164,12 +166,12 @@
                                 </div>
                                 <div class="col-md-6 text-end">
                                     {% if order.get_payment_display == 'Unpaid' and not order.get_status_display == 'Canceled' %}
-                                        <a href="{% url 'confirm_order' order.id %}">
+                                        <a href="{% url 'confirm_order' order.id %}" {% if not perms.orders.change_order_status %}disabled{% endif %}>
                                             <button type="button" class="btn btn-success btn-sm" name="confirm">
                                                 <i class="bi bi-check-circle"></i> Confirm Order
                                             </button>
                                         </a>
-                                        <a href="{% url 'cancel_order' order.id %}">
+                                        <a href="{% url 'cancel_order' order.id %}" {% if not perms.orders.change_order_status %}disabled{% endif %}>
                                             <button type="button" class="btn btn-danger btn-sm" name="cancel">
                                                 <i class="bi bi-x-circle"></i> Cancel Order
                                             </button>
@@ -186,7 +188,7 @@
 {% endblock %}
 {% block footerlink %}
 <script>
-        
+
     function myFunction(phone, tablet) {
         let tableEl = document.querySelector('table');
       if (phone.matches) { // If media query matches
@@ -201,7 +203,7 @@
         // alert('pc-size')
       }
     }
-    
+
     var phone = window.matchMedia("(max-width: 416px)");
     var tablet = window.matchMedia("(max-width: 912px)");
     myFunction(phone, tablet) // Call listener function at run time

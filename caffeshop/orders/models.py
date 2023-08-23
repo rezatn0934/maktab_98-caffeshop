@@ -21,6 +21,12 @@ class Order(models.Model):
     payment = models.CharField(verbose_name=_("Payment Status"), max_length=1, choices=payment_status, default="U")
     staff = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
 
+    class Meta:
+        permissions =[
+            ('change_order_status', 'can change order approval status' ),
+            ('change_payment_status', 'can change order Payment status' ),
+        ]
+
     @property
     def get_order_items(self):
         order_items = Order_detail.objects.filter(order=self.id)
@@ -72,7 +78,7 @@ class Order_detail(models.Model):
             self.save()
 
     def __str__(self):
-        return f"order: {self.order}"
+        return f"Order Details ID: {self.id}"
 
 
 class Table(models.Model):
