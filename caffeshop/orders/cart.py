@@ -37,7 +37,7 @@ def just_available_product(request, orders):
                 updated_orders.pop(product_id)
                 messages.error(request, message)
         else:
-            messages.error(request, f'Product {obj.name} is not available!!')
+            messages.error(request, f'Product {product_id} is not available!!')
             updated_orders.pop(product_id)
     request.COOKIES['number_of_order_items'] = sum([int(order_info['quantity']) for order_info in updated_orders.values()])    
     return order_items, updated_orders
