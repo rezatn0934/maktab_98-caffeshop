@@ -64,13 +64,6 @@
                                 Download
                             </button>
                         </div>
-                        <div class="col-md-3 py-5 m-0">
-                            <select class="btn btn-primary mb-0" id="chart-type"  onchange="changeConfig(this.value)">
-                                <option value="pie">Pie Chart</option>
-                                <option value="line">Line Chart</option>
-                                <option value="bar">Bar Chart</option>
-                            </select>
-                        </div>
                     </div>
                 </div>
             </form>
@@ -241,24 +234,6 @@
             document.body.appendChild(link); // Required for FF
             link.click();
             document.body.removeChild(link);
-        }
-        let ctx = document.getElementById('chartContainer')
-        function changeConfig(newType){
-            chart.destroy()
-            config.type = newType;
-            if (newType == 'line'){
-                config.options.scales.x.display = true;
-                config.options.scales.y.display = true;
-            }
-            if (newType == 'bar'){
-                config.options.scales.x.display = true;
-                config.options.scales.y.display = true;
-            }
-            if (newType == 'pie'){ 
-                config.options.scales.x.display = false;
-                config.options.scales.y.display = false;
-            }
-            chart = new Chart(ctx, config);
         }
 
         function onClick() {
