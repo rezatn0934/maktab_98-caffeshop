@@ -6,8 +6,6 @@ from django.test import TestCase
 from menu.models import Product, Category
 from model_bakery import baker
 
-import os
-
 
 class TestProductModel(TestCase):
 

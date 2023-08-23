@@ -27,16 +27,19 @@ def send_otp_code(request, phone):
             'type': 'sms',  # sms vs call
         }
         response = api.verify_lookup(params)
+        return "success"
 
     except APIException as e:
         print(e)
+        return "API failed"
     except HTTPException as e:
         print(e)
+        return "HTTP connection failed"
 
 
 def check_availability(obj):
     if obj.is_active:
-        message = 'product {obj.name} is available'
+        message = f'product {obj.name} is available'
         return message, obj
     else:
         message = 'Product is not active!!'

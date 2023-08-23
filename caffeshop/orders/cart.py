@@ -31,13 +31,12 @@ def just_available_product(request, orders):
             obj = qs.get(id=product_id)
             message, obj = check_availability(obj)
             if obj:
-                tp = obj.price * int(info.get('quantity'))
                 order_items.append((obj, info.get('quantity')))
             else:
                 updated_orders.pop(product_id)
                 messages.error(request, message)
         else:
-            messages.error(request, f'Product {obj.name} is not available!!')
+            messages.error(request, f'Product {product_id} is not available!!')
             updated_orders.pop(product_id)
     request.COOKIES['number_of_order_items'] = sum([int(order_info['quantity']) for order_info in updated_orders.values()])    
     return order_items, updated_orders
