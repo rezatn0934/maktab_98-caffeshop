@@ -331,54 +331,50 @@
     //     updateCookie();
     // }
 </script>
-    <script>
-    <script>
-        
 <script>     
-        
-        function myFunction(phone, tablet) {
-            let priceEl = document.querySelectorAll('td.price, button.btn-f');
-            let productTextEl = document.querySelectorAll('td.product-text p');
-            let quantityEl = document.querySelectorAll('td.quantity');
-            let qElInput = document.querySelectorAll('td.quantity input');
-            let btnF = document.querySelectorAll('button.btn-f');
-            let trEl = document.querySelectorAll('tr, td.top-remove div');
-          if (phone.matches) { // If media query matches
+    function myFunction(phone, tablet) {
+        let priceEl = document.querySelectorAll('td.price, button.btn-f');
+        let productTextEl = document.querySelectorAll('td.product-text p');
+        let quantityEl = document.querySelectorAll('td.quantity');
+        let qElInput = document.querySelectorAll('td.quantity input');
+        let btnF = document.querySelectorAll('button.btn-f');
+        let trEl = document.querySelectorAll('tr, td.top-remove div');
+        if (phone.matches) { // If media query matches
 
-            priceEl.forEach((Item) => {
-                             Item.style.setProperty("width", "5em", "important");
-            });
-            btnF.forEach((Item) => {
-                             Item.style.setProperty("width", "5em", "important")
-                             Item.classList.add('mx-1');
-            });
-            productTextEl.forEach((Item) => {
-                             Item.classList.add('text-center');
-                             Item.classList.remove('my-5');
-            });
-            quantityEl.forEach((Item) => {
-                             Item.style.setProperty("width", "14em", "important");
-            });
-            qElInput.forEach((Item) => {
-                             Item.style.setProperty("text-align", "center", "important");
-            });
-            trEl.forEach((Item) => {
-                             Item.classList.remove('justify-content-between');
-                             Item.classList.remove('justify-content-around');
-                             Item.classList.add('justify-content-center');
-            });
-            // alert('phone-size')
-          }
-           else if (tablet.matches) {
-            // alert('tablet-size')
+        priceEl.forEach((Item) => {
+                            Item.style.setProperty("width", "5em", "important");
+        });
+        btnF.forEach((Item) => {
+                            Item.style.setProperty("width", "5em", "important")
+                            Item.classList.add('mx-1');
+        });
+        productTextEl.forEach((Item) => {
+                            Item.classList.add('text-center');
+                            Item.classList.remove('my-5');
+        });
+        quantityEl.forEach((Item) => {
+                            Item.style.setProperty("width", "14em", "important");
+        });
+        qElInput.forEach((Item) => {
+                            Item.style.setProperty("text-align", "center", "important");
+        });
+        trEl.forEach((Item) => {
+                            Item.classList.remove('justify-content-between');
+                            Item.classList.remove('justify-content-around');
+                            Item.classList.add('justify-content-center');
+        });
+        // alert('phone-size')
         }
-          else {
-            // alert('pc-size')
-          }
+        else if (tablet.matches) {
+        // alert('tablet-size')
+    }
+        else {
+        // alert('pc-size')
         }
-        
-        var phone = window.matchMedia("(max-width: 416px)");
-        var tablet = window.matchMedia("(max-width: 416px)");
-        myFunction(phone, tablet) // Call listener function at run time
-        </script>
-  {% endblock %}
+    }
+    
+    var phone = window.matchMedia("(max-width: 416px)");
+    var tablet = window.matchMedia("(max-width: 416px)");
+    myFunction(phone, tablet) // Call listener function at run time
+</script>
+{% endblock %}
