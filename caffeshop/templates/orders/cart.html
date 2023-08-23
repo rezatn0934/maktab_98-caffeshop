@@ -234,7 +234,105 @@
     }
 </script>
 
+<script>
+    function loadOrdersTable(orders){
+        const tableBody = document.querySelector('table tbody');
+        let counter = 1;
+        for (product in orders){
+            let form = document.createElement("form");
+            let tr = document.createElement('tr');
+            let tdImage = document.createElement('td');
+            let tdText = document.createElement('td');
+            let tdQuantity = document.createElement('td');
+            let tdPrice = document.createElement('td');
+            let tdToalPrice = document.createElement('td');
+            let tdButtons = document.createElement('td');
+            let divText = document.createElement('div');
+            let divButton = document.createElement('div');
+            let image = document.createElement('img');
+            let spanPrice = document.createElement('span');
+            let spanTotalPrice = document.createElement('span');
+            let pText = document.createElement('p');
+            let inputQuantity = document.createElement('input');
+            let inputProductFormHidden = document.createElement('input');
+            let buttonUpdate = document.createElement('button');
+            let buttonRemove = document.createElement('button');
+            let iUpdateIcon = document.createElement('i');
+            let iRemoveIcon = document.createElement('i');
+            
+            tableBody.appendChild(form);
+            tableBody.appendChild(tr);
+            tr.appendChild(tdImage);
+            tr.appendChild(tdText);
+            tr.appendChild(tdQuantity);
+            tr.appendChild(tdPrice);
+            tr.appendChild(tdToalPrice); tr.appendChild(tdButtons);
+            tdImage.appendChild(image);
+            tdText.appendChild(divText); divText.appendChild(pText);
+            tdQuantity.appendChild(inputQuantity);
+            tdPrice.appendChild(spanPrice);
+            tdToalPrice.appendChild(spanTotalPrice);
+            tdButtons.appendChild(divButton);
+            divButton.appendChild(inputProductFormHidden);
+            divButton.appendChild(buttonUpdate); buttonUpdate.appendChild(iUpdateIcon);
+            divButton.appendChild(buttonRemove); buttonRemove.appendChild(iRemoveIcon)
 
+            
+            form.id="cart-item-form-" + counter;
+            
+            tr.id = "box-" + counter;
+            tr.classList.add('cake-top', 'row', 'justify-content-between', 'd-flex', 'align-items-center');
+            
+            tdImage.classList.add('cakes', 'col-sm-3');
+            tdText.classList.add("product-text", "col-sm-2");
+            tdQuantity.classList.add("quantity", "col-sm-3", "col-md-2");
+            tdPrice.classList.add("price", "i-p", "col-md-1", "col-sm-2", "px-sm-2", "py-2");
+            tdToalPrice.classList.add("price", "itp", "col-md-1", "col-sm-2", "px-sm-2", "py-2");
+            tdButtons.classList.add("top-remove", "col-sm-12", "col-md-2", "text-center", "mx-1");
+
+            divText.classList.add("product-text");
+            divButton.classList.add("row", "px-1", "justify-content-around");
+
+            image.className = "p-img"; image.src = orders[product]['image_url'];
+
+            spanPrice.classList.add('item-price'); spanPrice.value = orders[product]['price'];
+            spanPrice.innerText ="$ " + orders[product]['price'];
+            spanTotalPrice.classList.add('itp');
+            spanTotalPrice.innerText ="$ " + orders[product]['total_price'];
+            spanTotalPrice.id = "total-count-" + counter;
+
+            inputQuantity.classList.add("form-control", "input-small");
+            setAttributes(inputQuantity, {"type": "number", "id": "quantity", "form": form.id, "name": "quantity", "value": orders[product]['quantity'], "min": "1"});
+            setAttributes(inputProductFormHidden, {'type': 'hidden', 'name': 'product', 'form': form.id, 'value': product});
+
+            pText.className = "my-5"; pText.innerText = orders[product]['name'];
+
+            buttonUpdate.classList.add("col-sm-4", "btn", "btn-f", "btn-outline-warning", "m-auto",  "d-flex", "justify-content-center");
+            setAttributes(buttonUpdate, {'name': 'update', 'value': 'True', 'type': 'button', 'form': form.id})
+            buttonUpdate.addEventListener('click',function(){orderUpdate(this.form, tr.id);} );
+            buttonRemove.classList.add("col-sm-4", "btn", "btn-f", "btn-outline-danger", "mx-1",  "d-flex", "justify-content-center");
+            setAttributes(buttonRemove, {'name': 'remove', 'value': 'True', 'type': 'button', 'form': form.id})
+            buttonRemove.addEventListener('click', function(){deleteOrderItem(this.form, tr.id);} );
+            
+            iUpdateIcon.classList.add('bi', 'bi-arrow-repeat');
+            
+            iRemoveIcon.classList.add('bi', 'bi-trash');
+            counter += 1;
+            
+        }
+    }
+</script>
+<script>
+    updateCookie();
+    setOrdersTotalPrice();
+    let orders = getLocalStorageObject('orders');
+    loadOrdersTable(orders);
+    // window.onbeforeunload = function(){
+    //     updateCookie();
+    // }
+</script>
+    <script>
+    <script>
         
 <script>     
         
