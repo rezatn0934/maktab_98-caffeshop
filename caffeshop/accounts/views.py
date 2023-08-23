@@ -118,8 +118,7 @@ class Orders(LoginRequiredMixin, PermissionRequiredMixin, FilterMixin, View):
 
         self.check_paid(request=request)
 
-
-        paginator = Paginator(orders, 5)
+        paginator = Paginator(orders, 15)
         page_number = request.GET.get('page', 1)
         orders = paginator.get_page(page_number)
         context['orders'] = orders

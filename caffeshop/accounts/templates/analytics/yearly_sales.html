@@ -61,7 +61,7 @@
         const data = {
             labels: dataLabels,
             datasets: [{
-                label: "Yearly Sales",
+                label: "Sale($)",
                 data:  [{%for data in query_set %}{{ data.total_sale }}, {%endfor%}],
                 borderWidth: 1,
                 backgroundColor: [
