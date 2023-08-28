@@ -22,22 +22,3 @@ class ProductView(DetailView):
     template_name = 'menu/product.html'
     model = Product
     context_object_name = 'product'
-
-
-def search_product_view(request):
-    if request.method == 'GET':
-        search_term = request.GET.get('search')
-        template = 'menu/search.html'
-        items = []
-        if request.headers.get('HX-Request') == 'true':
-            template = 'menu/search_results.html'
-            if isinstance(search_term, str) and search_term.strip():
-                items = Product.objects.annotate(similarity=Greatest(
-                    TrigramSimilarity("name", string=search_term),
-                    TrigramSimilarity("description", string=search_term),
-                )).filter(similarity__gt=0).order_by("-similarity")
-
-                if not items.exists():
-                    items = ["Nothing Was Found"]
-
-        return render(request, template, context={'items': items})
