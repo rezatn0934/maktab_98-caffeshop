@@ -1,0 +1,13 @@
+
+{% if items.0 == "Nothing Was Found" %}
+<p class="pt-1">Nothing Was Found</p>
+
+{% else %}
+{% for product in items %}
+    <div class="row g-3 d-flex justify-content-center align-items-center mb-5">
+        <a  class="col-sm-5 text-dark" href="{% url 'menu:show_product' product.id %}">{{ product.name }}</a>
+        <img class="col-5 col-sm-5 col-md-5 col-lg-3" src="{{product.image.url}}" style="width=75px !important; height:100px; border-radius:25%; object-fit:cover">
+    </div>
+{% endfor %}
+{% endif %}
+
