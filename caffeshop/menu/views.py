@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.views.generic import ListView, DetailView
+from django.views.generic import DetailView, View
 from .models import Product, Category
 from django.contrib.postgres.search import TrigramSimilarity
 from django.db.models.functions import Greatest
@@ -7,7 +7,7 @@ from django.db.models.functions import Greatest
 
 # Create your views here.
 
-class Menu(ListView):
+class Menu(View):
     template_name = 'menu/menu.html'
     model = Product
     context_object_name = 'products'
