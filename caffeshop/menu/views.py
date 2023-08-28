@@ -32,15 +32,11 @@ def search_product_view(request):
         if isinstance(search_term, str):
             template = 'menu/search_results.html'
             if search_term := search_term.strip():
-                print("1" * 100)
-                print(search_term)
                 # if request.headers.get('HX-Request') == 'true':
                 items = Product.objects.annotate(similarity=Greatest(
                     TrigramSimilarity("name", string=search_term),
                     TrigramSimilarity("description", string=search_term),
                 )).filter(similarity__gt=0).order_by("-similarity")
-                print("2" * 100)
-                print(items)
                 if not items.exists():
                     items = ["Nothing Was Found"]
 
