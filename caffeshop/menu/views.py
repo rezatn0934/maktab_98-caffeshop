@@ -1,4 +1,4 @@
-from django.shortcuts import render, HttpResponseRedirect
+from django.shortcuts import render
 from django.views.generic import ListView, DetailView
 from .models import Product, Category
 from django.contrib.postgres.search import TrigramSimilarity
@@ -29,14 +29,14 @@ def search_product_view(request):
         search_term = request.GET.get('search')
         template = 'menu/search.html'
         items = []
-        if isinstance(search_term, str):
+        if request.headers.get('HX-Request') == 'true':
             template = 'menu/search_results.html'
-            if search_term := search_term.strip():
-                # if request.headers.get('HX-Request') == 'true':
+            if isinstance(search_term, str) and search_term.strip():
                 items = Product.objects.annotate(similarity=Greatest(
                     TrigramSimilarity("name", string=search_term),
                     TrigramSimilarity("description", string=search_term),
                 )).filter(similarity__gt=0).order_by("-similarity")
+
                 if not items.exists():
                     items = ["Nothing Was Found"]
 
