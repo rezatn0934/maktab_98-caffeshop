@@ -45,6 +45,8 @@ INSTALLED_APPS = [
     'orders',
     'accounts',
     'home',
+
+    'django.contrib.postgres',
 ]
 INTERNAL_IPS = [
     # ...
