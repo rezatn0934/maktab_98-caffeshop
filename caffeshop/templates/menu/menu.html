@@ -124,10 +124,21 @@
       // setCookie('message', message, 60);
       localStorage.setItem('message', message);
       // setOrderItemsNumber(orders); // set number of order items in  cookie and cart button 
-      setOrderItemsNumber(orders); // set number of order items in  cookie and cart button 
+      setOrderItemsNumber(orders); // set number of order items in  cookie and cart button
 
-    
-  }
-  </script>
+
+ }
+    </script>
+    <script>
+        const searchBtn = document.querySelector(".search-btn");
+        const searchBox = document.querySelector(".search-box");
+
+
+        searchBtn.onclick = () => {
+            searchBox.classList.toggle("active");
+            searchBtn.classList.toggle("active");
+        }
+
+    </script>
 {% endblock %}
 
