@@ -147,19 +147,20 @@
                             <div class="vocher pt-0">
                                 <div class="dis-total">
                                     <div class="tot-btn1 ">
+                                        <h1 class="mx-0">Total $<span class="text-dark" id="order-tp">{{ order_total_price }}</span></h1>
                                         <form action="{% url 'orders:cart' %}" id="table-reserve-form" method="post" novalidate>
                                             {% csrf_token %}
                                             <div class="row justify-content-between active" id="RadioTarget1" aria-hidden="true">
-                                                <div class="col-sm-5 d-flex align-items-end">
-                                                    <div class="row gy-2">
-                                                        {{form}}
+                                                <div class="col-sm-5 d-flex align-items-end mx-0">
+                                                    <div class="row gy-3">
+                                                        {{form.as_p}}
                                                     </div>
                                                 </div>
                                                 <div class="col-sm-5">
-                                                    <h1 class="mx-1">Total $<span id="order-tp">{{ order_total_price }}</span></h1>
-                                                    <div class="row justify-content-around">
-                                                        <button type="button" class="shop btn btn-dark col-sm-4 p-1 mx-2" ><a id="back-to-shop"  href="{% url 'menu:menu' %}">Back to Shop</a></button>
-                                                        <button class="col-sm-5 check p-1 mx-1 heart2 btn btn-success" id="checkout1" onclick="updateCookie()"  type="submit" form="table-reserve-form">
+
+                                                    <div class="row gx-1 gy-3 d-flex justify-content-center">
+                                                        <button type="button" class="shop btn btn-dark col-sm-8 p-2 mt-4 mb-5 mx-2" ><a id="back-to-shop"  href="{% url 'menu:menu' %}">Back to Shop</a></button>
+                                                        <button class="col-sm-8 check p-2 mt-2 mx-1 heart2 btn btn-success" id="checkout1" onclick="updateCookie()"  type="submit" form="table-reserve-form">
                                                              Continue to Checkout
                                                         </button>
                                                     </div>
