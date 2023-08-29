@@ -10,7 +10,7 @@
                                 {% if not category.parent_category and category.product_set %}
                                     <li><a href="#" data-filter=".{{ category.name|cut:' ' }}"
                                            id="{{ category.name|cut:' ' }}"
-                                           onclick="reply_click(this.id)">{{ category.name }}</a></li>
+                                           onclick="catecory_tree(this.id)">{{ category.name }}</a></li>
                                 {% endif %}
                             {% endfor %}
                         {% endif %}
