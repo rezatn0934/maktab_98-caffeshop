@@ -64,7 +64,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django_ratelimit.middleware.RatelimitMiddleware'
 ]
+RATELIMIT_VIEW = 'orders.views.ratelimited_error'
 
 ROOT_URLCONF = 'caffeshop.urls'
 
