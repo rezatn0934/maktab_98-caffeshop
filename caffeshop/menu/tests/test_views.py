@@ -59,3 +59,7 @@ class TestProductView(TestCase):
     def tearDown(self):
         self.product.delete()
         self.category.delete()
+
+    def test_product_view_status_code(self):
+        response = self.client.get(reverse('menu:show_product', args=(self.product.id, )))
+        self.assertEqual(response.status_code, 200)
