@@ -34,3 +34,9 @@ class ProductView(DetailView):
     template_name = 'menu/product.html'
     model = Product
     context_object_name = 'product'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["categories"] = Category.objects.all() 
+        return context
+    

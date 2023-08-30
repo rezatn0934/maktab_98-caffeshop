@@ -62,94 +62,9 @@
 
 
 {% block footerlink %}
-<script type="text/javascript">
-  function reply_click(clicked_id)
-  {
-      var classNam = clicked_id + "1";
-      const allCats = document.getElementsByClassName("cat");
-      const thisCats = document.getElementsByClassName(classNam);
-      for (item of allCats) {
-        item.classList.remove("Active1");
-      }
-      for (var index=0;index < thisCats.length;index++) {
-        thisCats[index].classList.add("Active1");
-      }
-  }
-</script>
-<script>
-  function addToCart(form_id) {
-    event.preventDefault();
-    let formElement = document.getElementById(form_id);
-    let formData = new FormData(formElement);
-    // let orders = getCookieObject('orders'); // gets oder object from cookie
-    let orders = getLocalStorageObject('orders'); // gets oder object from cookie
-    // let message = getCookie('message');
-    let message = localStorage.getItem('message');
-    let product = formData.get('product');
-    let product_name = formData.get('product_name');
-    let number_of_product = +formData.get('quantity');
-    let product_price = +formData.get('price');
-    let product_image_url = formData.get('image_url');
-    let product_detail_url = formData.get('detail_url');
-
-    if (JSON.stringify(orders) == '{}' ){ // alert('has entered to add level for non exist of last order')
-        orders[product] = {};
-        orders[product]['name'] = product_name ;
-        orders[product]['quantity'] = number_of_product ;
-        orders[product]['price'] = product_price;
-        orders[product]['total_price'] = product_price * orders[product]['quantity'];
-        orders[product]['image_url'] = product_image_url ;
-        orders[product]['detail_url'] = product_detail_url ;
-        message = "you created a shopping cart";
-      }
-    else {
-      if (orders[product]){   // alert('has entered to update level for exist of last order')
-            orders[product]['quantity'] = +orders[product]['quantity'] + number_of_product; 
-            orders[product]['price'] = product_price;
-            orders[product]['total_price'] = product_price * orders[product]['quantity'];
-            message = "Order updated";
-            }
-        else {  // alert('has entered to add level for exist of last order')
-            orders[product] = {};
-            orders[product]['name'] = product_name ;
-            orders[product]['quantity'] = number_of_product ;
-            orders[product]['price'] = product_price;
-            orders[product]['total_price'] = product_price * orders[product]['quantity'];
-            orders[product]['image_url'] = product_image_url ;
-            orders[product]['detail_url'] = product_detail_url ;
-            message = "Order added";
-        }}
-      // setCookie('orders', JSON.stringify(orders), 60);
-      localStorage.setItem('orders', JSON.stringify(orders));
-      // setCookie('message', message, 60);
-      localStorage.setItem('message', message);
-      // setOrderItemsNumber(orders); // set number of order items in  cookie and cart button 
-      setOrderItemsNumber(orders); // set number of order items in  cookie and cart button
-
-
- }
-    </script>
-    <script>
-        const searchBtn = document.querySelector(".search-btn");
-        const searchBox = document.querySelector(".search-box");
-        const searchInput = searchBox.querySelector(".input");
-
-        searchBtn.onclick = () => {
-            searchBox.classList.toggle("active");
-            searchBtn.classList.toggle("active");
-            const searchIcon = searchBtn.querySelector(".bi-search");
-            const clockIcon = searchBtn.querySelector(".bi-x-lg");
-
-            if (searchInput.type == 'hidden') {
-                searchInput.type = 'search'
-            } else {
-                searchInput.type = 'hidden'
-            }
-            searchIcon.classList.toggle("d-none");
-            clockIcon.classList.toggle("d-none");
-
-        }
-
-    </script>
+<script src="{% static 'menu_js/categoryTree.js' %}"></script>
+<script src="{% static 'menu_js/add_To_Cart.js' %}"></script>
+<script src="{% static 'menu_js/SearchButton.js' %}"></script>
+<script src="https://unpkg.com/htmx.org@1.8.0"></script>
 {% endblock %}
 
