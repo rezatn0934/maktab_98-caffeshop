@@ -63,3 +63,8 @@ class TestProductView(TestCase):
     def test_product_view_status_code(self):
         response = self.client.get(reverse('menu:show_product', args=(self.product.id, )))
         self.assertEqual(response.status_code, 200)
+
+    def test_product_view_template(self):
+        response = self.client.get(reverse('menu:show_product', args=(self.product.id, )))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed('menu/product.html')
