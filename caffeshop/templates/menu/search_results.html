@@ -7,10 +7,10 @@
                         <li><a href="#" data-filter="*">All</a></li>
                         {% if categories %}
                             {% for category in categories %}
-                                {% if not category.parent_category and category.product_set %}
+                                {% if not category.parent_category %}
                                     <li><a href="#" data-filter=".{{ category.name|cut:' ' }}"
                                            id="{{ category.name|cut:' ' }}"
-                                           onclick="reply_click(this.id)">{{ category.name }}</a></li>
+                                           onclick="catecory_tree(this.id)">{{ category.name }}</a></li>
                                 {% endif %}
                             {% endfor %}
                         {% endif %}
@@ -21,9 +21,11 @@
                     <ol class="type">
                         {% if categories %}
                             {% for category in categories %}
-                                {% if category.parent_category and not category.parent_category.parent_category  and category.product_set %}
+                                {% if category.parent_category and category.product_set.all %}
                                     <li><a href="#" data-filter=".{{ category.name|cut:' ' }}"
-                                           class="cat {{ category.parent_category.name|cut:' ' }}1 {{ category.parent_category.parent_category.name|cut:' ' }}1">{{ category.name }}</a>
+                                           class="cat {% for ctg in categories %}
+                                                         {% if category in ctg.category_set.all %} {{ ctg.name|cut:' ' }}1 {% endif %}
+                                                      {% endfor %}">{{ category.name }}</a>
                                     </li>
                                 {% endif %}
                             {% endfor %}
