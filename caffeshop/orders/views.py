@@ -1,12 +1,11 @@
 from django.contrib import messages
 from django.shortcuts import redirect
 from django.views import View
-from django_ratelimit.exceptions import Ratelimited
 from .models import Order, Order_detail, Table
 from .forms import OrderForm
 from .cart import just_available_product, orders_from_cookie
 from django.shortcuts import render
-from django.http import HttpResponse, JsonResponse
+from django.http import JsonResponse
 from django_ratelimit.decorators import ratelimit
 
 
@@ -92,13 +91,6 @@ def cancel_order_by_customer(request, pk):
         order.save()
         return redirect('menu:menu')
 
-
-# def ratelimited_error(request, exception=None):
-#     if isinstance(exception, Ratelimited):
-#         return HttpResponse(
-#             'This page has one-minute rate limit for each request, please wait one minute the try again',
-#             status=429)
-#     return HttpResponse('Forbidden')
 
 def ratelimited_error(request, exception):
     return JsonResponse(
