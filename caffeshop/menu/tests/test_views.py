@@ -42,3 +42,16 @@ class TestMenuView(TestCase):
         self.assertEqual(response.context['items'], ['Nothing Was Found'])
         self.assertTemplateUsed('menu/search_results.html')
         self.assertTemplateNotUsed('menu/search.html')
+
+
+class TestProductView(TestCase):
+
+    def setUp(self):
+        self.client = Client()
+        self.image = open(settings.MEDIA_ROOT / "images/test/pina_colada.png", 'rb').read()
+        self.category = Category.objects.create(name='Food')
+        self.product = Product.objects.create(name='pepperoni', category=self.category, price=100,
+                                              image=SimpleUploadedFile.from_dict(
+                                                  {'filename': 'product_pic.png', 'content': self.image,
+                                                   'content_tye': 'image/png'})
+                                              )
