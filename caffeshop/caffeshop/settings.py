@@ -13,6 +13,8 @@ import os
 from dotenv import load_dotenv
 from pathlib import Path
 from django.contrib.messages import constants as messages
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
 
 load_dotenv()
 
@@ -45,6 +47,8 @@ INSTALLED_APPS = [
     'orders',
     'accounts',
     'home',
+
+    'django.contrib.postgres',
 ]
 INTERNAL_IPS = [
     # ...
@@ -60,7 +64,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django_ratelimit.middleware.RatelimitMiddleware'
 ]
+RATELIMIT_VIEW = 'orders.views.ratelimited_error'
 
 ROOT_URLCONF = 'caffeshop.urls'
 
@@ -155,4 +161,75 @@ MESSAGE_TAGS = {
         messages.SUCCESS: 'alert-success',
         messages.WARNING: 'alert-warning',
         messages.ERROR: 'alert-danger',
+}
+
+sentry_sdk.init(
+    dsn="https://9d8bbe69583572e98f65239325c52172@o4505775546761216.ingest.sentry.io/4505775548465152",
+    integrations=[DjangoIntegration()],
+    # If you wish to associate users to errors (assuming you are using
+    # django.contrib.auth) you may enable sending PII data.
+    send_default_pii=True,
+    # Set traces_sample_rate to 1.0 to capture 100%
+    # of transactions for performance monitoring.
+    # We recommend adjusting this value in production.
+    traces_sample_rate=1.0,
+    # To set a uniform sample rate
+    # Set profiles_sample_rate to 1.0 to profile 100%
+    # of sampled transactions.
+    # We recommend adjusting this value in production,
+    profiles_sample_rate=1.0,
+)
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "filters": {
+        "require_debug_false": {
+            "()": "django.utils.log.RequireDebugFalse",
+        },
+        "require_debug_true": {
+            "()": "django.utils.log.RequireDebugTrue",
+        },
+    },
+    "formatters": {
+        "django.server": {
+            "()": "django.utils.log.ServerFormatter",
+            "format": "[{server_time}] {message}",
+            "style": "{",
+        },
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+        },
+    },
+    "handlers": {
+        "console": {
+            "level": "INFO",
+            "filters": ["require_debug_true"],
+            "class": "logging.StreamHandler",
+        },
+        "django.server": {
+            "level": "INFO",
+            "class": "logging.StreamHandler",
+            "formatter": "django.server",
+        },
+        "file": {
+            'level': 'INFO',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': './logs/log.log',
+            'maxBytes': 15728640,  # 1024 * 1024 * 15B = 15MB
+            'backupCount': 10,
+            'formatter': 'verbose'
+        },
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["console", "file"],
+            "level": "INFO",
+        },
+        "django.server": {
+            "handlers": ["django.server"],
+            "level": "INFO",
+            "propagate": False,
+        },
+    },
 }

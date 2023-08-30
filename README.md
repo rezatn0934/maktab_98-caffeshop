@@ -22,6 +22,7 @@ This project is a web application built with Django framework for managing a cof
 * [![Django][django.js]][django-url]
 * [![JavaScript][JavaScript.js]][JavaScript-url]
 * [![HTML][HTML.js]][HTML-url]
+* [![HTMX][HTMX.js]][HTMX-url]
 * [![CSS][CSS.js]][CSS-url]
 
 
@@ -161,7 +162,9 @@ Thank you for your interest in contributing to the Caffe Shop Django project! We
 [JavaScript.js]: https://img.shields.io/badge/JavaScript-A21441?style=for-the-badge&logo=javascript&logoColor=black
 [JavaScript-url]: https://www.javascript.com/
 [HTML.js]: https://img.shields.io/badge/HTML-00A693?style=for-the-badge&logo=html5&logoColor=black
-[HTML-url]: https://www.javascript.com/
+[HTML-url]: https://html.com/
+[HTMX.js]: https://img.shields.io/badge/HTMX-00A693?style=for-the-badge&logo=htmx&logoColor=black
+[HTMX-url]: https://htmx.com/
 [CSS.js]: https://img.shields.io/badge/CSS-32127a?&style=for-the-badge&logo=css3&logoColor=white
 [CSS-url]: https://www.javascript.com/
 [Python.js]: https://img.shields.io/badge/Python-red?style=for-the-badge&logo=python&logoColor=black

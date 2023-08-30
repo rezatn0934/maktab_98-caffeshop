@@ -18,7 +18,8 @@ class TestInfoModelAdminTests(TestCase):
 
     def setUp(self):
         self.user = baker.make(User, is_active=True, is_staff=True, is_superuser=True)
-        self.factory = RequestFactory()
+        self.request = RequestFactory()
+        self.request.user = self.user
 
     def tearDown(self):
         self.user.delete()
@@ -32,9 +33,7 @@ class TestInfoModelAdminTests(TestCase):
 
     def test_has_add_permission_first_instance(self):
         info_admin = InfoAdmin(Info, AdminSite())
-        request = self.factory
-        request.user = self.user
-        self.assertTrue(info_admin.has_add_permission(request))
+        self.assertTrue(info_admin.has_add_permission(self.request))
 
     def test_has_add_permission_next_instance(self):
         self.info = baker.make(Info, cafe_title="farzam",
@@ -45,16 +44,12 @@ class TestInfoModelAdminTests(TestCase):
                                    settings.MEDIA_ROOT / "images/test/test_intro-bg.jpg", 'rb').read(),
                                                                    content_type='image/jpg'))
         info_admin = InfoAdmin(Info, AdminSite())
-        request = self.factory
-        request.user = self.user
-        self.assertFalse(info_admin.has_add_permission(request))
+        self.assertFalse(info_admin.has_add_permission(self.request))
         self.info.delete()
 
     def test_has_delete_permission(self):
         info_admin = InfoAdmin(Info, AdminSite())
-        request = self.factory
-        request.user = self.user
-        self.assertFalse(info_admin.has_delete_permission(request))
+        self.assertFalse(info_admin.has_delete_permission(self.request))
 
 
 class TestAboutModelAdminTests(TestCase):

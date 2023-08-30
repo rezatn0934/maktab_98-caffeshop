@@ -26,165 +26,45 @@
 {% endblock %}
 
 {% block content %}
-<div id="portfolio">
-    <div class="section-title text-center center">
-      <div class="overlay">
-        <h2>Menu</h2>
-        <hr>
-        <p>The Best quality what you deserve.</p>
-      </div>
-    </div>
-    <div class="container">
-      <div class="row justify-content-center">
-        <div class="categories">
-          <ul class="cat justify-content-around">
-            <li>
-              <ol class="type">
-                <li><a href="#" data-filter="*"  >All</a></li>
-                {% if categories %}
-                  {% for category in categories %}
-                      {% if not category.parent_category and category.product_set %}
-                        <li><a href="#" data-filter=".{{ category.name|cut:' ' }}" id="{{ category.name|cut:' ' }}" onclick="reply_click(this.id)" >{{ category.name }}</a></li>
-                      {% endif %}
-                  {% endfor %}
-                {% endif %}
-              </ol>
-            </li>
-            <br>
-            <li>
-              <ol class="type">
-                {% if categories %}
-                  {% for category in categories %}
-                       {% if category.parent_category and not category.parent_category.parent_category  and category.product_set %}
-                      <li><a href="#" data-filter=".{{ category.name|cut:' ' }}"  class="cat {{ category.parent_category.name|cut:' ' }}1 {{ category.parent_category.parent_category.name|cut:' ' }}1" >{{ category.name }}</a></li>
-                       {% endif %}
-                  {% endfor %}
-                {% endif %}
-              </ol>
-            </li>
-          </ul>
-          <div class="clearfix"></div>
-
+    <div id="portfolio">
+        <div class="section-title text-center center">
+            <div class="overlay">
+                <h2>Menu</h2>
+                <hr>
+                <p>The Best quality what you deserve.</p>
+            </div>
         </div>
-      </div>
-      <div class="container">
-        <div class="portfolio-items pp-gallery row justify-content-between">
-          {% if products %}
-          {% for product in products %}
-            <div  class="col-sm-6 col-md-6 col-lg-4 {{ product.category.parent_category.parent_category.parent_category.name|cut:' ' }} {{ product.category.parent_category.parent_category.name|cut:' ' }} {{ product.category.parent_category.name|cut:' '   }} {{ product.category.name|cut:' ' }}">
-                <div class="portfolio-item container">
-                    <div class="hover-bg" style="border: 1px solid black; border-radius: 10px 10px 0 0;">
-                      {% if product.image %}
-                      <a href="{% url 'menu:show_product'  product.id %}" title="{{ product.category }}" data-lightbox-gallery="gallery1">
-                          <div class="hover-text">
-                              <h4 style="color: chartreuse !important;">{{ product.name }}</h4>
-                          </div>
-                          <img src="{{ product.image.url }}" width="500" height="333" class="img-responsive" alt="Project Title" style="max-width: 100%; max-height: 100%;">
-                        </a>
-                        {% else %}
-                      <a href="#" title="{{ product.category }}" data-lightbox-gallery="gallery1">
-                          <div class="hover-text">
-                              <h4 style="color: chartreuse !important;">{{ product.name }}</h4>
-                          </div>
-                          <img src="#" width="500" height="333" class="img-responsive" alt="Project Title" style="max-width: 100%; max-height: 100%;">
-                        </a>
-                        {% endif %}
-                    </div>
-                    <div class="container mx-0 px-lg-5 justify-content-center" style="background-color: rgba(233, 33, 220, 0); border: 1px solid black; border-radius: 0 0 10px 10px; max-width: 100%; max-height: 100%; height: 170px;">
-                        <form class=" row justify-content-center pb-1" id="my-form-{{forloop.counter}}"
-                              style="width: fit-content;" onsubmit="return addToCart(this.id)">
-                            <input  type="hidden" name="product" value="{{ product.id }}">
-                            <input  type="hidden" name="product_name" value="{{ product.name }}">
-                            <input  type="hidden" name="price" value="{{ product.price }}">
-                            <input  type="hidden" name="image_url" value="{{ product.image.url }}">
-                            <input  type="hidden" name="detail_url" value="{% url 'menu:show_product'  product.id %}">
-                            <span class="co-sm-1 text-center">{{ product.name }}</span>
-                            <span class="co-sm-1 text-center">{{ product.price }} <span>$</span></span>
-                            <!-- <span class="co-sm-1 text-center">Qnt</span> -->
-                            <span class="col-sm-8"><input placeholder="Qnt" class="col-sm-11 my-3 text-center  qnt" type="number" min="1"  name="quantity" value="1" style="width: 100%; border-radius: 5px; color: #00014f; font-weight: bold; background-color: rgb(255, 255, 255);" ></span>
-                            <div class="col-sm-8">
-                              <input type="submit" class="btn btn-cart moving-btn1 heart" style="border-radius: 10px; color: rgb(3, 0, 38) !important; background-color: rgba(16, 3, 87, 0.142); width: 100%;" value="Add to cart" {% if not product.is_active %} disabled {% endif %}>
-                            </div>
-                          </form>
+        <form action="{% url 'menu:menu' %}" method="GET">
+            <div class="container">
+                <div class="row g-3 mt-2 justify-content-center">
+                    <div class="search-box mx-5">
+                        <input class="input mb-4"
+                               placeholder="Search here"
+                               name="search"
+                               type="hidden"
+                               hx-get="{% url 'menu:menu' %}"
+                               hx-trigger="keyup changed delay:500ms, search"
+                               hx-target="#search-results"
+                               hx-swap="innerHTML"/>
+                        <div class="search-btn mx-5">
+                            <i class="bi bi-search"></i>
+                            <i class="bi bi-x-lg d-none"></i>
+                        </div>
                     </div>
                 </div>
             </div>
-          {% endfor %}
-          {% endif %}
+        </form>
+        <div class="container" id="search-results">
+            {% include "menu/search_results.html" %}
         </div>
-      </div>
     </div>
-  </div>
 {% endblock %}
 
 
 {% block footerlink %}
-<script type="text/javascript">
-  function reply_click(clicked_id)
-  {
-      var classNam = clicked_id + "1";
-      const allCats = document.getElementsByClassName("cat");
-      const thisCats = document.getElementsByClassName(classNam);
-      for (item of allCats) {
-        item.classList.remove("Active1");
-      }
-      for (var index=0;index < thisCats.length;index++) {
-        thisCats[index].classList.add("Active1");
-      }
-  }
-</script>
-<script>
-  function addToCart(form_id) {
-    event.preventDefault();
-    let formElement = document.getElementById(form_id);
-    let formData = new FormData(formElement);
-    // let orders = getCookieObject('orders'); // gets oder object from cookie
-    let orders = getLocalStorageObject('orders'); // gets oder object from cookie
-    // let message = getCookie('message');
-    let message = localStorage.getItem('message');
-    let product = formData.get('product');
-    let product_name = formData.get('product_name');
-    let number_of_product = +formData.get('quantity');
-    let product_price = +formData.get('price');
-    let product_image_url = formData.get('image_url');
-    let product_detail_url = formData.get('detail_url');
-
-    if (JSON.stringify(orders) == '{}' ){ // alert('has entered to add level for non exist of last order')
-        orders[product] = {};
-        orders[product]['name'] = product_name ;
-        orders[product]['quantity'] = number_of_product ;
-        orders[product]['price'] = product_price;
-        orders[product]['total_price'] = product_price * orders[product]['quantity'];
-        orders[product]['image_url'] = product_image_url ;
-        orders[product]['detail_url'] = product_detail_url ;
-        message = "you created a shopping cart";
-      }
-    else {
-      if (orders[product]){   // alert('has entered to update level for exist of last order')
-            orders[product]['quantity'] = +orders[product]['quantity'] + number_of_product; 
-            orders[product]['price'] = product_price;
-            orders[product]['total_price'] = product_price * orders[product]['quantity'];
-            message = "Order updated";
-            }
-        else {  // alert('has entered to add level for exist of last order')
-            orders[product] = {};
-            orders[product]['name'] = product_name ;
-            orders[product]['quantity'] = number_of_product ;
-            orders[product]['price'] = product_price;
-            orders[product]['total_price'] = product_price * orders[product]['quantity'];
-            orders[product]['image_url'] = product_image_url ;
-            orders[product]['detail_url'] = product_detail_url ;
-            message = "Order added";
-        }}
-      // setCookie('orders', JSON.stringify(orders), 60);
-      localStorage.setItem('orders', JSON.stringify(orders));
-      // setCookie('message', message, 60);
-      localStorage.setItem('message', message);
-      // setOrderItemsNumber(orders); // set number of order items in  cookie and cart button 
-      setOrderItemsNumber(orders); // set number of order items in  cookie and cart button 
-
-    
-  }
-  </script>
+<script src="{% static 'menu_js/categoryTree.js' %}"></script>
+<script src="{% static 'menu_js/add_To_Cart.js' %}"></script>
+<script src="{% static 'menu_js/SearchButton.js' %}"></script>
+<script src="https://unpkg.com/htmx.org@1.8.0"></script>
 {% endblock %}
 

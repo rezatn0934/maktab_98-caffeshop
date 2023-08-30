@@ -1,17 +1,12 @@
 from django.contrib import messages
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect
 from django.views import View
-from django.utils import timezone
-
-from menu.models import Product
 from .models import Order, Order_detail, Table
 from .forms import OrderForm
-from utils import check_availability
 from .cart import just_available_product, orders_from_cookie
-
-import datetime
-import json
-
+from django.shortcuts import render
+from django.http import JsonResponse
+from django_ratelimit.decorators import ratelimit
 
 
 class CartView(View):
@@ -40,7 +35,7 @@ class CartView(View):
         else:
             messages.error(request, 'Your phone number is not valid!!')
             return redirect('orders:cart')
-        
+
 
 def create_order(request):
     pre_order = request.session['pre_order']
@@ -74,6 +69,7 @@ def create_order(request):
     return response
 
 
+@ratelimit(key='user_or_ip', rate='1/m')
 def order_history(request):
     if request.method == "GET":
 
@@ -86,10 +82,17 @@ def order_history(request):
             message = "You Don't have any order yet."
             return render(request, "orders/order_history.html", context={"message": message})
 
+
 def cancel_order_by_customer(request, pk):
     order = Order.objects.filter(id=pk)
     if order:
         order = order.get(id=pk)
         order.status = 'C'
         order.save()
-        return redirect('orders:order_history')
+        return redirect('menu:menu')
+
+
+def ratelimited_error(request, exception):
+    return JsonResponse(
+        {'error': 'This page has one-minute rate limit for each request, please wait one minute the try again'},
+        status=429)
