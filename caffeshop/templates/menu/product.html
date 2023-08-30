@@ -1,45 +1,57 @@
 {% extends 'base.html' %}
+{% load static %}
+{% block link %}
+  <link href="{% static 'menu_css/product.css'%}" rel="stylesheet">
+{% endblock  %}
 {% block content %}
-<!-- <header id="header">
-    <div class="intro1">
-      <div class="overlay">
-        <div class="container">
-          <div class="row">
-            <div class="intro-text">
+  <div class="container pt-3 justify-content-center px-5">
+    <div class="mb-0" style="margin-top: 10%; margin-bottom: 0;">
+
+      <span>{{ product.category.name }} <i class="bi bi-arrow-return-right"></i> </span>
+    </div>
+    <div class="card" style="margin-top: 10%; margin-bottom: 10%; width:fit-content;">
+      <div class="row justify-content-between">
+        <div class="col-sm-5 d-flex align-items-center justify-content-center">
+            <img src="{{ product.image.url }}"class="my-1 product-image">
+        </div>
+        <div class="col-sm-5 py-5 ">
+          <div class="row d-flex align-items-center">
+            <div class="d-flex justify-content-center text-center">
+              <h1>{{ product.name }}</h1><br>
+            </div>
+            <div class="d-flex justify-content-center text-center">
+              <p style="overflow-wrap: break-word;">Description: {{ product.description }} </p>
+            </div>
+            <div class="d-flex justify-content-center">
+              <form class=" row justify-content-center pb-1"
+                  id="my-form-x"
+                  style="width: fit-content;" onsubmit="return addToCart(this.id)">
+                <input type="hidden" name="product" value="{{ product.id }}">
+                <input type="hidden" name="product_name" value="{{ product.name }}">
+                <input type="hidden" name="price" value="{{ product.price }}">
+                <input type="hidden" name="image_url" value="{{ product.image.url }}">
+                <input type="hidden" name="detail_url"
+                      value="{% url 'menu:show_product'  product.id %}">
+                <span class="co-sm-1 text-center" style="font-size:20px">{{ product.price }} <span>$</span></span>
+                <span class="col-sm-8 d-flex justify-content-center"><input placeholder="Qnt"
+                                              class="col-sm-11 my-3 text-center  qnt qnt-add"
+                                              type="number" min="1" name="quantity"
+                                              value="1"></span>
+                <div class="col-sm-8 d-flex justify-content-center">
+                    <input type="submit" class="btn btn-cart btn-add moving-btn1 heart mb-2"
+                          value="Add to cart" {% if not product.is_active %}
+                          disabled {% endif %}>
+                </div>
+              </form>
+            </div>
+
           </div>
         </div>
       </div>
     </div>
-  </header> -->
-  <div class="d-flex justify-content-center">
-  </div>
-  <div class="container">
-    <div class="card" style="margin-top: 10%; margin-bottom: 10%;">
-      <div class="d-flex justify-content-center">
-        <img src="{{ product.image.url }}" style="height: 300px; width: 400px;">
-      </div>
-      <div class="d-flex justify-content-center">
-        <h1>{{ product.name }}</h1><br>
-      </div>
-      <div class="d-flex justify-content-center">
-        <h4>{{ product.category }}</h4>
-      </div>
-      <div class="d-flex justify-content-center">
-        <p style="overflow-wrap: break-word;"> {{ product.description }} </p>
-      </div>
-      <div class="d-flex justify-content-center">
-        <h3> {{ product.price }} </h3>
-      </div>
-      <div class="d-flex justify-content-center">
-        <form action="{% url 'menu:menu'  %}" class=" row px-5 py-1" method="post" style="width: fit-content;">
-          {% csrf_token %}
-          <input type="hidden" name="product" value="{{ product.id }}">
-          <!-- <span class="co-sm-1 text-center">Qnt</span> -->
-          <span><input placeholder="Qnt" class="col-sm-1 my-3 text-center  qnt" type="number" min="0" max="{{ product.quantity }}" name="quantity" value="1" style="width: 100%; border-radius: 5px; color: #00014f; font-weight: bold; background-color: rgb(255, 255, 255);"></span>
-          <input type="submit" class="btn btn-cart moving-btn1 heart col-sm-1  " style="border-radius: 10px; color: rgb(3, 0, 38) !important; background-color: rgba(16, 3, 87, 0.142); width: 100%;" value="Add to cart"> 
-       </form>
-      </div>
-    </div>
   </div>
     
+{% endblock %}
+{% block footerlink %}
+<script src="{% static 'menu_js/add_To_Cart.js' %}"></script>
 {% endblock %}
