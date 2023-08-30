@@ -55,3 +55,7 @@ class TestProductView(TestCase):
                                                   {'filename': 'product_pic.png', 'content': self.image,
                                                    'content_tye': 'image/png'})
                                               )
+
+    def tearDown(self):
+        self.product.delete()
+        self.category.delete()
