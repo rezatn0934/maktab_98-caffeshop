@@ -7,7 +7,6 @@ from menu.models import Product, Category
 from model_bakery import baker
 from orders.forms import OrderForm
 from http.cookies import SimpleCookie
-from django_ratelimit.decorators import ratelimit
 import json
 import os
 
@@ -87,6 +86,15 @@ class TestCreateOrder(TestCase):
         self.session = self.client.session
         self.session['pre_order'] = {'phone': '09152593858', 'table_number': self.table.Table_number}
         self.session.save()
+
+    def tearDown(self):
+        Order_detail.objects.all().delete()
+        Product.objects.all().delete()
+        Order.objects.all().delete()
+        Table.objects.all().delete()
+        image_path = os.path.join(settings.MEDIA_ROOT / "images/product", "product_pic.png")
+        if os.path.exists(image_path):
+            os.remove(image_path)
 
     def test_inactive_product(self):
         response = self.client.get(reverse('orders:create_order'))
