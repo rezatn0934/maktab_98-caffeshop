@@ -1,12 +1,13 @@
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.conf import settings
 from orders.models import Order, Order_detail, Table
-from django.test import TestCase, Client
+from django.test import TestCase, Client, override_settings
 from django.urls import reverse
 from menu.models import Product, Category
 from model_bakery import baker
 from orders.forms import OrderForm
 from http.cookies import SimpleCookie
+from django_ratelimit.decorators import ratelimit
 import json
 import os
 
@@ -106,7 +107,6 @@ class TestOrderHistory(TestCase):
         self.session = self.client.session
         self.session['pre_order'] = {'phone': '09152593858', 'table_number': self.table.Table_number}
         self.session.save()
-        return super().setUp()
 
     def tearDown(self) -> None:
         Order_detail.objects.all().delete()
@@ -114,8 +114,8 @@ class TestOrderHistory(TestCase):
         Order.objects.all().delete()
         Table.objects.all().delete()
         del self.session
-        return super().tearDown()
 
+    @override_settings(RATELIMIT_ENABLE=False)
     def test_order_history(self):
         self.client.get(reverse('orders:create_order'))
         response = self.client.get(reverse('orders:order_history'))
@@ -125,6 +125,7 @@ class TestOrderHistory(TestCase):
         self.assertEqual(response.status_code, 200)
         self.failUnless(order_detail)
 
+    @override_settings(RATELIMIT_ENABLE=False)
     def test_order_has_tow_history(self):
         self.client.get(reverse('orders:create_order'))
         self.client.get(reverse('orders:order_history'))
@@ -151,6 +152,12 @@ class TestOrderHistory(TestCase):
         self.assertFalse(order_id_session)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['message'], "You Don't have any order yet.")
+
+    def test_ratelimited_error(self):
+        response = self.client.get(reverse('orders:order_history'))
+        self.assertEqual(response.status_code, 429)
+        self.assertJSONEqual(str(response.content, encoding='utf8'), {
+            'error': 'This page has one-minute rate limit for each request, please wait one minute the try again'})
 
 
 class OrderCancellationTestCase(TestCase):
