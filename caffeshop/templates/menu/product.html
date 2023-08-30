@@ -6,7 +6,11 @@
 {% block content %}
   <div class="container pt-3 justify-content-center px-5">
     <div class="mb-0" style="margin-top: 10%; margin-bottom: 0;">
-
+      {% for category in categories %}
+      {% if product.category in category.category_set.all %}
+      <span>{{ category.name }} <i class="bi bi-arrow-return-right"></i> </span>
+      {% endif %}
+      {% endfor %}
       <span>{{ product.category.name }} <i class="bi bi-arrow-return-right"></i> </span>
     </div>
     <div class="card" style="margin-top: 10%; margin-bottom: 10%; width:fit-content;">
