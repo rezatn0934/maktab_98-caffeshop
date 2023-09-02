@@ -21,7 +21,7 @@ class ProductAdmin(admin.ModelAdmin):
     ]
     list_editable = ['category', 'price', 'is_active']
     list_filter = ['name', 'category', 'price', 'is_active']
-    search_fields = ['name__istartswith', 'category__istartswith']
+    search_fields = ['name__istartswith', 'category__name__istartswith']
     ordering = ['name', 'category', 'price', 'is_active']
     list_per_page = 15
 
@@ -53,7 +53,7 @@ class CategoryAdmin(admin.ModelAdmin):
     list_display = ['name', 'parent_category', 'product_count', 'img_preview']
     list_filter = ['name', 'parent_category']
 
-    search_fields = ['name__istartswith', 'parent__istartswith']
+    search_fields = ['name__istartswith', 'parent_category__name__istartswith']
     ordering = ['name', 'parent_category']
     list_per_page = 15
 
